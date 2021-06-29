@@ -19,7 +19,10 @@ import os
 
 DATABASE_URL = os.environ.get('DATABASE_URL')
 CONNECTION = psycopg2.connect(DATABASE_URL, sslmode='require')
-
+with CONNECTION:
+    with CONNECTION.cursor() as cur:
+        cur.execute(f'select id, username, first_name from users where users.id = {user.id}')   
+        print(cur.fetchall())
 
 # Enable logging
 logging.basicConfig(
@@ -96,18 +99,27 @@ def reply_and_confirm(update, context):
     
     dict_message = message.to_dict()
 
-    #context.bot.send_message(chat_id = chat_id.id, text = f'{chat_id}\n\n{message}\n\n{user}')
     try:
-        context.bot.send_message(chat_id = chat_id.id, text = f"""{message.reply_to_message.forward_from_message_id}\n{message.reply_to_message.forward_from_chat.id}\n{message.reply_to_message.text}\n{message.reply_to_message.forward_signature}
-                                                          \n\n{message.sticker.file_unique_id}
-                                                          \n\n{user.id}\n{user.username}\n{user.first_name}""")
+        message_id = message.reply_to_message.forward_from_message_id
+        group_id = message.reply_to_message.forward_from_chat.id
+        text = message.reply_to_message.text
+        
     except:
+        message_id = message.reply_to_message.message_id
+        group_id = message.reply_to_message.chat.id
+        text = message.reply_to_message.text
 
-        context.bot.send_message(chat_id = chat_id.id, text = f"""{message.reply_to_message.message_id}\n{message.reply_to_message.chat.id}\n{message.reply_to_message.text}\n{dict_message['reply_to_message']['from']['username']}
-                                                          \n\n{message.sticker.file_unique_id}
-                                                          \n\n{user.id}\n{user.username}\n{user.first_name}"""
-                                                          )
+    user_id = user.id
+    username = user.username
+    user_firstname = user.first_name
 
+    with CONNECTION:
+        with CONNECTION.cursor() as cur:
+            cur.execute(f'select id, username, first_name from users where users.id = {user.id}')   
+            res = cur.fetchall() 
+            if len(res) == 0:
+                cur.execute(f'insert into users values ({user_id}, {username}, {user_firstname})')
+    
 
 def extract_status_change(
     chat_member_update,
