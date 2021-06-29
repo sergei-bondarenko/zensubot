@@ -17,14 +17,15 @@ from telegram.ext import (
 import psycopg2
 import os
 
-#1
 
 DATABASE_URL = os.environ.get('DATABASE_URL')
 CONNECTION = psycopg2.connect(DATABASE_URL, sslmode='require')
 with CONNECTION:
     with CONNECTION.cursor() as cur:
         cur.execute(f'select id from users')   
-        print(cur.fetchall())
+        res = cur.fetchall()[0][0]
+        print(type(res))
+        print(res)
 
 # Enable logging
 logging.basicConfig(
