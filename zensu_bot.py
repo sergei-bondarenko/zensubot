@@ -23,9 +23,7 @@ CONNECTION = psycopg2.connect(DATABASE_URL, sslmode='require')
 with CONNECTION:
     with CONNECTION.cursor() as cur:
         cur.execute(f'select id from users')   
-        res = cur.fetchall()[0][0]
-        print(type(res))
-        print(res)
+        USERS = (x[0] for x in cur.fetchall())
 
 # Enable logging
 logging.basicConfig(
@@ -118,9 +116,7 @@ def reply_and_confirm(update, context):
 
     with CONNECTION:
         with CONNECTION.cursor() as cur:
-            cur.execute(f'select id, username, first_name from users where users.id = {user.id}')   
-            res = cur.fetchall() 
-            if len(res) == 0:
+            if user_id not in USERS:
                 cur.execute(f"insert into users values ({user_id}, '{username}', '{user_firstname}')")
     
 
