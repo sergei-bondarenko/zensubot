@@ -77,11 +77,10 @@ def create_post(update, context) -> int:
     #context.bot.send_message(chat_id=update.effective_chat.id, text=context.user_data["chosen_group"] + '\n\n' + update.message.text)
     posted_message = context.bot.copy_message(chat_id=context.user_data["chosen_group"], from_chat_id = update.effective_chat.id, message_id = update.effective_message.message_id)
     
-    context.bot.send_message(chat_id = update.effective_chat.id, text = f'Done!')
-
-    with CONNECTION.cursor() as cursor:
-        cursor.execute('insert into jobs(message_id, chat_id) values (posted_message.message_id, context.user_data["chosen_group"])')    
-        
+    with CONNECTION.cursor() as cur:
+        cur.execute(f'insert into jobs(message_id, chat_id) values ({int(posted_message.message_id)}, {int(context.user_data["chosen_group"])});')
+    
+    context.bot.send_message(chat_id = update.effective_chat.id, text = 'Done!')
     return ConversationHandler.END
   
 def cancel(update, context) -> int:
@@ -182,11 +181,32 @@ def main() -> None:
     # Get the dispatcher to register handlers
     dispatcher = updater.dispatcher
 
-    cur = CONNECTION.cursor()
-    cur.execute('select * from users')
-    records = cur.fetchall()
-    print(records)
-    cur.close()
+    # Add conversation handler with the states GENDER, PHOTO, LOCATION and BIO
+    conv_handler = ConversationHandler(
+        allow_reentry=True,
+        entry_points=[CommandHandler('start', start)],
+        states={
+            PARSE_START: [CallbackQueryHandler(parse_start, pattern='add_post|end')],
+            PARSE_WHERE_TO_POST: [CallbackQueryHandler(parse_where_to_post, pattern = r'(pub|chat)_\d')],
+            CREATE_POST: [MessageHandler(Filters.all, create_post)],
+        },
+        fallbacks=[CommandHandler('cancel', cancel)],
+    )
+
+    dispatcher.add_handler(conv_handler)
+    dispatcher.add_handler(ChatMemberHandler(track_chats, ChatMemberHandler.MY_CHAT_MEMBER))
+
+    q_handler = MessageHandler(Filters.sticker & Filters.reply, reply_and_confirm)
+    dispatcher.add_handler(q_handler)
+
+    # Start the Bot
+    updater.start_polling()
+
+    # Run the bot until you press Ctrl-C or the process receives SIGINT,
+    # SIGTERM or SIGABRT. This should be used most of the time, since
+    # start_polling() is non-blocking and will stop the bot gracefully.
+    updater.idle()
+    CONNECTION.close()
 
 
 if __name__ == '__main__':
