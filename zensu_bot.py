@@ -21,7 +21,7 @@ DATABASE_URL = os.environ.get('DATABASE_URL')
 CONNECTION = psycopg2.connect(DATABASE_URL, sslmode='require')
 with CONNECTION:
     with CONNECTION.cursor() as cur:
-        cur.execute(f'select id, username, first_name from users where users.id = {user.id}')   
+        cur.execute(f'select id from users')   
         print(cur.fetchall())
 
 # Enable logging
