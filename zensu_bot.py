@@ -78,7 +78,7 @@ def create_post(update, context) -> int:
     posted_message = context.bot.copy_message(chat_id=context.user_data["chosen_group"], from_chat_id = update.effective_chat.id, message_id = update.effective_message.message_id)
     
     with CONNECTION.cursor() as cur:
-        cur.execute(f'insert into jobs(message_id, chat_id) values ({int(posted_message.message_id)}, {int(context.user_data["chosen_group"])});')
+        cur.execute(f'insert into jobs(message_id, chat_id) values ({posted_message.message_id}, {context.user_data["chosen_group"]});')
     
     context.bot.send_message(chat_id = update.effective_chat.id, text = 'Done!')
     return ConversationHandler.END
