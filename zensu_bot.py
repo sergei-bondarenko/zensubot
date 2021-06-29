@@ -118,7 +118,7 @@ def reply_and_confirm(update, context):
             cur.execute(f'select id, username, first_name from users where users.id = {user.id}')   
             res = cur.fetchall() 
             if len(res) == 0:
-                cur.execute(f'insert into users values ({user_id}, "{username}", "{user_firstname}")')
+                cur.execute(f"insert into users values ({user_id}, '{username}', '{user_firstname}')")
     
 
 def extract_status_change(
