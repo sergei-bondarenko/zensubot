@@ -1,6 +1,5 @@
 ADMINS = ['okuaubro', 'dzendzee', 'z9503']
 GROUP_TO_ID = {'pub_1': -1001547820476,'pub_2': -1001528853084,'chat_1':-1001185239661, 'chat_2':-1001211284566}
-REPOST_GROUP_ID = -531491306
 
 import logging
 
@@ -148,7 +147,17 @@ def reply_and_confirm(update, context):
             with CONNECTION.cursor() as cur:
                 cur.execute(f"insert into jobs_updates (user_id, job_id, sticker_id) values ({user_id}, {job_id}, {sticker_id})")
                 
-    print(text)
+        with CONNECTION:
+            with CONNECTION.cursor() as cur:
+                cur.execute(f"""select coalesce(concat('@',username), first_name) as name, d1, d2, d3, d4, d5 
+                                from 
+                                    (select user_id, sum(case when day=1 then 1 else 0 end) d1, sum(case when day=2 then 1 else 0 end) d2, sum(case when day=3 then 1 else 0 end) d3
+                                        , sum(case when day =4 then 1 else 0 end) d4, sum(case when day =5 then 1 else 0 end) d5 
+                                    from jobs_updates join stickers on jobs_updates.sticker_id = stickers.id 
+                                    where job_id={job_id} group by user_id) as t 
+                                join users on users.id = t.user_id;""")
+                data = cur.fetchall()
+                print(data)
 
 def extract_status_change(
     chat_member_update,
