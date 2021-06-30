@@ -1,5 +1,7 @@
 ADMINS = ['okuaubro', 'dzendzee', 'z9503']
 GROUP_TO_ID = {'pub_1': -1001547820476,'pub_2': -1001528853084,'chat_1':-1001185239661, 'chat_2':-1001211284566}
+EM_TRUE = ✅
+EM_FALSE = ⚫️
 
 import logging
 
@@ -157,7 +159,14 @@ def reply_and_confirm(update, context):
                                     where job_id={job_id} group by user_id) as t 
                                 join users on users.id = t.user_id;""")
                 data = cur.fetchall()
-                print(data)
+        text = text.split('Участники:')[0]
+        added_text = 'Участники:\n'
+        for item in data:
+            added_text += item[0] + ' '
+            added_text += ''.join([EM_TRUE if int(x)>0 else EM_FALSE for x in item[1:]])
+            added_text += '\n'
+        text += added_text
+        context.bot.edit_message_text(text = text, chat_id = group_id, message_id = message_id)
 
 def extract_status_change(
     chat_member_update,
