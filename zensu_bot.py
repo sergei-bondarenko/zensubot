@@ -110,6 +110,8 @@ def reply_and_confirm(update, context):
     user_id = user.id
     username = user.username
     user_firstname = user.first_name
+
+    job_id, sticker_id = None, None
     
     #Creating new users if they do not exist    
     
@@ -126,17 +128,23 @@ def reply_and_confirm(update, context):
         with CONNECTION.cursor() as cur:
             cur.execute(f"select id from jobs where message_id = {message_id} and chat_id = {group_id} and DATE_PART('day', now()-created)<=4")
             data = cur.fetchall()
-            print(f'Active jobs: {data}')
+            if len(data) != 0:
+                job_id = data[0][0]
     
     #Getting sticker id if it exist
     
     with CONNECTION:
         with CONNECTION.cursor() as cur:
-            cur.execute(f"select id, day, power from stickers where text_id='{message.sticker.file_unique_id}'")
+            cur.execute(f"select id from stickers where text_id='{message.sticker.file_unique_id}'")
             data = cur.fetchall()
-            print(f'Sticker_id: {data}')
-            print(message.sticker.file_unique_id)   
+            if len(data) != 0:
+                sticker_id = data[0][0]
     
+    if job_id and sticker_id:
+        with CONNECTION:
+            with CONNECTION.cursor() as cur:
+                cur.execute(f"insert into jobs_updates (user_id, job_id, sticker_id) values ({user_id}, {job_id}, {sticker_id})")
+                
     
 
 def extract_status_change(
