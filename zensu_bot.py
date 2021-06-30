@@ -136,28 +136,36 @@ def reply_and_confirm(update, context):
     
     with CONNECTION:
         with CONNECTION.cursor() as cur:
-            cur.execute(f"select id from stickers where text_id='{message.sticker.file_unique_id}'")
+            cur.execute(f"select id, day from stickers where text_id='{message.sticker.file_unique_id}'")
             data = cur.fetchall()
             if len(data) != 0:
                 sticker_id = data[0][0]
+                sticker_day = data[0][1]
     
     #Writing update to table if job_id and sticker_id is correct    
     
     if job_id and sticker_id:
         with CONNECTION:
             with CONNECTION.cursor() as cur:
-                cur.execute(f"insert into jobs_updates (user_id, job_id, sticker_id) values ({user_id}, {job_id}, {sticker_id})")
-                
-        with CONNECTION:
-            with CONNECTION.cursor() as cur:
-                cur.execute(f"""select coalesce(concat('@',username), first_name) as name, d1, d2, d3, d4, d5 
-                                from 
-                                    (select user_id, sum(case when day=1 then 1 else 0 end) d1, sum(case when day=2 then 1 else 0 end) d2, sum(case when day=3 then 1 else 0 end) d3
-                                        , sum(case when day =4 then 1 else 0 end) d4, sum(case when day =5 then 1 else 0 end) d5 
-                                    from jobs_updates join stickers on jobs_updates.sticker_id = stickers.id 
-                                    where job_id={job_id} group by user_id) as t 
-                                join users on users.id = t.user_id;""")
-                data = cur.fetchall()
+                cur.execute(f"select DATE_PART('day', now()-created)+1 from jobs where id = {job_id}")
+                cur_day = cur.fetchall()[0][0]
+
+        if cur_day == sticker_day:
+            with CONNECTION:
+                with CONNECTION.cursor() as cur:
+                    cur.execute(f"insert into jobs_updates (user_id, job_id, sticker_id) values ({user_id}, {job_id}, {sticker_id})")
+                    
+            with CONNECTION:
+                with CONNECTION.cursor() as cur:
+                    cur.execute(f"""select coalesce(concat('@',username), first_name) as name, d1, d2, d3, d4, d5 
+                                    from 
+                                        (select user_id, sum(case when day=1 then 1 else 0 end) d1, sum(case when day=2 then 1 else 0 end) d2, sum(case when day=3 then 1 else 0 end) d3
+                                            , sum(case when day =4 then 1 else 0 end) d4, sum(case when day =5 then 1 else 0 end) d5 
+                                        from jobs_updates join stickers on jobs_updates.sticker_id = stickers.id 
+                                        where job_id={job_id} group by user_id) as t 
+                                    join users on users.id = t.user_id;""")
+                    data = cur.fetchall()
+
         text = text.split('\n\nУчастники:')[0]
         added_text = '\n\nУчастники:\n'
         for item in data:
