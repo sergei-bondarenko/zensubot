@@ -96,7 +96,7 @@ def reply_and_confirm(update, context):
     chat_id = update.effective_chat
     message = update.effective_message
     user =  update.effective_user
-    
+    print(message)
     dict_message = message.to_dict()
 
     try:
