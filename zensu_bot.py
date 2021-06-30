@@ -159,8 +159,8 @@ def reply_and_confirm(update, context):
                                     where job_id={job_id} group by user_id) as t 
                                 join users on users.id = t.user_id;""")
                 data = cur.fetchall()
-        text = text.split('Участники:')[0]
-        added_text = 'Участники:\n'
+        text = text.split('\nУчастники:')[0]
+        added_text = '\nУчастники:\n'
         for item in data:
             added_text += item[0] + ' '
             added_text += ''.join([EM_TRUE if int(x)>0 else EM_FALSE for x in item[1:]])
