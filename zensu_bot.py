@@ -39,16 +39,14 @@ def start(update, context) -> int:
         reply_keyboard = [[InlineKeyboardButton("Добавить пост", callback_data='add_post'),
                      InlineKeyboardButton("Пойти нахуй", callback_data='end')]]
         reply_markup = InlineKeyboardMarkup(reply_keyboard)
-        update.message.reply_text("What to do?", reply_markup=reply_markup)
-
-        return PARSE_START
 
     else:
         reply_keyboard = [[InlineKeyboardButton("Пойти нахуй", callback_data='end')]]
         reply_markup = InlineKeyboardMarkup(reply_keyboard)
-        update.message.reply_text("What to do?", reply_markup=reply_markup)
+    
+    update.message.reply_text("What to do?", reply_markup=reply_markup)
 
-        return ConversationHandler.END
+    return PARSE_START
     
 
 def parse_start(update, context) -> int:
