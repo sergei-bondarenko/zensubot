@@ -1,8 +1,7 @@
 ADMINS = ['okuaubro', 'dzendzee', 'z9503']
-GROUP_TO_ID = {'pub_1': -1001547820476,'pub_2': -1001528853084,'chat_1':-1001185239661, 'chat_2':-1001211284566}
+GROUP_TO_ID = {'pub_1': -1001547820476,'pub_2': -1001528853084,'chat_1':-1001171240986, 'chat_2':-1001211284566}
 EM_TRUE = '✅'
 EM_FALSE = '⚫️'
-#Yoga Chan with id -1001171240986 chat
 
 import logging
 
@@ -41,7 +40,7 @@ def start(update, context) -> int:
         reply_markup = InlineKeyboardMarkup(reply_keyboard)
 
     else:
-        reply_keyboard = [[InlineKeyboardButton("Пойти нахуй", callback_data='end')]]
+        reply_keyboard = [[InlineKeyboardButton("Я не дзендзи. Пойти нахуй", callback_data='end')]]
         reply_markup = InlineKeyboardMarkup(reply_keyboard)
     
     update.message.reply_text("What to do?", reply_markup=reply_markup)
@@ -52,10 +51,8 @@ def start(update, context) -> int:
 def parse_start(update, context) -> int:
     query = update.callback_query
     if query.data == 'add_post':
-        keyboard = [[InlineKeyboardButton('Паблик 1', callback_data='pub_1'),
-                          InlineKeyboardButton('Паблик 2', callback_data='pub_2')],
-                        [InlineKeyboardButton('Чат паблика 1', callback_data='chat_1'),
-                          InlineKeyboardButton('Чат паблика 2', callback_data='chat_2')]]
+        keyboard = [[InlineKeyboardButton('Yoga Chan канал (дайте админку, оно не работает)', callback_data='pub_1')],
+                          [InlineKeyboardButton('Yoga Chan чат', callback_data='chat_1')]
         reply_markup = InlineKeyboardMarkup(keyboard)
         context.bot.edit_message_text(text='Where to post?',
                                   reply_markup=reply_markup,
