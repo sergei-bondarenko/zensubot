@@ -108,7 +108,13 @@ def reply_and_confirm(update, context):
         message_id = message.reply_to_message.message_id
         group_id = message.reply_to_message.chat.id
         text = message.reply_to_message.text
-
+    
+    if text is None:
+        try:
+            text = message['reply_to_message']['caption']    
+        except:
+            pass
+    
     user_id = user.id
     username = user.username
     user_firstname = user.first_name
