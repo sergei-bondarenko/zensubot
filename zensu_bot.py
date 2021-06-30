@@ -35,13 +35,11 @@ PARSE_START, PARSE_WHERE_TO_POST, CREATE_POST, = range(3)
 
 def start(update, context) -> int:
     if update.effective_user.username in ADMINS:
-        reply_keyboard = [[InlineKeyboardButton("Добавить пост", callback_data='add_post'),
-                     InlineKeyboardButton("Пойти нахуй", callback_data='end')]]
-        reply_markup = InlineKeyboardMarkup(reply_keyboard)
-
+        reply_keyboard = [[InlineKeyboardButton("Добавить пост", callback_data='add_post')], [InlineKeyboardButton("Пойти нахуй", callback_data='end')]]
     else:
         reply_keyboard = [[InlineKeyboardButton("Я не дзендзи. Пойти нахуй", callback_data='end')]]
-        reply_markup = InlineKeyboardMarkup(reply_keyboard)
+    
+    reply_markup = InlineKeyboardMarkup(reply_keyboard)
     
     update.message.reply_text("What to do?", reply_markup=reply_markup)
 
