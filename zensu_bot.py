@@ -50,7 +50,7 @@ def parse_start(update, context) -> int:
     query = update.callback_query
     if query.data == 'add_post':
         keyboard = [[InlineKeyboardButton('Yoga Chan канал (дайте админку, оно не работает)', callback_data='pub_1')],
-                          [InlineKeyboardButton('Yoga Chan чат', callback_data='chat_1')]
+                          [InlineKeyboardButton('Yoga Chan чат', callback_data='chat_1')]]
         reply_markup = InlineKeyboardMarkup(keyboard)
         context.bot.edit_message_text(text='Where to post?',
                                   reply_markup=reply_markup,
