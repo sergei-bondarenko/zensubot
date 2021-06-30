@@ -172,7 +172,10 @@ def reply_and_confirm(update, context):
             added_text += ''.join([EM_TRUE if int(x)>0 else EM_FALSE for x in item[1:]])
             added_text += '\n'
         text += added_text
-        context.bot.edit_message_text(text = text, chat_id = group_id, message_id = message_id)
+        try:
+            context.bot.edit_message_text(text = text, chat_id = group_id, message_id = message_id)
+        except:
+            context.bot.edit_message_caption(chat_id = group_id, message_id = message_id, caption = text)
 
 def extract_status_change(
     chat_member_update,
