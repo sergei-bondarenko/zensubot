@@ -1,5 +1,6 @@
 ADMINS = ['okuaubro', 'dzendzee', 'z9503']
 GROUP_TO_ID = {'pub_1': -1001547820476,'pub_2': -1001528853084,'chat_1':-1001185239661, 'chat_2':-1001211284566}
+REPOST_GROUP_ID = -531491306
 
 import logging
 
@@ -140,12 +141,14 @@ def reply_and_confirm(update, context):
             if len(data) != 0:
                 sticker_id = data[0][0]
     
+    #Writing update to table if job_id and sticker_id is correct    
+    
     if job_id and sticker_id:
         with CONNECTION:
             with CONNECTION.cursor() as cur:
                 cur.execute(f"insert into jobs_updates (user_id, job_id, sticker_id) values ({user_id}, {job_id}, {sticker_id})")
                 
-    
+    print(text)
 
 def extract_status_change(
     chat_member_update,
