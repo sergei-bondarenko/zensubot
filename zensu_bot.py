@@ -20,10 +20,7 @@ import os
 
 DATABASE_URL = os.environ.get('DATABASE_URL')
 CONNECTION = psycopg2.connect(DATABASE_URL, sslmode='require')
-with CONNECTION:
-    with CONNECTION.cursor() as cur:
-        cur.execute(f'select id from users')   
-        USERS = (x[0] for x in cur.fetchall())
+
 
 # Enable logging
 logging.basicConfig(
@@ -118,9 +115,11 @@ def reply_and_confirm(update, context):
     
     with CONNECTION:
         with CONNECTION.cursor() as cur:
-            if user_id not in USERS:
+            cur.execute(f'select id from users where id = {user_id}')
+            res = cur.fetchall()
+            print(res)
+            if len(res) == 0:
                 cur.execute(f"insert into users values ({user_id}, '{username}', '{user_firstname}')")
-                USERS.add(user_id)
     
     #Getting active jobs if they exist    
 
