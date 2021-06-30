@@ -117,7 +117,6 @@ def reply_and_confirm(update, context):
         with CONNECTION.cursor() as cur:
             cur.execute(f'select id from users where id = {user_id}')
             res = cur.fetchall()
-            print(res)
             if len(res) == 0:
                 cur.execute(f"insert into users values ({user_id}, '{username}', '{user_firstname}')")
     
@@ -125,10 +124,9 @@ def reply_and_confirm(update, context):
 
     with CONNECTION:
         with CONNECTION.cursor() as cur:
-            if user_id not in USERS:
-                cur.execute(f"select id from jobs where message_id = {message_id} and chat_id = {group_id} and DATE_PART('day', now()-created)<=5")
-                data = cur.fetchall()
-                print(f'Active jobs: {data}')
+            cur.execute(f"select id from jobs where message_id = {message_id} and chat_id = {group_id} and DATE_PART('day', now()-created)<=4")
+            data = cur.fetchall()
+            print(f'Active jobs: {data}')
     
 
 def extract_status_change(
