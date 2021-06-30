@@ -1,7 +1,7 @@
 ADMINS = ['okuaubro', 'dzendzee', 'z9503']
 GROUP_TO_ID = {'pub_1': -1001547820476,'pub_2': -1001528853084,'chat_1':-1001185239661, 'chat_2':-1001211284566}
-EM_TRUE = ✅
-EM_FALSE = ⚫️
+EM_TRUE = '✅'
+EM_FALSE = '⚫️'
 
 import logging
 
