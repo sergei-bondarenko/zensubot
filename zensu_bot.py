@@ -168,8 +168,8 @@ def reply_and_confirm(update, context):
         text = text.split('\n\nУчастники:')[0]
         added_text = '\n\nУчастники:\n'
         for item in data:
-            added_text += ''.join([EM_TRUE if int(x)>0 else EM_FALSE for x in item[1:]])
-            added_text += item[0] + ' '
+            added_text += ''.join([EM_TRUE if int(x)>0 else EM_FALSE for x in item[1:]])+' '
+            added_text += item[0]
             added_text += '\n'
         text += added_text
         try:
