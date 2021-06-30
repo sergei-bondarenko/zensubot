@@ -128,6 +128,16 @@ def reply_and_confirm(update, context):
             data = cur.fetchall()
             print(f'Active jobs: {data}')
     
+    #Getting sticker id if it exist
+    
+    with CONNECTION:
+        with CONNECTION.cursor() as cur:
+            cur.execute(f"select id from stickers where text_id={message.sticker.file_unique_id}")
+            data = cur.fetchall()
+            print(f'Sticker_id: {data}')
+            print(message.sticker.file_unique_id)   
+    
+    
 
 def extract_status_change(
     chat_member_update,
