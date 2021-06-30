@@ -1,5 +1,5 @@
 ADMINS = ['okuaubro', 'dzendzee', 'z9503']
-GROUP_TO_ID = {'pub_1': -1001547820476,'pub_2': -1001528853084,'chat_1':-1001171240986, 'chat_2':-1001211284566}
+GROUP_TO_ID = {'pub_1': -1001216918794,'chat_1':-1001171240986}
 EM_TRUE = '✅'
 EM_FALSE = '⚫️'
 
@@ -49,7 +49,7 @@ def start(update, context) -> int:
 def parse_start(update, context) -> int:
     query = update.callback_query
     if query.data == 'add_post':
-        keyboard = [[InlineKeyboardButton('Yoga Chan канал (дайте админку, оно не работает)', callback_data='pub_1')],
+        keyboard = [[InlineKeyboardButton('Yoga Chan канал', callback_data='pub_1')],
                           [InlineKeyboardButton('Yoga Chan чат', callback_data='chat_1')]]
         reply_markup = InlineKeyboardMarkup(keyboard)
         context.bot.edit_message_text(text='Where to post?',
