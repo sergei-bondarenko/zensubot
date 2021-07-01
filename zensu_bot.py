@@ -34,6 +34,9 @@ logger = logging.getLogger(__name__)
 PARSE_START, PARSE_WHERE_TO_POST, CREATE_POST, = range(3)
 
 def start(update, context) -> int:
+
+    logger.info(f"@{update.effective_user.username}, {update.effective_user.first_name} started bot")
+
     if update.effective_user.username in ADMINS:
         reply_keyboard = [[InlineKeyboardButton("Добавить пост", callback_data='add_post')], [InlineKeyboardButton("Пойти нахуй", callback_data='end')]]
     else:
@@ -42,7 +45,7 @@ def start(update, context) -> int:
     reply_markup = InlineKeyboardMarkup(reply_keyboard)
     
     update.message.reply_text("What to do?", reply_markup=reply_markup)
-
+    
     return PARSE_START
     
 
@@ -66,6 +69,9 @@ def parse_start(update, context) -> int:
 def parse_where_to_post(update, context) -> int:
     query = update.callback_query
     context.user_data["chosen_group"] = GROUP_TO_ID[query.data]
+
+    logger.info(f"@{update.effective_user.username}, {update.effective_user.first_name} chosen to post at {query.data}")
+    
     context.bot.edit_message_text(text='Write here your post',
                                   chat_id=query.message.chat_id,
                                   message_id=query.message.message_id)
@@ -78,6 +84,8 @@ def create_post(update, context) -> int:
     with CONNECTION:
         with CONNECTION.cursor() as cur:
             cur.execute(f'insert into jobs(message_id, chat_id) values ({posted_message.message_id}, {context.user_data["chosen_group"]});')
+
+    logger.info(f"@{update.effective_user.username}, {update.effective_user.first_name} posted message with text \n\n{posted_message.text} \n\ncaption \n\n{posted_message.caption}")
     
     context.bot.send_message(chat_id = update.effective_chat.id, text = 'Done!')
     return ConversationHandler.END
@@ -122,6 +130,8 @@ def reply_and_confirm(update, context):
             res = cur.fetchall()
             if len(res) == 0:
                 cur.execute(f"insert into users values ({user_id}, '{username}', '{user_firstname}')")
+
+            logger.info(f"User with id {user_id}\n, username\n{username}, firstname\n{user_firstname} added to database")
     
     #Getting active jobs if they exist    
 
@@ -145,11 +155,13 @@ def reply_and_confirm(update, context):
     #Writing update to table if job_id and sticker_id is correct    
     
     if job_id and sticker_id:
+        #Getting current day since start of job
+        
         with CONNECTION:
             with CONNECTION.cursor() as cur:
                 cur.execute(f"select DATE_PART('day', now()-created)+1 from jobs where id = {job_id}")
                 cur_day = cur.fetchall()[0][0]
-
+        
         if cur_day == sticker_day:
             with CONNECTION:
                 with CONNECTION.cursor() as cur:
@@ -177,6 +189,8 @@ def reply_and_confirm(update, context):
                 context.bot.edit_message_text(text = text, chat_id = group_id, message_id = message_id)
             except:
                 context.bot.edit_message_caption(chat_id = group_id, message_id = message_id, caption = text)
+
+            logger.info(f"Edited job with id {job_id} after posted sticker id {sticker_id} by @{username} with firstname {user_firstname}")
 
 def extract_status_change(
     chat_member_update,
