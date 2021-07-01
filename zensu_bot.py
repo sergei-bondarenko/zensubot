@@ -19,7 +19,7 @@ from telegram.ext import (
 import psycopg2
 import os
 
-
+TELEGRAM_TOKEN = os.environ.get('TELEGRAM_TOKEN')
 DATABASE_URL = os.environ.get('DATABASE_URL')
 CONNECTION = psycopg2.connect(DATABASE_URL, sslmode='require')
 
@@ -261,7 +261,7 @@ def track_chats(update: Update, context: CallbackContext) -> None:
 def main() -> None:
     """Run the bot."""
     # Create the Updater and pass it your bot's token.
-    updater = Updater('1884842077:AAFlcCTfYyk-U14Q0Zem7doysM3pBCfQZLU')
+    updater = Updater(TELEGRAM_TOKEN)
 
     # Get the dispatcher to register handlers
     dispatcher = updater.dispatcher
