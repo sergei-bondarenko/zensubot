@@ -131,7 +131,7 @@ def reply_and_confirm(update, context):
             if len(res) == 0:
                 cur.execute(f"insert into users values ({user_id}, '{username}', '{user_firstname}')")
 
-            logger.info(f"User with id {user_id}\n, username\n{username}, firstname\n{user_firstname} added to database")
+            logger.info(f"User with id {user_id}, username {username}, firstname {user_firstname} added to database")
     
     #Getting active jobs if they exist    
 
