@@ -99,6 +99,7 @@ def parse_where_to_post(update, context) -> int:
     return CREATE_POST
 
 def create_post(update, context) -> int:
+    print(update)
     query = update.callback_query
     
     context.bot.edit_message_text(text='Write here your post',
