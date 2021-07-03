@@ -209,7 +209,6 @@ def reply_and_confirm(update, context):
 
 
 def delete_message(context) -> None:
-    """Send the alarm message."""
     job = context.job.context
     context.bot.delete_message(chat_id = job[1], message_id = job[0])
 
