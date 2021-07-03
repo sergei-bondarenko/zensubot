@@ -44,7 +44,7 @@ def get_reply_keyboard():
     data = db_query(f"select id, title from chats")
 
     reply_keyboard = list()
-    
+    print(data)
     for item in data:
         reply_keyboard.append([InlineKeyboardButton(item[1], callback_data=item[0])])
         
