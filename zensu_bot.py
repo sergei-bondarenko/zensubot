@@ -162,8 +162,9 @@ def reply_and_confirm(update, context):
 
         #Getting current day since start of job
         cur_day = db_query(f"select DATE_PART('day', now()-created)+1 from jobs where id = {job_id}")[0][0]
-        
-        if cur_day == sticker_day:
+        print(sticker_day, cur_day)
+        print(type(sticker_day), type(cur_day))
+        if sticker_day in (cur_day, cur_day + 1):
             db_query(f"insert into jobs_updates (user_id, job_id, sticker_id) values ({user_id}, {job_id}, {sticker_id})", False)
             
             data = db_query(f"""select coalesce(concat('@',username), first_name) as name, d1, d2, d3, d4, d5 
