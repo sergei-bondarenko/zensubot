@@ -203,7 +203,7 @@ def reply_and_confirm(update, context):
 
             logger.info(f"Edited job with id {job_id} after posted sticker id {sticker_id} by @{username} with firstname {user_firstname}")
 
-            posted_message = context.bot.send_message(chat_id = group_id, reply_to_message_id = message_id, text = f"Молодец! День {sticker_day} выполнен! \n\n (Сообщение самоликвидируется через 1 минуту)")
+            posted_message = context.bot.send_message(chat_id = group_id, reply_to_message_id = message_id, text = f"Молодец! День {sticker_day} выполнен!")
 
             context.job_queue.run_once(delete_message, 60, context = [posted_message.message_id, group_id])
 
