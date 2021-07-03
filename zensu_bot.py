@@ -247,14 +247,14 @@ def track_chats(update: Update, context: CallbackContext) -> None:
             db_query(f"insert into chats values ({chat.id}, '{chat.title} чат')", False)
         elif was_member and not is_member:
             logger.info("%s removed the bot from the group %s with id %s", cause_name, chat.title, chat.id)
-            db_query(f"delete from chats where id = {chat.id})", False)
+            db_query(f"delete from chats where id = {chat.id}", False)
     else:
         if not was_member and is_member:
             logger.info("%s added the bot to the channel %s with id %s", cause_name, chat.title, chat.id)
             db_query(f"insert into chats values ({chat.id}, '{chat.title} канал')", False)
         elif was_member and not is_member:
             logger.info("%s removed the bot from the channel %s with id %s", cause_name, chat.title, chat.id)
-            db_query(f"delete from chats where id = {chat.id})", False)
+            db_query(f"delete from chats where id = {chat.id}", False)
 
 
 
