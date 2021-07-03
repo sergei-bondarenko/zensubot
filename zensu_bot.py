@@ -96,7 +96,7 @@ def parse_where_to_post(update, context) -> int:
 
 def create_post(update, context) -> int:
     #context.bot.send_message(chat_id=update.effective_chat.id, text=context.user_data["chosen_group"] + '\n\n' + update.message.text)
-    context.bot.copy_message(chat_id=context.user_data["chosen_group"], from_chat_id = update.effective_chat.id, message_id = update.effective_message.message_id)
+    posted_message = context.bot.copy_message(chat_id=context.user_data["chosen_group"], from_chat_id = update.effective_chat.id, message_id = update.effective_message.message_id)
     
     db_query(f'insert into jobs(message_id, chat_id) values ({posted_message.message_id}, {context.user_data["chosen_group"]});', False)
 
