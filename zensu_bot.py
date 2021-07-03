@@ -30,7 +30,7 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
-PARSE_START, PARSE_WHERE_TO_POST, CREATE_POST, = range(4)
+PARSE_START, PARSE_WHERE_TO_POST, CREATE_POST, = range(3)
 
 def db_query(line, fetching = True):
     with CONNECTION:
