@@ -1,5 +1,4 @@
 ADMINS = ['okuaubro', 'dzendzee', 'z9503']
-GROUP_TO_ID = {'pub_1': -1001216918794,'chat_1':-1001171240986}
 EM_TRUE = '✅'
 EM_FALSE = '⚫️'
 
@@ -87,7 +86,7 @@ def parse_start(update, context) -> int:
 
 def parse_where_to_post(update, context) -> int:
     query = update.callback_query
-    context.user_data["chosen_group"] = GROUP_TO_ID[query.data]
+    context.user_data["chosen_group"] = query.data
 
     logger.info(f"@{update.effective_user.username}, {update.effective_user.first_name} chosen to post at {query.data}")
     
