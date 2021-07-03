@@ -33,11 +33,15 @@ logger = logging.getLogger(__name__)
 
 PARSE_START, PARSE_WHERE_TO_POST, CREATE_POST, = range(3)
 
-def get_reply_keyboard():
+def query(line):
     with CONNECTION:
         with CONNECTION.cursor() as cur:
-            cur.execute(f"select id, title from chats")
+            cur.execute(line)
             data = cur.fetchall()
+    return data
+
+def get_reply_keyboard():
+    data = query(f"select id, title from chats")
 
     reply_keyboard = list()
     
@@ -95,9 +99,7 @@ def create_post(update, context) -> int:
     #context.bot.send_message(chat_id=update.effective_chat.id, text=context.user_data["chosen_group"] + '\n\n' + update.message.text)
     posted_message = context.bot.copy_message(chat_id=context.user_data["chosen_group"], from_chat_id = update.effective_chat.id, message_id = update.effective_message.message_id)
     
-    with CONNECTION:
-        with CONNECTION.cursor() as cur:
-            cur.execute(f'insert into jobs(message_id, chat_id) values ({posted_message.message_id}, {context.user_data["chosen_group"]});')
+    query(f'insert into jobs(message_id, chat_id) values ({posted_message.message_id}, {context.user_data["chosen_group"]});')
 
     logger.info(f"@{update.effective_user.username}, {update.effective_user.first_name} posted message with text \n\n{posted_message.text} \n\ncaption \n\n{posted_message.caption}")
     
@@ -138,61 +140,41 @@ def reply_and_confirm(update, context):
     
     
     #Getting active jobs if they exist    
-
-    with CONNECTION:
-        with CONNECTION.cursor() as cur:
-            cur.execute(f"select id from jobs where message_id = {message_id} and chat_id = {group_id} and DATE_PART('day', now()-created)<=4")
-            data = cur.fetchall()
-            if len(data) != 0:
-                job_id = data[0][0]
+    data = query(f"select id from jobs where message_id = {message_id} and chat_id = {group_id} and DATE_PART('day', now()-created)<=4")
+    if len(data) != 0:
+        job_id = data[0][0]
     
     #Getting sticker id if it exist
     
-    with CONNECTION:
-        with CONNECTION.cursor() as cur:
-            cur.execute(f"select id, day from stickers where text_id='{message.sticker.file_unique_id}'")
-            data = cur.fetchall()
-            if len(data) != 0:
-                sticker_id = data[0][0]
-                sticker_day = data[0][1]
+    data = query(f"select id, day from stickers where text_id='{message.sticker.file_unique_id}'")
+    if len(data) != 0:
+        sticker_id = data[0][0]
+        sticker_day = data[0][1]
     
     #Writing update to table if job_id and sticker_id is correct    
     
     if job_id and sticker_id:
 
         #Creating new users if they do not exist    
-    
-        with CONNECTION:
-            with CONNECTION.cursor() as cur:
-                cur.execute(f'select id from users where id = {user_id}')
-                res = cur.fetchall()
-                if len(res) == 0:
-                    cur.execute(f"insert into users values ({user_id}, '{username}', '{user_firstname}')")
+        data = query(f'select id from users where id = {user_id}')
+        if len(data) == 0:
+            query(f"insert into users values ({user_id}, '{username}', '{user_firstname}')")
 
-                logger.info(f"User with id {user_id}, username {username}, firstname {user_firstname} added to database")
+        logger.info(f"User with id {user_id}, username {username}, firstname {user_firstname} added to database")
 
         #Getting current day since start of job
-        
-        with CONNECTION:
-            with CONNECTION.cursor() as cur:
-                cur.execute(f"select DATE_PART('day', now()-created)+1 from jobs where id = {job_id}")
-                cur_day = cur.fetchall()[0][0]
+        cur_day = query(f"select DATE_PART('day', now()-created)+1 from jobs where id = {job_id}")[0][0]
         
         if cur_day == sticker_day:
-            with CONNECTION:
-                with CONNECTION.cursor() as cur:
-                    cur.execute(f"insert into jobs_updates (user_id, job_id, sticker_id) values ({user_id}, {job_id}, {sticker_id})")
-                    
-            with CONNECTION:
-                with CONNECTION.cursor() as cur:
-                    cur.execute(f"""select coalesce(concat('@',username), first_name) as name, d1, d2, d3, d4, d5 
-                                    from 
-                                        (select user_id, sum(case when day=1 then 1 else 0 end) d1, sum(case when day=2 then 1 else 0 end) d2, sum(case when day=3 then 1 else 0 end) d3
-                                            , sum(case when day =4 then 1 else 0 end) d4, sum(case when day =5 then 1 else 0 end) d5 
-                                        from jobs_updates join stickers on jobs_updates.sticker_id = stickers.id 
-                                        where job_id={job_id} group by user_id) as t 
-                                    join users on users.id = t.user_id;""")
-                    data = cur.fetchall()
+            query(f"insert into jobs_updates (user_id, job_id, sticker_id) values ({user_id}, {job_id}, {sticker_id})")
+            
+            data = query(f"""select coalesce(concat('@',username), first_name) as name, d1, d2, d3, d4, d5 
+                            from 
+                                (select user_id, sum(case when day=1 then 1 else 0 end) d1, sum(case when day=2 then 1 else 0 end) d2, sum(case when day=3 then 1 else 0 end) d3
+                                    , sum(case when day =4 then 1 else 0 end) d4, sum(case when day =5 then 1 else 0 end) d5 
+                                from jobs_updates join stickers on jobs_updates.sticker_id = stickers.id 
+                                where job_id={job_id} group by user_id) as t 
+                            join users on users.id = t.user_id;""")
 
             text = text.split('\n\nУчастники:')[0]
             added_text = '\n\nУчастники:\n'
