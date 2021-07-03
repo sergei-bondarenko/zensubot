@@ -126,6 +126,7 @@ def cancel(update, context) -> int:
 
 
 def reply_and_confirm(update, context):
+    print(update)
     chat_id = update.effective_chat
     message = update.effective_message
     user =  update.effective_user
