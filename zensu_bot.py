@@ -275,7 +275,7 @@ def main() -> None:
         entry_points=[CommandHandler('start', start)],
         states={
             PARSE_START: [CallbackQueryHandler(parse_start, pattern='add_post|end')],
-            PARSE_WHERE_TO_POST: [CallbackQueryHandler(parse_where_to_post, pattern = r'.* (чат|канал)')],
+            PARSE_WHERE_TO_POST: [CallbackQueryHandler(parse_where_to_post, pattern = r'-\d*')],
             CREATE_POST: [MessageHandler(Filters.all, create_post)],
         },
         fallbacks=[CommandHandler('cancel', cancel)],
