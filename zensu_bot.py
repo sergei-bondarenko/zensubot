@@ -131,6 +131,10 @@ def reply_and_confirm(update, context):
     user =  update.effective_user
     dict_message = message.to_dict()
 
+    print(chat_id)
+    print(message)
+    print(update)
+
     try:
         message_id = message.reply_to_message.forward_from_message_id
         group_id = message.reply_to_message.forward_from_chat.id
