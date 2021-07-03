@@ -85,7 +85,9 @@ def parse_start(update, context) -> int:
 
 
 def parse_where_to_post(update, context) -> int:
-    query = update.callback_query
+    query = update.callback_query]
+    print(query)
+    print(query.data)
     context.user_data["chosen_group"] = query.data
 
     logger.info(f"@{update.effective_user.username}, {update.effective_user.first_name} chosen to post at {query.data}")
