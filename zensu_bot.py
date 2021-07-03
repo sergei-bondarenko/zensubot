@@ -33,15 +33,16 @@ logger = logging.getLogger(__name__)
 
 PARSE_START, PARSE_WHERE_TO_POST, CREATE_POST, = range(3)
 
-def query(line):
+def db_query(line, fetching = True):
     with CONNECTION:
         with CONNECTION.cursor() as cur:
             cur.execute(line)
-            data = cur.fetchall()
-    return data
+            if fetching:
+                data = cur.fetchall()
+                return data
 
 def get_reply_keyboard():
-    data = query(f"select id, title from chats")
+    data = db_query(f"select id, title from chats")
 
     reply_keyboard = list()
     
@@ -99,7 +100,7 @@ def create_post(update, context) -> int:
     #context.bot.send_message(chat_id=update.effective_chat.id, text=context.user_data["chosen_group"] + '\n\n' + update.message.text)
     posted_message = context.bot.copy_message(chat_id=context.user_data["chosen_group"], from_chat_id = update.effective_chat.id, message_id = update.effective_message.message_id)
     
-    query(f'insert into jobs(message_id, chat_id) values ({posted_message.message_id}, {context.user_data["chosen_group"]});')
+    db_query(f'insert into jobs(message_id, chat_id) values ({posted_message.message_id}, {context.user_data["chosen_group"]});', False)
 
     logger.info(f"@{update.effective_user.username}, {update.effective_user.first_name} posted message with text \n\n{posted_message.text} \n\ncaption \n\n{posted_message.caption}")
     
@@ -158,15 +159,14 @@ def reply_and_confirm(update, context):
         #Creating new users if they do not exist    
         data = query(f'select id from users where id = {user_id}')
         if len(data) == 0:
-            query(f"insert into users values ({user_id}, '{username}', '{user_firstname}')")
-
-        logger.info(f"User with id {user_id}, username {username}, firstname {user_firstname} added to database")
+            query(f"insert into users values ({user_id}, '{username}', '{user_firstname}')", False)
+            logger.info(f"User with id {user_id}, username {username}, firstname {user_firstname} added to database")
 
         #Getting current day since start of job
         cur_day = query(f"select DATE_PART('day', now()-created)+1 from jobs where id = {job_id}")[0][0]
         
         if cur_day == sticker_day:
-            query(f"insert into jobs_updates (user_id, job_id, sticker_id) values ({user_id}, {job_id}, {sticker_id})")
+            query(f"insert into jobs_updates (user_id, job_id, sticker_id) values ({user_id}, {job_id}, {sticker_id})", False)
             
             data = query(f"""select coalesce(concat('@',username), first_name) as name, d1, d2, d3, d4, d5 
                             from 
