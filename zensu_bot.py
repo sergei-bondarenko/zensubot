@@ -44,7 +44,6 @@ def get_reply_keyboard():
     data = db_query(f"select id, title from chats")
 
     reply_keyboard = list()
-    print(data)
     for item in data:
         reply_keyboard.append([InlineKeyboardButton(item[1], callback_data=item[0])])
         
@@ -276,7 +275,7 @@ def main() -> None:
         entry_points=[CommandHandler('start', start)],
         states={
             PARSE_START: [CallbackQueryHandler(parse_start, pattern='add_post|end')],
-            PARSE_WHERE_TO_POST: [CallbackQueryHandler(parse_where_to_post, pattern = r'(pub|chat)_\d')],
+            PARSE_WHERE_TO_POST: [CallbackQueryHandler(parse_where_to_post, pattern = r'.* (чат|канал)')],
             CREATE_POST: [MessageHandler(Filters.all, create_post)],
         },
         fallbacks=[CommandHandler('cancel', cancel)],
