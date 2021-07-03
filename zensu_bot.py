@@ -205,7 +205,7 @@ def reply_and_confirm(update, context):
 
             posted_message = context.bot.send_message(chat_id = message.chat.id, reply_to_message_id = update.message.message_id, text = f"Молодец! День {sticker_day} выполнен!")
 
-            context.job_queue.run_once(delete_message, 60, context = [posted_message.message_id, group_id])
+            context.job_queue.run_once(delete_message, 60, context = [posted_message.message_id, message.chat.id])
 
 
 def delete_message(context) -> None:
