@@ -131,10 +131,6 @@ def reply_and_confirm(update, context):
     user =  update.effective_user
     dict_message = message.to_dict()
 
-    print(chat_id)
-    print(message)
-    print(update)
-
     try:
         message_id = message.reply_to_message.forward_from_message_id
         group_id = message.reply_to_message.forward_from_chat.id
@@ -207,7 +203,7 @@ def reply_and_confirm(update, context):
 
             logger.info(f"Edited job with id {job_id} after posted sticker id {sticker_id} by @{username} with firstname {user_firstname}")
 
-            posted_message = context.bot.send_message(chat_id = group_id, reply_to_message_id = update.message.message_id, text = f"Молодец! День {sticker_day} выполнен!")
+            posted_message = context.bot.send_message(chat_id = message.chat.id, reply_to_message_id = update.message.message_id, text = f"Молодец! День {sticker_day} выполнен!")
 
             context.job_queue.run_once(delete_message, 60, context = [posted_message.message_id, group_id])
 
