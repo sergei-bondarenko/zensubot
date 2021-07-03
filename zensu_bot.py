@@ -30,7 +30,7 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
-PARSE_START, PARSE_WHERE_TO_POST, CREATE_POST, = range(3)
+PARSE_START, PARSE_WHERE_TO_POST, CREATE_POST, = range(4)
 
 def db_query(line, fetching = True):
     with CONNECTION:
@@ -40,8 +40,8 @@ def db_query(line, fetching = True):
                 data = cur.fetchall()
                 return data
 
-def get_reply_keyboard():
-    data = db_query(f"select id, title from chats")
+def get_reply_keyboard(query):
+    data = db_query(query)
 
     reply_keyboard = list()
     for item in data:
@@ -69,7 +69,7 @@ def parse_start(update, context) -> int:
     query = update.callback_query
     if query.data == 'add_post':
 
-        keyboard = get_reply_keyboard()
+        keyboard = get_reply_keyboard(f"select id, title from chats")
         reply_markup = InlineKeyboardMarkup(keyboard)
 
         context.bot.edit_message_text(text='Where to post?',
@@ -89,16 +89,23 @@ def parse_where_to_post(update, context) -> int:
 
     logger.info(f"@{update.effective_user.username}, {update.effective_user.first_name} chosen to post at {query.data}")
     
-    context.bot.edit_message_text(text='Write here your post',
+    keyboard = get_reply_keyboard(f"select id, type from jobs_chats")
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    
+    context.bot.edit_message_text(text='Choose type of pyatidnevka',
+                                  reply_markup=reply_markup,
                                   chat_id=query.message.chat_id,
                                   message_id=query.message.message_id)
     return CREATE_POST
 
 def create_post(update, context) -> int:
+    query = update.callback_query
+    
+
     #context.bot.send_message(chat_id=update.effective_chat.id, text=context.user_data["chosen_group"] + '\n\n' + update.message.text)
     posted_message = context.bot.copy_message(chat_id=context.user_data["chosen_group"], from_chat_id = update.effective_chat.id, message_id = update.effective_message.message_id)
     
-    db_query(f'insert into jobs(message_id, chat_id) values ({posted_message.message_id}, {context.user_data["chosen_group"]});', False)
+    db_query(f'insert into jobs(message_id, chat_id, type) values ({posted_message.message_id}, {context.user_data["chosen_group"]}, {query.data});', False)
 
     logger.info(f"@{update.effective_user.username}, {update.effective_user.first_name} posted message to {context.user_data['chosen_group']}")
     
@@ -162,7 +169,6 @@ def reply_and_confirm(update, context):
 
         #Getting current day since start of job
         cur_day = db_query(f"select DATE_PART('day', now()-created)+1 from jobs where id = {job_id}")[0][0]
-        print(sticker_day, cur_day)
         if sticker_day in (int(cur_day), int(cur_day + 1)):
             db_query(f"insert into jobs_updates (user_id, job_id, sticker_id) values ({user_id}, {job_id}, {sticker_id})", False)
             
