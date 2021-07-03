@@ -33,6 +33,19 @@ logger = logging.getLogger(__name__)
 
 PARSE_START, PARSE_WHERE_TO_POST, CREATE_POST, = range(3)
 
+def get_reply_keyboard():
+    with CONNECTION:
+        with CONNECTION.cursor() as cur:
+            cur.execute(f"select id, title from chats")
+            data = cur.fetchall()
+
+    reply_keyboard = list()
+    
+    for item in data:
+        reply_keyboard.append([InlineKeyboardButton(item[1], callback_data=item[0])])
+        
+    return reply_keyboard
+
 def start(update, context) -> int:
 
     logger.info(f"@{update.effective_user.username}, {update.effective_user.first_name} started bot")
@@ -52,9 +65,10 @@ def start(update, context) -> int:
 def parse_start(update, context) -> int:
     query = update.callback_query
     if query.data == 'add_post':
-        keyboard = [[InlineKeyboardButton('Yoga Chan канал', callback_data='pub_1')],
-                          [InlineKeyboardButton('Yoga Chan чат', callback_data='chat_1')]]
+
+        keyboard = get_reply_keyboard()
         reply_markup = InlineKeyboardMarkup(keyboard)
+
         context.bot.edit_message_text(text='Where to post?',
                                   reply_markup=reply_markup,
                                   chat_id=query.message.chat_id,
@@ -122,16 +136,6 @@ def reply_and_confirm(update, context):
 
     job_id, sticker_id = None, None
     
-    #Creating new users if they do not exist    
-    
-    with CONNECTION:
-        with CONNECTION.cursor() as cur:
-            cur.execute(f'select id from users where id = {user_id}')
-            res = cur.fetchall()
-            if len(res) == 0:
-                cur.execute(f"insert into users values ({user_id}, '{username}', '{user_firstname}')")
-
-            logger.info(f"User with id {user_id}, username {username}, firstname {user_firstname} added to database")
     
     #Getting active jobs if they exist    
 
@@ -155,6 +159,18 @@ def reply_and_confirm(update, context):
     #Writing update to table if job_id and sticker_id is correct    
     
     if job_id and sticker_id:
+
+        #Creating new users if they do not exist    
+    
+        with CONNECTION:
+            with CONNECTION.cursor() as cur:
+                cur.execute(f'select id from users where id = {user_id}')
+                res = cur.fetchall()
+                if len(res) == 0:
+                    cur.execute(f"insert into users values ({user_id}, '{username}', '{user_firstname}')")
+
+                logger.info(f"User with id {user_id}, username {username}, firstname {user_firstname} added to database")
+
         #Getting current day since start of job
         
         with CONNECTION:
@@ -248,6 +264,7 @@ def track_chats(update: Update, context: CallbackContext) -> None:
     elif chat.type in [Chat.GROUP, Chat.SUPERGROUP]:
         if not was_member and is_member:
             logger.info("%s added the bot to the group %s with id %s", cause_name, chat.title, chat.id)
+            
         elif was_member and not is_member:
             logger.info("%s removed the bot from the group %s with id %s", cause_name, chat.title, chat.id)
     else:
