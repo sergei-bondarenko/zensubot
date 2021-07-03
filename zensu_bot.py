@@ -30,7 +30,7 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
-PARSE_START, PARSE_WHERE_TO_POST, CREATE_POST, = range(3)
+PARSE_START, PARSE_WHERE_TO_POST, PARSE_TYPE, CREATE_POST, = range(4)
 
 def db_query(line, fetching = True):
     with CONNECTION:
@@ -96,19 +96,25 @@ def parse_where_to_post(update, context) -> int:
                                   reply_markup=reply_markup,
                                   chat_id=query.message.chat_id,
                                   message_id=query.message.message_id)
-    return CREATE_POST
+    return PARSE_TYPE
 
-def create_post(update, context) -> int:
-    print(update)
+def parse_type(update, context) -> int:
     query = update.callback_query
+    context.user_data["chosen_type"] = query.data
+    
+    logger.info(f"@{update.effective_user.username}, {update.effective_user.first_name} chosen type {query.data}")
     
     context.bot.edit_message_text(text='Write here your post',
                                   chat_id=query.message.chat_id,
                                   message_id=query.message.message_id)
+
+    return CREATE_POST
+
+def create_post(update, context) -> int:
     #context.bot.send_message(chat_id=update.effective_chat.id, text=context.user_data["chosen_group"] + '\n\n' + update.message.text)
     posted_message = context.bot.copy_message(chat_id=context.user_data["chosen_group"], from_chat_id = update.effective_chat.id, message_id = update.effective_message.message_id)
     
-    db_query(f'insert into jobs(message_id, chat_id, type) values ({posted_message.message_id}, {context.user_data["chosen_group"]}, {query.data});', False)
+    db_query(f'insert into jobs(message_id, chat_id, type) values ({posted_message.message_id}, {context.user_data["chosen_group"]}, {context.user_data["chosen_type"]});', False)
 
     logger.info(f"@{update.effective_user.username}, {update.effective_user.first_name} posted message to {context.user_data['chosen_group']}")
     
@@ -282,6 +288,7 @@ def main() -> None:
         states={
             PARSE_START: [CallbackQueryHandler(parse_start, pattern='add_post|end')],
             PARSE_WHERE_TO_POST: [CallbackQueryHandler(parse_where_to_post, pattern = r'-\d*')],
+            PARSE_TYPE: [CallbackQueryHandler(parse_type, pattern = r'\d*')],
             CREATE_POST: [MessageHandler(Filters.all, create_post)],
         },
         fallbacks=[CommandHandler('cancel', cancel)],
