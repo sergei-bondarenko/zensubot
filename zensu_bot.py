@@ -101,7 +101,9 @@ def parse_where_to_post(update, context) -> int:
 def create_post(update, context) -> int:
     query = update.callback_query
     
-
+    context.bot.edit_message_text(text='Write here your post',
+                                  chat_id=query.message.chat_id,
+                                  message_id=query.message.message_id)
     #context.bot.send_message(chat_id=update.effective_chat.id, text=context.user_data["chosen_group"] + '\n\n' + update.message.text)
     posted_message = context.bot.copy_message(chat_id=context.user_data["chosen_group"], from_chat_id = update.effective_chat.id, message_id = update.effective_message.message_id)
     
