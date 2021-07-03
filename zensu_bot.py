@@ -89,7 +89,7 @@ def parse_where_to_post(update, context) -> int:
 
     logger.info(f"@{update.effective_user.username}, {update.effective_user.first_name} chosen to post at {query.data}")
     
-    keyboard = get_reply_keyboard(f"select id, type from jobs_chats")
+    keyboard = get_reply_keyboard(f"select id, type from jobs_types")
     reply_markup = InlineKeyboardMarkup(keyboard)
     
     context.bot.edit_message_text(text='Choose type of pyatidnevka',
