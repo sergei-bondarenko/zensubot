@@ -85,6 +85,7 @@ def parse_start(update, context) -> int:
 
 
 def parse_where_to_post(update, context) -> int:
+    print(1)
     query = update.callback_query
     print(query)
     print(query.data)
