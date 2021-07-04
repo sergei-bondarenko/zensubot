@@ -206,6 +206,7 @@ def reply_and_confirm(update, context):
                 added_text += item[0]
                 added_text += '\n'
             text += added_text
+
             try:
                 context.bot.edit_message_text(text = text, chat_id = group_id, message_id = message_id)
 
