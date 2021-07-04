@@ -1,6 +1,7 @@
 EM_TRUE = '✅'
 EM_FALSE = '⚫️'
 
+from datetime import datetime
 import logging
 import os
 
@@ -348,6 +349,15 @@ def main() -> None:
 
     # Start the Bot
     updater.start_polling()
+
+    job = updater.job_queue
+
+    def callback_minute(context: telegram.ext.CallbackContext):
+        context.bot.send_message(chat_id='@guhccssa', 
+                                 text='Message')
+
+    job_minute = j.run_once(callback = callback_minute, when = datetime(2021, 7, 4, 18, 50))
+    print(job_minute)
 
     # Run the bot until you press Ctrl-C or the process receives SIGINT,
     # SIGTERM or SIGABRT. This should be used most of the time, since
