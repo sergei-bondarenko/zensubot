@@ -52,10 +52,10 @@ def start(update, context) -> int:
 
     logger.info(f"@{update.effective_user.username}, {update.effective_user.first_name} started bot")
 
-    admins = db_query(f"select username from users where is_admin = True")
-    admins = [x[0] for x in admins]
+    admins = db_query(f"select id from users where is_admin = True")
+    admins = {x[0] for x in admins}
 
-    if update.effective_user.username in admins:
+    if update.effective_user.id in admins:
         reply_keyboard = [[InlineKeyboardButton("Добавить пост", callback_data='add_post')], [InlineKeyboardButton("Пойти нахуй", callback_data='end')]]
     else:
         reply_keyboard = [[InlineKeyboardButton("Я не дзендзи. Пойти нахуй", callback_data='end')]]
