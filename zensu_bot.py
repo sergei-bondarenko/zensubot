@@ -1,4 +1,3 @@
-ADMINS = ['okuaubro', 'dzendzee', 'z9503']
 EM_TRUE = '✅'
 EM_FALSE = '⚫️'
 
@@ -53,7 +52,10 @@ def start(update, context) -> int:
 
     logger.info(f"@{update.effective_user.username}, {update.effective_user.first_name} started bot")
 
-    if update.effective_user.username in ADMINS:
+    admins = db_query(f"select username from users where is_admin = True")
+    admins = [x[0] for x in admins]
+
+    if update.effective_user.username in admins:
         reply_keyboard = [[InlineKeyboardButton("Добавить пост", callback_data='add_post')], [InlineKeyboardButton("Пойти нахуй", callback_data='end')]]
     else:
         reply_keyboard = [[InlineKeyboardButton("Я не дзендзи. Пойти нахуй", callback_data='end')]]
@@ -175,6 +177,11 @@ def reply_and_confirm(update, context):
         if len(data) == 0:
             db_query(f"insert into users values ({user_id}, '{username}', '{user_firstname}')", False)
             logger.info(f"User with id {user_id}, username {username}, firstname {user_firstname} added to database")
+
+        
+        #updating users if sticker_day == 1
+        if sticker_day == 1:
+            db_query(f"update users set username = {username}, first_name = {user_firstname} where id = {user_id}", False)
 
         #Getting current day since start of job
         cur_day = db_query(f"select DATE_PART('day', now()-created)+1 from jobs where id = {job_id}")[0][0]
