@@ -208,18 +208,28 @@ def reply_and_confirm(update, context):
             text += added_text
             try:
                 context.bot.edit_message_text(text = text, chat_id = group_id, message_id = message_id)
+
+                logger.info(f"Edited job with id {job_id} after posted sticker id {sticker_id} by @{username} with firstname {user_firstname}")
+
+                posted_message = context.bot.send_message(chat_id = message.chat.id, reply_to_message_id = update.message.message_id, text = f"Молодец! День {sticker_day} выполнен!")
+
+                context.job_queue.run_once(delete_message, 60, context = [posted_message.message_id, message.chat.id])
+
             except BadRequest:
                 #May be exception because edited message stays the same
                 try:
                     context.bot.edit_message_caption(chat_id = group_id, message_id = message_id, caption = text)
+
+                    logger.info(f"Edited job with id {job_id} after posted sticker id {sticker_id} by @{username} with firstname {user_firstname}")
+
+                    posted_message = context.bot.send_message(chat_id = message.chat.id, reply_to_message_id = update.message.message_id, text = f"Молодец! День {sticker_day} выполнен!")
+
+                    context.job_queue.run_once(delete_message, 60, context = [posted_message.message_id, message.chat.id])
+
                 except BadRequest:
                     pass
 
-            logger.info(f"Edited job with id {job_id} after posted sticker id {sticker_id} by @{username} with firstname {user_firstname}")
-
-            posted_message = context.bot.send_message(chat_id = message.chat.id, reply_to_message_id = update.message.message_id, text = f"Молодец! День {sticker_day} выполнен!")
-
-            context.job_queue.run_once(delete_message, 60, context = [posted_message.message_id, message.chat.id])
+            
 
 
 def delete_message(context) -> None:
