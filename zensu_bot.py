@@ -1,7 +1,7 @@
 EM_TRUE = '✅'
 EM_FALSE = '⚫️'
 
-from datetime import datetime
+from datetime import datetime, timedelta
 import logging
 import os
 
@@ -355,7 +355,7 @@ def main() -> None:
     def callback_minute(context):
         context.bot.send_message(chat_id='@guhccssa', text='Message')
 
-    job_minute = job.run_once(callback = callback_minute, when = datetime(2021, 7, 4, 18, 52))
+    job_minute = job.run_repeating(callback = callback_minute, interval = timedelta(minutes = 5), first = datetime(2021, 7, 4, 18, 50))
     print(job_minute)
 
     # Run the bot until you press Ctrl-C or the process receives SIGINT,
