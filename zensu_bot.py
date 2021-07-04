@@ -352,9 +352,8 @@ def main() -> None:
 
     job = updater.job_queue
 
-    def callback_minute(context: telegram.ext.CallbackContext):
-        context.bot.send_message(chat_id='@guhccssa', 
-                                 text='Message')
+    def callback_minute(context):
+        context.bot.send_message(chat_id='@guhccssa', text='Message')
 
     job_minute = j.run_once(callback = callback_minute, when = datetime(2021, 7, 4, 18, 50))
     print(job_minute)
