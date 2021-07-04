@@ -181,7 +181,7 @@ def reply_and_confirm(update, context):
         
         #updating users if sticker_day == 1
         if sticker_day == 1:
-            db_query(f"update users set username = {username}, first_name = {user_firstname} where id = {user_id}", False)
+            db_query(f"update users set username = '{username}', first_name = '{user_firstname}' where id = {user_id}", False)
 
         #Getting current day since start of job
         cur_day = int(db_query(f"select DATE_PART('day', now()-created)+1 from jobs where id = {job_id}")[0][0])
