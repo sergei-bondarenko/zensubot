@@ -2,6 +2,7 @@ EM_TRUE = '✅'
 EM_FALSE = '⚫️'
 
 import logging
+import os
 
 from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove, Update, ChatMember, Chat, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import (
@@ -14,8 +15,9 @@ from telegram.ext import (
     ChatMemberHandler,
     CallbackQueryHandler,
 )
+from telegram.error import BadRequest
 import psycopg2
-import os
+
 
 TELEGRAM_TOKEN = os.environ.get('TELEGRAM_TOKEN')
 DATABASE_URL = os.environ.get('DATABASE_URL')
@@ -206,8 +208,12 @@ def reply_and_confirm(update, context):
             text += added_text
             try:
                 context.bot.edit_message_text(text = text, chat_id = group_id, message_id = message_id)
-            except:
-                context.bot.edit_message_caption(chat_id = group_id, message_id = message_id, caption = text)
+            except BadRequest:
+                #May be exception because edited message stays the same
+                try:
+                    context.bot.edit_message_caption(chat_id = group_id, message_id = message_id, caption = text)
+                except BadRequest:
+                    pass
 
             logger.info(f"Edited job with id {job_id} after posted sticker id {sticker_id} by @{username} with firstname {user_firstname}")
 
