@@ -184,8 +184,8 @@ def reply_and_confirm(update, context):
             db_query(f"update users set username = {username}, first_name = {user_firstname} where id = {user_id}", False)
 
         #Getting current day since start of job
-        cur_day = db_query(f"select DATE_PART('day', now()-created)+1 from jobs where id = {job_id}")[0][0]
-        if sticker_day in (int(cur_day), int(cur_day + 1)):
+        cur_day = int(db_query(f"select DATE_PART('day', now()-created)+1 from jobs where id = {job_id}")[0][0])
+        if sticker_day in (cur_day, cur_day + 1) and check_previous_days(job_id, user_id, sticker_day):
             db_query(f"insert into jobs_updates (user_id, job_id, sticker_id) values ({user_id}, {job_id}, {sticker_id})", False)
             
             data = db_query(f"""select coalesce(concat('@',username), first_name) as name, d1, d2, d3, d4, d5 
@@ -193,7 +193,8 @@ def reply_and_confirm(update, context):
                                 (select user_id, sum(case when day=1 then 1 else 0 end) d1, sum(case when day=2 then 1 else 0 end) d2, sum(case when day=3 then 1 else 0 end) d3
                                     , sum(case when day =4 then 1 else 0 end) d4, sum(case when day =5 then 1 else 0 end) d5 
                                 from jobs_updates join stickers on jobs_updates.sticker_id = stickers.id 
-                                where job_id={job_id} group by user_id) as t 
+                                where job_id={job_id} 
+                                group by user_id) as t 
                             join users on users.id = t.user_id;""")
 
             text = text.split('\n\nУчастники:')[0]
@@ -218,6 +219,17 @@ def reply_and_confirm(update, context):
 def delete_message(context) -> None:
     job = context.job.context
     context.bot.delete_message(chat_id = job[1], message_id = job[0])
+
+
+def check_previous_days(job_id, user_id, sticker_day):
+    data = db_query(f"select distinct day from jobs_updates join stickers on stickers.id = jobs_updates.sticker_id where job_id={job_id} and user_id = {user_id}")
+    data = {x[0] for x in data}
+    passed = True
+    
+    for i in range(1, sticker_day):
+        passed = passed and (i in data)    
+
+    return passed
 
 
 def extract_status_change(
