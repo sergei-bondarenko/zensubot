@@ -225,10 +225,11 @@ def check_previous_days(job_id, user_id, sticker_day):
     data = db_query(f"select distinct day from jobs_updates join stickers on stickers.id = jobs_updates.sticker_id where job_id={job_id} and user_id = {user_id}")
     data = {x[0] for x in data}
     passed = True
-    
+    print(data)
     for i in range(1, sticker_day):
+        print(i)
         passed = passed and (i in data)    
-
+    print(passed)
     return passed
 
 
