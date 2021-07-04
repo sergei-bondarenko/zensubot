@@ -233,7 +233,6 @@ def check_previous_days(job_id, user_id, sticker_day):
     passed = True
 
     for i in range(1, sticker_day):
-        print(i)
         passed = passed and (i in data)    
 
     return passed
