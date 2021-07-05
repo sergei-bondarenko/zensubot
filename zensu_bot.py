@@ -7,6 +7,7 @@ from database import db_query, CONNECTION
 from direct_messages import get_reply_keyboard, start, parse_start, parse_where_to_post, parse_type, create_post, cancel
 from direct_messages import PARSE_START, PARSE_WHERE_TO_POST, PARSE_TYPE, CREATE_POST
 from sticker_tracking import reply_and_confirm
+from post_scheduler import create_post
 
 from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove, Update, ChatMember, Chat, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import (
@@ -62,14 +63,9 @@ def main() -> None:
     # Start the Bot
     updater.start_polling()
     
-    #queue example
-    """
+    # Schedule a post every 5 days.
     job = updater.job_queue
-    job_minute = job.run_repeating(callback = callback_minute, interval = timedelta(days = 5), first = datetime(2021, 7, 4, 18, 50))
-    print(job_minute.jobs())
-    def callback_minute(context):
-        context.bot.send_message(chat_id='@guhccssa', text='Message')
-    """
+    create_post(job)
 
     # Run the bot until you press Ctrl-C or the process receives SIGINT,
     # SIGTERM or SIGABRT. This should be used most of the time, since
