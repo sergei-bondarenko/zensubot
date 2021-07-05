@@ -6,6 +6,7 @@ import logging
 import os
 
 from chats_tracking import extract_status_change, track_chats
+from database import db_query
 
 from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove, Update, ChatMember, Chat, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import (
@@ -19,12 +20,9 @@ from telegram.ext import (
     CallbackQueryHandler,
 )
 from telegram.error import BadRequest
-import psycopg2
 
 
 TELEGRAM_TOKEN = os.environ.get('TELEGRAM_TOKEN')
-DATABASE_URL = os.environ.get('DATABASE_URL')
-CONNECTION = psycopg2.connect(DATABASE_URL, sslmode='require')
 
 
 # Enable logging
@@ -35,14 +33,6 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 PARSE_START, PARSE_WHERE_TO_POST, PARSE_TYPE, CREATE_POST, = range(4)
-
-def db_query(line, fetching = True):
-    with CONNECTION:
-        with CONNECTION.cursor() as cur:
-            cur.execute(line)
-            if fetching:
-                data = cur.fetchall()
-                return data
 
 def get_reply_keyboard(query):
     data = db_query(query)
