@@ -7,4 +7,4 @@ def create_post(job):
     # interval = timedelta(days = 5)
     interval = timedelta(seconds = 10)
     # job_minute = job.run_repeating(callback = callback_minute, interval = interval, first = datetime(2021, 7, 5, 18, 50))
-    job_minute = job.run_repeating(callback = callback_minute, interval = interval)
+    # job_minute = job.run_repeating(callback = callback_minute, interval = interval)
