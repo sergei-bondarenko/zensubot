@@ -10,6 +10,8 @@ from telegram.ext import (
     CallbackQueryHandler,
 )
 
+from zensu_bot import logger
+
 
 def extract_status_change(
     chat_member_update,
