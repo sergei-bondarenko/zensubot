@@ -1,3 +1,5 @@
+import logging
+
 from database import db_query
 
 from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove, Update, ChatMember, Chat, InlineKeyboardMarkup, InlineKeyboardButton
@@ -14,6 +16,9 @@ from telegram.ext import (
 from telegram.error import BadRequest
 
 logger = logging.getLogger(__name__)
+
+EM_TRUE = '✅'
+EM_FALSE = '⚫️'
 
 def reply_and_confirm(update, context):
     chat_id = update.effective_chat

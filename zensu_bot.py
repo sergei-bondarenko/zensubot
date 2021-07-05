@@ -1,6 +1,3 @@
-EM_TRUE = '✅'
-EM_FALSE = '⚫️'
-
 from datetime import datetime, timedelta
 import logging
 import os
