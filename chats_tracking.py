@@ -1,3 +1,5 @@
+import logging
+
 from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove, Update, ChatMember, Chat, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import (
     Updater,
@@ -9,6 +11,9 @@ from telegram.ext import (
     ChatMemberHandler,
     CallbackQueryHandler,
 )
+
+
+logger = logging.getLogger(__name__)
 
 
 def extract_status_change(
@@ -47,7 +52,7 @@ def extract_status_change(
     return was_member, is_member
 
 
-def track_chats(update, context, logger) -> None:
+def track_chats(update, context) -> None:
     """Tracks the chats the bot is in."""
     result = extract_status_change(update.my_chat_member)
     if result is None:
