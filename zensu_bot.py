@@ -155,12 +155,6 @@ def check_previous_days(job_id, user_id, sticker_day):
     return passed
 
 
-
-#def callback_minute(context):
-#    context.bot.send_message(chat_id='@guhccssa', text='Message')
-
-
-
 def main() -> None:
     """Run the bot."""
     # Create the Updater and pass it your bot's token.
@@ -190,10 +184,15 @@ def main() -> None:
 
     # Start the Bot
     updater.start_polling()
-
-    #job = updater.job_queue
-    #job_minute = job.run_repeating(callback = callback_minute, interval = timedelta(days = 5), first = datetime(2021, 7, 4, 18, 50))
-    #print(job_minute.jobs())
+    
+    #queue example
+    """
+    job = updater.job_queue
+    job_minute = job.run_repeating(callback = callback_minute, interval = timedelta(days = 5), first = datetime(2021, 7, 4, 18, 50))
+    print(job_minute.jobs())
+    def callback_minute(context):
+        context.bot.send_message(chat_id='@guhccssa', text='Message')
+    """
 
     # Run the bot until you press Ctrl-C or the process receives SIGINT,
     # SIGTERM or SIGABRT. This should be used most of the time, since
