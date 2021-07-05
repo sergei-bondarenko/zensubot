@@ -16,6 +16,8 @@ from telegram.ext import (
 
 PARSE_START, PARSE_WHERE_TO_POST, PARSE_TYPE, CREATE_POST, = range(4)
 
+logger = logging.getLogger(__name__)
+
 def get_reply_keyboard(query):
     data = db_query(query)
 
