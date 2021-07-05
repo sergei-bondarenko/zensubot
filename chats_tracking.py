@@ -1,3 +1,16 @@
+from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove, Update, ChatMember, Chat, InlineKeyboardMarkup, InlineKeyboardButton
+from telegram.ext import (
+    Updater,
+    CommandHandler,
+    MessageHandler,
+    Filters,
+    ConversationHandler,
+    CallbackContext,
+    ChatMemberHandler,
+    CallbackQueryHandler,
+)
+
+
 def extract_status_change(
     chat_member_update,
 ):
@@ -34,7 +47,7 @@ def extract_status_change(
     return was_member, is_member
 
 
-def track_chats(update: Update, context: CallbackContext) -> None:
+def track_chats(update, context -> None:
     """Tracks the chats the bot is in."""
     result = extract_status_change(update.my_chat_member)
     if result is None:
