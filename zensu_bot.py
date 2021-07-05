@@ -280,7 +280,7 @@ def main() -> None:
     )
 
     dispatcher.add_handler(conv_handler)
-    dispatcher.add_handler(ChatMemberHandler(track_chats, ChatMemberHandler.MY_CHAT_MEMBER))
+    dispatcher.add_handler(ChatMemberHandler(track_chats(logger=logger), ChatMemberHandler.MY_CHAT_MEMBER))
 
     q_handler = MessageHandler(Filters.sticker & Filters.reply, reply_and_confirm)
     dispatcher.add_handler(q_handler)
