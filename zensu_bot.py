@@ -6,7 +6,7 @@ import logging
 import os
 
 from chats_tracking import extract_status_change, track_chats
-from database import db_query
+from database import db_query, CONNECTION
 from direct_messages import get_reply_keyboard, start, parse_start, parse_where_to_post, parse_type, create_post, cancel
 from direct_messages import PARSE_START, PARSE_WHERE_TO_POST, PARSE_TYPE, CREATE_POST
 
