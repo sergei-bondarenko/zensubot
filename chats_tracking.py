@@ -1,5 +1,7 @@
 import logging
 
+from zensu_bot import db_query
+
 from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove, Update, ChatMember, Chat, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import (
     Updater,
