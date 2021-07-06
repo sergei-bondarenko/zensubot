@@ -107,7 +107,7 @@ def reply_and_confirm(update, context):
         # New logic
         if sticker_id > 50 and not is_banned:
             # Getting if today is the first update
-            data = db_query(f"""select sum(power)
+            data = db_query(f"""select coalesce(sum(power), 0)
                                 from jobs_updates join jobs on jobs.id = jobs_updates.job_id join stickers on stickers.id = jobs_updates.sticker_id 
                                 where job_id = {job_id} 
                                 and date_part('day', jobs_updates.created - jobs.created) + 1 = {cur_day}
