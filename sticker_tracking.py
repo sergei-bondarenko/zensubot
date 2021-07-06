@@ -15,6 +15,7 @@ def reply_and_confirm(update, context):
     message = update.effective_message
     user = update.effective_user
     dict_message = message.to_dict()
+    is_caption = False
 
     try:
         message_id = message.reply_to_message.forward_from_message_id
@@ -28,7 +29,7 @@ def reply_and_confirm(update, context):
     if text is None:
         try:
             text = message["reply_to_message"]["caption"]
-            print('caption')
+            is_caption = True
         except:
             pass
 
@@ -89,13 +90,15 @@ def reply_and_confirm(update, context):
             )
 
             data = db_query(
-                f"""select coalesce(concat('@',username), first_name) as name, d1, d2, d3, d4, d5 
+                f"""select coalesce(concat('@',username), first_name) as name, d1, d2, d3, d4, d5, total
                         from
-                            (select user_id , sum(case when sday = 1 then 1 else 0 end) d1, sum(case when sday = 2 then 1 else 0 end) d2, sum(case when sday = 3 then 1 else 0 end) d3, sum(case when sday = 4 then 1 else 0 end) d4, sum(case when sday = 5 then 1 else 0 end) d5
+                            (select user_id , sum(case when sday = 1 then 1 else 0 end) d1, sum(case when sday = 2 then 1 else 0 end) d2
+                            				  , sum(case when sday = 3 then 1 else 0 end) d3, sum(case when sday = 4 then 1 else 0 end) d4
+                            				  , sum(case when sday = 5 then 1 else 0 end) d5, sum(stickers.power) total
                             from
-                                (select user_id, date_part('day', jobs_updates.created - jobs.created)+1 as sday
+                                (select user_id, date_part('day', jobs_updates.created - jobs.created)+1 as sday, sticker_id
                                 from jobs_updates join jobs on jobs.id = jobs_updates.job_id
-                                where job_id = {job_id}) t
+                                where job_id = {job_id}) t join stickers on stickers.id = t.sticker_id
                             group by user_id) t 
                             join users on users.id=t.user_id 
                         ;"""
@@ -105,17 +108,22 @@ def reply_and_confirm(update, context):
             added_text = "\n\nУчастники:\n"
             for item in data:
                 added_text += (
-                    "".join([EM_TRUE if int(x) > 0 else EM_FALSE for x in item[1:]])
+                    "".join([EM_TRUE if int(x) > 0 else EM_FALSE for x in item[1:6]])
                     + " "
                 )
-                added_text += item[0]
-                added_text += "\n"
+                added_text += item[0] + "\n"
+                added_text += item[-1] + " mm\n"
             text += added_text
 
             try:
-                context.bot.edit_message_text(
-                    text=text, chat_id=group_id, message_id=message_id
-                )
+                if is_caption:
+                    context.bot.edit_message_caption(
+                        chat_id=group_id, message_id=message_id, caption=text
+                    )
+                else:
+                    context.bot.edit_message_text(
+                        text=text, chat_id=group_id, message_id=message_id
+                    )
 
                 logger.info(
                     f"Edited job with id {job_id} after posted sticker id {sticker_id} by @{username} with firstname {user_firstname}"
@@ -134,30 +142,7 @@ def reply_and_confirm(update, context):
                 )
 
             except BadRequest:
-                # May be exception because edited message stays the same
-                try:
-                    context.bot.edit_message_caption(
-                        chat_id=group_id, message_id=message_id, caption=text
-                    )
-
-                    logger.info(
-                        f"Edited job with id {job_id} after posted sticker id {sticker_id} by @{username} with firstname {user_firstname}"
-                    )
-
-                    posted_message = context.bot.send_message(
-                        chat_id=message.chat.id,
-                        reply_to_message_id=update.message.message_id,
-                        text=f"Молодец! День {sticker_day} выполнен!",
-                    )
-
-                    context.job_queue.run_once(
-                        delete_message,
-                        60,
-                        context=[posted_message.message_id, message.chat.id],
-                    )
-
-                except BadRequest:
-                    pass
+                pass
 
         if sticker_day in (cur_day, cur_day + 1) and check_previous_days(
             job_id, user_id, sticker_day
