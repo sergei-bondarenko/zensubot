@@ -82,8 +82,7 @@ def reply_and_confirm(update, context):
                 f"select DATE_PART('day', now()-created)+1 from jobs where id = {job_id}"
             )[0][0]
         )
-        print(cur_day)
-        print(job_id)
+
         # Check if user is banned
         if cur_day > 2:
             data = int(
@@ -95,7 +94,6 @@ def reply_and_confirm(update, context):
                                       date_part('day', jobs_updates.created - jobs.created) + 2 = {cur_day};"""
                 )[0][0]
             )
-            print(data)
             if data == 0:
                 is_banned = True
 
@@ -103,12 +101,6 @@ def reply_and_confirm(update, context):
                     chat_id=message.chat.id,
                     reply_to_message_id=update.message.message_id,
                     text=f"Мда, долбаеб. Вчера день проебал, а сегодня хочешь отметиться?",
-                )
-
-                context.job_queue.run_once(
-                    delete_message,
-                    60,
-                    context=[posted_message.message_id, message.chat.id],
                 )
 
         # New logic
