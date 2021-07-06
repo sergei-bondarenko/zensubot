@@ -8,6 +8,7 @@ logger = logging.getLogger(__name__)
 
 EM_TRUE = "✅"
 EM_FALSE = "⚫️"
+EM_FAIL = "💩"
 
 
 def reply_and_confirm(update, context):
@@ -129,16 +130,32 @@ def reply_and_confirm(update, context):
 
             text = text.split("\n\nУчастники:")[0]
             added_text = "\n\nУчастники:\n"
+            passed = list()
+            loosers = list()
+
             for item in data:
-                added_text += (
-                    "".join([EM_TRUE if int(x) > 0 else EM_FALSE for x in item[1:6]])
-                    + " "
-                )
-                added_text += item[0] + "\n"
-                added_text += (
-                    str(item[-1] // 60) + "h " + f"{(item[-1] % 60):02d}" + "m\n\n"
-                )
-            text += added_text
+                is_first = True
+                phrase = str()
+                for day in item[1:6]:
+                    day = int(day)
+
+                    if day == 0 and is_first:
+                        phrase += EM_FAIL
+                        is_first = False
+                    elif day > 0:
+                        phrase += EM_TRUE
+                    else:
+                        phrase += EM_FALSE
+
+                if is_first:
+                    phrase += item[0] + "\n"
+                    phrase += (str(item[-1] // 60) + "h " + f"{(item[-1] % 60):02d}" + "m\n\n")
+                    passed.append(phrase)
+                else:
+                    phrase += item[0] + "\n"
+                    loosers.append(phrase)
+                    
+            text += ''.join(passed) + ''.join(loosers)
 
             try:
                 if is_caption:
