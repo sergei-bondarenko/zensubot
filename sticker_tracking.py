@@ -83,6 +83,7 @@ def reply_and_confirm(update, context):
             )[0][0]
         )
         print(cur_day)
+        print(job_id)
         # Check if user is banned
         if cur_day > 2:
             data = int(
