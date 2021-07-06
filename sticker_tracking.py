@@ -128,7 +128,7 @@ def reply_and_confirm(update, context):
                             from
                                 (select user_id, date_part('day', jobs_updates.created - jobs.created)+1 as sday, sticker_id
                                 from jobs_updates join jobs on jobs.id = jobs_updates.job_id
-                                where job_id = 62) t join stickers on stickers.id = t.sticker_id
+                                where job_id = {job_id}) t join stickers on stickers.id = t.sticker_id
                             group by user_id) t 
                             join users on users.id=t.user_id 
                         ;"""
