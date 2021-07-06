@@ -82,7 +82,7 @@ def reply_and_confirm(update, context):
                 f"select DATE_PART('day', now()-created)+1 from jobs where id = {job_id}"
             )[0][0]
         )
-
+        print(cur_day)
         # Check if user is banned
         if cur_day > 2:
             data = int(
@@ -94,6 +94,7 @@ def reply_and_confirm(update, context):
                                       date_part('day', jobs_updates.created - jobs.created) + 2 = {cur_day};"""
                 )
             )
+            print(data)
             if data[0][0] == 0:
                 is_banned = True
 
