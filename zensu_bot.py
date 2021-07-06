@@ -18,12 +18,14 @@ from direct_messages import (
     PARSE_START,
     PARSE_TYPE,
     PARSE_WHERE_TO_POST,
+    EDIT_TEMPLATE,
     cancel,
     create_post,
     parse_start,
     parse_type,
     parse_where_to_post,
     start,
+    edit_template
 )
 from post_scheduler import create_post_sc
 from sticker_tracking import reply_and_confirm
@@ -52,12 +54,13 @@ def main() -> None:
         allow_reentry=True,
         entry_points=[CommandHandler("start", start)],
         states={
-            PARSE_START: [CallbackQueryHandler(parse_start, pattern="add_post|end")],
+            PARSE_START: [CallbackQueryHandler(parse_start, pattern="add_post|edit_template|end")],
             PARSE_WHERE_TO_POST: [
                 CallbackQueryHandler(parse_where_to_post, pattern=r"-\d*")
             ],
             PARSE_TYPE: [CallbackQueryHandler(parse_type, pattern=r"\d*")],
             CREATE_POST: [MessageHandler(Filters.all, create_post)],
+            EDIT_TEMPLATE: [MessageHandler(Filters.all, edit_template)],
         },
         fallbacks=[CommandHandler("cancel", cancel)],
     )

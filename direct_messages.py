@@ -10,7 +10,8 @@ from database import db_query
     PARSE_WHERE_TO_POST,
     PARSE_TYPE,
     CREATE_POST,
-) = range(4)
+    EDIT_TEMPLATE
+) = range(5)
 
 logger = logging.getLogger(__name__)
 
@@ -37,7 +38,8 @@ def start(update, context) -> int:
     if update.effective_user.id in admins:
         reply_keyboard = [
             [InlineKeyboardButton("Добавить пост", callback_data="add_post")],
-            [InlineKeyboardButton("Пойти нахуй", callback_data="end")],
+            [InlineKeyboardButton("Изменить шаблон", callback_data="edit_template")],
+            [InlineKeyboardButton("Пойти нахуй", callback_data="end")]
         ]
     else:
         reply_keyboard = [
@@ -46,7 +48,7 @@ def start(update, context) -> int:
 
     reply_markup = InlineKeyboardMarkup(reply_keyboard)
 
-    update.message.reply_text("What to do?", reply_markup=reply_markup)
+    update.message.reply_text("Что сделать?", reply_markup=reply_markup)
 
     return PARSE_START
 
@@ -59,12 +61,16 @@ def parse_start(update, context) -> int:
         reply_markup = InlineKeyboardMarkup(keyboard)
 
         context.bot.edit_message_text(
-            text="Where to post?",
+            text="Куда запостить?",
             reply_markup=reply_markup,
             chat_id=query.message.chat_id,
             message_id=query.message.message_id,
         )
         return PARSE_WHERE_TO_POST
+    if query.data == "edit_template":
+        # TODO: Print from database.
+        update.message.reply_text("Отправь новый темплейт.")
+        return EDIT_TEMPLATE
     if query.data == "end":
         context.bot.delete_message(
             chat_id=query.message.chat_id, message_id=query.message.message_id
@@ -131,4 +137,12 @@ def create_post(update, context) -> int:
 
 
 def cancel(update, context) -> int:
+    return ConversationHandler.END
+
+
+def edit_template(update, context) -> int:
+    # TODO: Selection of chats must be here.
+    update.message.reply_text(update)
+    update.message.reply_text(context)
+    # TODO: Proceed to save_template.
     return ConversationHandler.END
