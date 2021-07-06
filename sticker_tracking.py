@@ -131,6 +131,7 @@ def reply_and_confirm(update, context):
                                 where job_id = {job_id}) t join stickers on stickers.id = t.sticker_id
                             group by user_id) t 
                             join users on users.id=t.user_id 
+                            order by total desc
                         ;"""
             )
 
