@@ -20,7 +20,6 @@ def reply_and_confirm(update, context):
         message_id = message.reply_to_message.forward_from_message_id
         group_id = message.reply_to_message.forward_from_chat.id
         text = message.reply_to_message.text
-
     except:
         message_id = message.reply_to_message.message_id
         group_id = message.reply_to_message.chat.id
@@ -29,6 +28,7 @@ def reply_and_confirm(update, context):
     if text is None:
         try:
             text = message["reply_to_message"]["caption"]
+            print('caption')
         except:
             pass
 
@@ -88,6 +88,76 @@ def reply_and_confirm(update, context):
                 False,
             )
 
+            data = db_query(
+                f"""select coalesce(concat('@',username), first_name) as name, d1, d2, d3, d4, d5 
+                        from
+                            (select user_id , sum(case when sday = 1 then 1 else 0 end) d1, sum(case when sday = 2 then 1 else 0 end) d2, sum(case when sday = 3 then 1 else 0 end) d3, sum(case when sday = 4 then 1 else 0 end) d4, sum(case when sday = 5 then 1 else 0 end) d5
+                            from
+                                (select user_id, date_part('day', jobs_updates.created - jobs.created)+1 as sday
+                                from jobs_updates join jobs on jobs.id = jobs_updates.job_id
+                                where job_id = {job_id}) t
+                            group by user_id) t 
+                            join users on users.id=t.user_id 
+                        ;"""
+            )
+
+            text = text.split("\n\nУчастники:")[0]
+            added_text = "\n\nУчастники:\n"
+            for item in data:
+                added_text += (
+                    "".join([EM_TRUE if int(x) > 0 else EM_FALSE for x in item[1:]])
+                    + " "
+                )
+                added_text += item[0]
+                added_text += "\n"
+            text += added_text
+
+            try:
+                context.bot.edit_message_text(
+                    text=text, chat_id=group_id, message_id=message_id
+                )
+
+                logger.info(
+                    f"Edited job with id {job_id} after posted sticker id {sticker_id} by @{username} with firstname {user_firstname}"
+                )
+
+                posted_message = context.bot.send_message(
+                    chat_id=message.chat.id,
+                    reply_to_message_id=update.message.message_id,
+                    text=f"Молодец! День {sticker_day} выполнен!",
+                )
+
+                context.job_queue.run_once(
+                    delete_message,
+                    60,
+                    context=[posted_message.message_id, message.chat.id],
+                )
+
+            except BadRequest:
+                # May be exception because edited message stays the same
+                try:
+                    context.bot.edit_message_caption(
+                        chat_id=group_id, message_id=message_id, caption=text
+                    )
+
+                    logger.info(
+                        f"Edited job with id {job_id} after posted sticker id {sticker_id} by @{username} with firstname {user_firstname}"
+                    )
+
+                    posted_message = context.bot.send_message(
+                        chat_id=message.chat.id,
+                        reply_to_message_id=update.message.message_id,
+                        text=f"Молодец! День {sticker_day} выполнен!",
+                    )
+
+                    context.job_queue.run_once(
+                        delete_message,
+                        60,
+                        context=[posted_message.message_id, message.chat.id],
+                    )
+
+                except BadRequest:
+                    pass
 
         if sticker_day in (cur_day, cur_day + 1) and check_previous_days(
             job_id, user_id, sticker_day
