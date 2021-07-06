@@ -135,10 +135,10 @@ def reply_and_confirm(update, context):
             for item in data:
                 is_first = True
                 phrase = str()
-                for day in item[1:6]:
+                for i, day in enumerate(item[1:6]):
                     day = int(day)
 
-                    if day == 0 and is_first:
+                    if day == 0 and is_first and i+1<cur_day:
                         phrase += EM_FAIL
                         is_first = False
                     elif day > 0:
