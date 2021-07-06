@@ -50,11 +50,10 @@ def reply_and_confirm(update, context):
 
     # Getting sticker id if it exist
     data = db_query(
-        f"select id, day from stickers where text_id='{message.sticker.file_unique_id}'"
+        f"select id, day, power from stickers where text_id='{message.sticker.file_unique_id}'"
     )
     if len(data) != 0:
-        sticker_id = data[0][0]
-        sticker_day = data[0][1]
+        sticker_id, sticker_day, sticker_power = data[0]
 
     # Writing update to table if job_id and sticker_id is correct
 
@@ -107,11 +106,13 @@ def reply_and_confirm(update, context):
         # New logic
         if sticker_id > 50 and not is_banned:
             # Getting if today is the first update
-            data = db_query(f"""select coalesce(sum(power), 0)
+            data = db_query(
+                f"""select coalesce(sum(power), 0)
                                 from jobs_updates join jobs on jobs.id = jobs_updates.job_id join stickers on stickers.id = jobs_updates.sticker_id 
                                 where job_id = {job_id} 
                                 and date_part('day', jobs_updates.created - jobs.created) + 1 = {cur_day}
-                                and user_id = {user_id}""")
+                                and user_id = {user_id}"""
+            )
 
             work_today = int(data[0][0])
 
@@ -146,7 +147,7 @@ def reply_and_confirm(update, context):
                 for i, day in enumerate(item[1:6]):
                     day = int(day)
 
-                    if day == 0 and is_first and i+1<cur_day:
+                    if day == 0 and is_first and i + 1 < cur_day:
                         phrase += EM_FAIL
                         is_first = False
                     elif day > 0:
@@ -157,17 +158,19 @@ def reply_and_confirm(update, context):
                 phrase += " " + item[0] + "\n"
 
                 if is_first:
-                    phrase += (str(item[-1] // 60) + "h " + f"{(item[-1] % 60):02d}" + "m\n\n")
+                    phrase += (
+                        str(item[-1] // 60) + "h " + f"{(item[-1] % 60):02d}" + "m\n\n"
+                    )
                     passed.append(phrase)
                 else:
                     loosers.append(phrase)
 
             added_text = str()
             if len(passed) != 0:
-                added_text += "Участники:\n" + ''.join(passed)
+                added_text += "Участники:\n" + "".join(passed)
             if len(loosers) != 0:
-                added_text += "Долбаебы:\n" + ''.join(loosers)
-            text += '\n\n' + added_text
+                added_text += "Долбаебы:\n" + "".join(loosers)
+            text += "\n\n" + added_text
 
             try:
                 if is_caption:
@@ -186,6 +189,7 @@ def reply_and_confirm(update, context):
                 if work_today == 0:
                     text = f"Молодец! День {cur_day} выполнен!"
                 else:
+                    work_today += sticker_power
                     text = f"Время добавлено!\nЗа сегодня всрато {work_today // 60}h {work_today % 60:02d}m!"
 
                 posted_message = context.bot.send_message(
