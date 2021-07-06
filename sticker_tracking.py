@@ -96,7 +96,7 @@ def reply_and_confirm(update, context):
                 )[0][0]
             )
             print(data)
-            if data[0][0] == 0:
+            if data == 0:
                 is_banned = True
 
                 posted_message = context.bot.send_message(
