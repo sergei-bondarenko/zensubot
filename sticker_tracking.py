@@ -16,6 +16,7 @@ def reply_and_confirm(update, context):
     user = update.effective_user
     dict_message = message.to_dict()
     is_caption = False
+    is_banned = False
 
     try:
         message_id = message.reply_to_message.forward_from_message_id
@@ -82,8 +83,35 @@ def reply_and_confirm(update, context):
             )[0][0]
         )
 
+        # Check if user is banned
+        if cur_day > 2:
+            data = int(
+                db_query(
+                    f"""select count(1)
+                                from jobs_updates join jobs on jobs.id = jobs_updates.job_id
+                                where job_id={job_id} and 
+                                      user_id = {user_id} and 
+                                      date_part('day', jobs_updates.created - jobs.created) + 2 = {cur_day};"""
+                )
+            )
+            if data[0][0] == 0:
+                is_banned = True
+
+                posted_message = context.bot.send_message(
+                    chat_id=message.chat.id,
+                    reply_to_message_id=update.message.message_id,
+                    text=f"Мда, долбаеб. Вчера день проебал, а сегодня хочешь отметиться?",
+                )
+
+                context.job_queue.run_once(
+                    delete_message,
+                    60,
+                    context=[posted_message.message_id, message.chat.id],
+                )
+
         # New logic
-        if sticker_id > 50:
+        if sticker_id > 50 and not is_banned:
+
             db_query(
                 f"insert into jobs_updates (user_id, job_id, sticker_id) values ({user_id}, {job_id}, {sticker_id})",
                 False,
@@ -92,16 +120,15 @@ def reply_and_confirm(update, context):
             data = db_query(
                 f"""select coalesce(concat('@',username), first_name) as name, d1, d2, d3, d4, d5, total
                         from
-                            (select user_id , sum(case when sday = 1 then 1 else 0 end) d1, sum(case when sday = 2 then 1 else 0 end) d2
-                            				  , sum(case when sday = 3 then 1 else 0 end) d3, sum(case when sday = 4 then 1 else 0 end) d4
-                            				  , sum(case when sday = 5 then 1 else 0 end) d5, sum(stickers.power) total
+                            (select user_id , sum(case when sday = 1 then power else 0 end) d1, sum(case when sday = 2 then power else 0 end) d2
+                            				  , sum(case when sday = 3 then power else 0 end) d3, sum(case when sday = 4 then power else 0 end) d4
+                            				  , sum(case when sday = 5 then power else 0 end) d5, sum(power) total
                             from
                                 (select user_id, date_part('day', jobs_updates.created - jobs.created)+1 as sday, sticker_id
                                 from jobs_updates join jobs on jobs.id = jobs_updates.job_id
-                                where job_id = {job_id}) t join stickers on stickers.id = t.sticker_id
+                                where job_id = 62) t join stickers on stickers.id = t.sticker_id
                             group by user_id) t 
                             join users on users.id=t.user_id 
-                            order by total desc
                         ;"""
             )
 
@@ -113,7 +140,9 @@ def reply_and_confirm(update, context):
                     + " "
                 )
                 added_text += item[0] + "\n"
-                added_text += str(item[-1] // 60) + "h " + f"{(item[-1] % 60):02d}" + "m\n\n"
+                added_text += (
+                    str(item[-1] // 60) + "h " + f"{(item[-1] % 60):02d}" + "m\n\n"
+                )
             text += added_text
 
             try:
