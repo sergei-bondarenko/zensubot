@@ -153,8 +153,13 @@ def reply_and_confirm(update, context):
                 else:
                     phrase += item[0] + "\n"
                     loosers.append(phrase)
-                    
-            text += "\n\nУчастники:\n" + ''.join(passed) + "Долбаебы:\n" + ''.join(loosers)
+
+            added_text = str()
+            if len(passed) != 0:
+                added_text += "\n\nУчастники:\n" + ''.join(passed)
+            if len(loosers) != 0:
+                added_text += "Долбаебы:\n" + ''.join(loosers)
+            text += added_text
 
             try:
                 if is_caption:
