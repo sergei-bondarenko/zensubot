@@ -93,7 +93,7 @@ def reply_and_confirm(update, context):
                                 where job_id={job_id} and 
                                       user_id = {user_id} and 
                                       date_part('day', jobs_updates.created - jobs.created) + 2 = {cur_day};"""
-                )
+                )[0][0]
             )
             print(data)
             if data[0][0] == 0:
