@@ -46,7 +46,6 @@ def reply_and_confirm(update, context):
         job_id = data[0][0]
 
     # Getting sticker id if it exist
-    print(message.sticker.file_unique_id)
     data = db_query(
         f"select id, day from stickers where text_id='{message.sticker.file_unique_id}'"
     )
@@ -69,12 +68,11 @@ def reply_and_confirm(update, context):
                 f"User with id {user_id}, username {username}, firstname {user_firstname} added to database"
             )
 
-        # updating users if sticker_day == 1
-        if sticker_day == 1:
-            db_query(
-                f"update users set username = '{username}', first_name = '{user_firstname}' where id = {user_id}",
-                False,
-            )
+        # updating users
+        db_query(
+            f"update users set username = '{username}', first_name = '{user_firstname}' where id = {user_id}",
+            False,
+        )
 
         # Getting current day since start of job
         cur_day = int(
@@ -82,6 +80,15 @@ def reply_and_confirm(update, context):
                 f"select DATE_PART('day', now()-created)+1 from jobs where id = {job_id}"
             )[0][0]
         )
+
+        # New logic
+        if sticker_id > 50:
+            db_query(
+                f"insert into jobs_updates (user_id, job_id, sticker_id) values ({user_id}, {job_id}, {sticker_id})",
+                False,
+            )
+
+
         if sticker_day in (cur_day, cur_day + 1) and check_previous_days(
             job_id, user_id, sticker_day
         ):
