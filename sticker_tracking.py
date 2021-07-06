@@ -70,18 +70,19 @@ def reply_and_confirm(update, context):
                 f"User with id {user_id}, username {username}, firstname {user_firstname} added to database"
             )
 
-        # updating users
-        db_query(
-            f"update users set username = '{username}', first_name = '{user_firstname}' where id = {user_id}",
-            False,
-        )
-
         # Getting current day since start of job
         cur_day = int(
             db_query(
                 f"select DATE_PART('day', now()-created)+1 from jobs where id = {job_id}"
             )[0][0]
         )
+
+        # updating users
+        if cur_day == 1:
+            db_query(
+                f"update users set username = '{username}', first_name = '{user_firstname}' where id = {user_id}",
+                False,
+            )
 
         # Check if user is banned
         if cur_day > 2:
