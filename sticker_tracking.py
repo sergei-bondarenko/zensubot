@@ -146,12 +146,12 @@ def reply_and_confirm(update, context):
                     else:
                         phrase += EM_FALSE
 
+                phrase += " " + item[0] + "\n"
+
                 if is_first:
-                    phrase += item[0] + "\n"
                     phrase += (str(item[-1] // 60) + "h " + f"{(item[-1] % 60):02d}" + "m\n\n")
                     passed.append(phrase)
                 else:
-                    phrase += item[0] + "\n"
                     loosers.append(phrase)
 
             added_text = str()
