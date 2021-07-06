@@ -113,7 +113,7 @@ def reply_and_confirm(update, context):
                     + " "
                 )
                 added_text += item[0] + "\n"
-                added_text += str(item[-1] // 60) + "h " + str(item[-1] % 60) + "m\n\n"
+                added_text += str(item[-1] // 60) + "h " + f"{(item[-1] % 60):02d}" + "m\n\n"
             text += added_text
 
             try:
