@@ -156,10 +156,10 @@ def reply_and_confirm(update, context):
 
             added_text = str()
             if len(passed) != 0:
-                added_text += "\n\nУчастники:\n" + ''.join(passed)
+                added_text += "Участники:\n" + ''.join(passed)
             if len(loosers) != 0:
                 added_text += "Долбаебы:\n" + ''.join(loosers)
-            text += added_text
+            text += '\n\n' + added_text
 
             try:
                 if is_caption:
