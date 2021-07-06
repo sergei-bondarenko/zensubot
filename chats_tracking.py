@@ -1,19 +1,8 @@
 import logging
 
+from telegram import Chat, ChatMember
+
 from database import db_query
-
-from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove, Update, ChatMember, Chat, InlineKeyboardMarkup, InlineKeyboardButton
-from telegram.ext import (
-    Updater,
-    CommandHandler,
-    MessageHandler,
-    Filters,
-    ConversationHandler,
-    CallbackContext,
-    ChatMemberHandler,
-    CallbackQueryHandler,
-)
-
 
 logger = logging.getLogger(__name__)
 
@@ -26,7 +15,9 @@ def extract_status_change(
     the status didn't change.
     """
     status_change = chat_member_update.difference().get("status")
-    old_is_member, new_is_member = chat_member_update.difference().get("is_member", (None, None))
+    old_is_member, new_is_member = chat_member_update.difference().get(
+        "is_member", (None, None)
+    )
 
     if status_change is None:
         return None
@@ -73,17 +64,37 @@ def track_chats(update, context) -> None:
             logger.info("%s blocked the bot", cause_name)
     elif chat.type in [Chat.GROUP, Chat.SUPERGROUP]:
         if not was_member and is_member:
-            logger.info("%s added the bot to the group %s with id %s", cause_name, chat.title, chat.id)
+            logger.info(
+                "%s added the bot to the group %s with id %s",
+                cause_name,
+                chat.title,
+                chat.id,
+            )
             db_query(f"insert into chats values ({chat.id}, '{chat.title} чат')", False)
         elif was_member and not is_member:
-            logger.info("%s removed the bot from the group %s with id %s", cause_name, chat.title, chat.id)
+            logger.info(
+                "%s removed the bot from the group %s with id %s",
+                cause_name,
+                chat.title,
+                chat.id,
+            )
             db_query(f"delete from chats where id = {chat.id}", False)
     else:
         if not was_member and is_member:
-            logger.info("%s added the bot to the channel %s with id %s", cause_name, chat.title, chat.id)
-            db_query(f"insert into chats values ({chat.id}, '{chat.title} канал')", False)
+            logger.info(
+                "%s added the bot to the channel %s with id %s",
+                cause_name,
+                chat.title,
+                chat.id,
+            )
+            db_query(
+                f"insert into chats values ({chat.id}, '{chat.title} канал')", False
+            )
         elif was_member and not is_member:
-            logger.info("%s removed the bot from the channel %s with id %s", cause_name, chat.title, chat.id)
+            logger.info(
+                "%s removed the bot from the channel %s with id %s",
+                cause_name,
+                chat.title,
+                chat.id,
+            )
             db_query(f"delete from chats where id = {chat.id}", False)
-
-
