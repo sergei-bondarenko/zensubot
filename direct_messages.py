@@ -69,7 +69,7 @@ def parse_start(update, context) -> int:
         return PARSE_WHERE_TO_POST
     if query.data == "edit_template":
         # TODO: Print from database.
-        context.bot.send_message("@sergei_bondarenko", "Отправь новый темплейт.")
+        context.bot.send_message(update.effective_chat.id, "Отправь новый темплейт.")
         return EDIT_TEMPLATE
     if query.data == "end":
         context.bot.delete_message(
@@ -142,7 +142,7 @@ def cancel(update, context) -> int:
 
 def edit_template(update, context) -> int:
     # TODO: Selection of chats must be here.
-    context.bot.send_message("@sergei_bondarenko", update)
-    context.bot.send_message("@sergei_bondarenko", dir(context))
+    context.bot.send_message(update.effective_chat.id, update)
+    context.bot.send_message(update.effective_chat.id, dir(context))
     # TODO: Proceed to save_template.
     return ConversationHandler.END
