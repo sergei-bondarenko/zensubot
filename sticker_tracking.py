@@ -46,7 +46,7 @@ def reply_and_confirm(update, context):
         job_id = data[0][0]
 
     # Getting sticker id if it exist
-
+    print(message.sticker.file_unique_id)
     data = db_query(
         f"select id, day from stickers where text_id='{message.sticker.file_unique_id}'"
     )
