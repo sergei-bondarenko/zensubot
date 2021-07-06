@@ -106,6 +106,14 @@ def reply_and_confirm(update, context):
 
         # New logic
         if sticker_id > 50 and not is_banned:
+            # Getting if today is the first update
+            data = db_query(f"""select sum(power)
+                                from jobs_updates join jobs on jobs.id = jobs_updates.job_id join stickers on stickers.id = jobs_updates.sticker_id 
+                                where job_id = {job_id} 
+                                and date_part('day', jobs_updates.created - jobs.created) + 1 = {cur_day}
+                                and user_id = {user_id}""")
+
+            work_today = int(data[0][0])
 
             db_query(
                 f"insert into jobs_updates (user_id, job_id, sticker_id) values ({user_id}, {job_id}, {sticker_id})",
@@ -175,10 +183,15 @@ def reply_and_confirm(update, context):
                     f"Edited job with id {job_id} after posted sticker id {sticker_id} by @{username} with firstname {user_firstname}"
                 )
 
+                if work_today == 0:
+                    text = f"Молодец! День {cur_day} выполнен!"
+                else:
+                    text = f"Время добавлено!\nЗа сегодня всрато {work_today // 60}h {work_today % 60:02d}m!"
+
                 posted_message = context.bot.send_message(
                     chat_id=message.chat.id,
                     reply_to_message_id=update.message.message_id,
-                    text=f"Молодец! День {sticker_day} выполнен!",
+                    text=text,
                 )
 
                 context.job_queue.run_once(
