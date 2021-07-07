@@ -12,10 +12,8 @@ EM_FAIL = "💩"
 
 
 def reply_and_confirm(update, context):
-    chat_id = update.effective_chat
     message = update.effective_message
     user = update.effective_user
-    dict_message = message.to_dict()
     is_caption = False
     is_banned = False
 
@@ -56,7 +54,6 @@ def reply_and_confirm(update, context):
         sticker_id, sticker_day, sticker_power = data[0]
 
     # Writing update to table if job_id and sticker_id is correct
-
     if job_id and sticker_id:
 
         # Creating new users if they do not exist
@@ -70,14 +67,14 @@ def reply_and_confirm(update, context):
                 f"User with id {user_id}, username {username}, firstname {user_firstname} added to database"
             )
 
-        # Getting current day since start of job
+        # Getting current day since start of the job
         cur_day = int(
             db_query(
                 f"select DATE_PART('day', now()-created)+1 from jobs where id = {job_id}"
             )[0][0]
         )
 
-        # updating users
+        # updating users if today is start of the job
         if cur_day == 1:
             db_query(
                 f"update users set username = '{username}', first_name = '{user_firstname}' where id = {user_id}",
@@ -86,27 +83,19 @@ def reply_and_confirm(update, context):
 
         # Check if user is banned
         if cur_day > 2:
-            data = int(
-                db_query(
-                    f"""select count(1)
-                                from jobs_updates join jobs on jobs.id = jobs_updates.job_id
-                                where job_id={job_id} and 
-                                      user_id = {user_id} and 
-                                      date_part('day', jobs_updates.created - jobs.created) + 2 = {cur_day};"""
-                )[0][0]
+            is_banned = get_is_banned(
+                context,
+                job_id,
+                user_id,
+                cur_day,
+                message.chat.id,
+                update.message.message_id,
             )
-            if data == 0:
-                is_banned = True
-
-                posted_message = context.bot.send_message(
-                    chat_id=message.chat.id,
-                    reply_to_message_id=update.message.message_id,
-                    text=f"Мда, долбаеб. Вчера день проебал, а сегодня хочешь отметиться?",
-                )
 
         # New logic
         if sticker_id > 50 and not is_banned:
-            # Getting if today is the first update
+
+            # Getting if today user got his first update
             data = db_query(
                 f"""select coalesce(sum(power), 0)
                                 from jobs_updates join jobs on jobs.id = jobs_updates.job_id join stickers on stickers.id = jobs_updates.sticker_id 
@@ -116,12 +105,13 @@ def reply_and_confirm(update, context):
             )
 
             work_today = int(data[0][0])
-
+            # Inserting new job_update
             db_query(
                 f"insert into jobs_updates (user_id, job_id, sticker_id) values ({user_id}, {job_id}, {sticker_id})",
                 False,
             )
 
+            # Collecting data about current job progress
             data = db_query(
                 f"""select coalesce(concat('@',username), first_name) as name, d1, d2, d3, d4, d5, total
                         from
@@ -138,40 +128,7 @@ def reply_and_confirm(update, context):
                         ;"""
             )
 
-            text = text.split("\n\nУчастники:")[0]
-            passed = list()
-            loosers = list()
-
-            for item in data:
-                is_first = True
-                phrase = str()
-                for i, day in enumerate(item[1:6]):
-                    day = int(day)
-
-                    if day == 0 and is_first and i + 1 < cur_day:
-                        phrase += EM_FAIL
-                        is_first = False
-                    elif day > 0:
-                        phrase += EM_TRUE
-                    else:
-                        phrase += EM_FALSE
-
-                phrase += " " + item[0] + "\n"
-
-                if is_first:
-                    phrase += (
-                        str(item[-1] // 60) + "h " + f"{(item[-1] % 60):02d}" + "m\n\n"
-                    )
-                    passed.append(phrase)
-                else:
-                    loosers.append(phrase)
-
-            added_text = str()
-            if len(passed) != 0:
-                added_text += "Участники:\n" + "".join(passed)
-            if len(loosers) != 0:
-                added_text += "Долбаебы:\n" + "".join(loosers)
-            text += "\n\n" + added_text
+            text = get_posted_message(text, data, cur_day)
 
             try:
                 if is_caption:
@@ -302,3 +259,66 @@ def check_previous_days(job_id, user_id, sticker_day):
         passed = passed and (i in data)
 
     return passed
+
+
+def get_posted_message(text, data, cur_day):
+    text = text.split("\n\nУчастники:")[0]
+    text = text.split("\n\nДолбаебы:")[0]
+
+    passed = list()
+    loosers = list()
+
+    for item in data:
+        is_first = True
+        phrase = str()
+        for i, day in enumerate(item[1:6]):
+            day = int(day)
+
+            if day == 0 and is_first and i + 1 < cur_day:
+                phrase += EM_FAIL
+                is_first = False
+            elif day > 0:
+                phrase += EM_TRUE
+            else:
+                phrase += EM_FALSE
+
+        phrase += " " + item[0] + "\n"
+
+        if is_first:
+            phrase += str(item[-1] // 60) + "h " + f"{(item[-1] % 60):02d}" + "m\n\n"
+            passed.append(phrase)
+        else:
+            loosers.append(phrase)
+
+    added_text = str()
+    if len(passed) != 0:
+        added_text += "Участники:\n" + "".join(passed)
+    if len(loosers) != 0:
+        added_text += "Долбаебы:\n" + "".join(loosers)
+    text += "\n\n" + added_text
+
+    return text
+
+
+def get_is_banned(context, job_id, user_id, cur_day, chat_id, message_id):
+    is_banned = False
+
+    data = int(
+        db_query(
+            f"""select count(1)
+                        from jobs_updates join jobs on jobs.id = jobs_updates.job_id
+                        where job_id={job_id} and 
+                                user_id = {user_id} and 
+                                date_part('day', jobs_updates.created - jobs.created) + 2 = {cur_day};"""
+        )[0][0]
+    )
+    if data == 0:
+        is_banned = True
+
+        context.bot.send_message(
+            chat_id=chat_id,
+            reply_to_message_id=message_id,
+            text=f"Мда, долбаеб. Вчера день проебал, а сегодня хочешь отметиться?",
+        )
+
+    return is_banned
