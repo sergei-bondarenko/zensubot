@@ -142,10 +142,19 @@ def cancel(update, context) -> int:
 
 def edit_template(update, context) -> int:
     # TODO: Selection of chats must be here.
-    context.bot.send_message(update.effective_chat.id, str(update))
+    # context.bot.send_message(update.effective_chat.id, str(update))
+    photo_id = None
+    caption = None
     if len(update["message"]["photo"]):
         context.bot.send_photo(update.effective_chat.id, update["message"]["photo"][-1]["file_id"], caption=update["message"]["caption"])
+        photo_id = update["message"]["photo"][-1]["file_id"]
+        caption = update["message"]["caption"]
     else:
         context.bot.send_message(update.effective_chat.id, update["message"]["text"])
+        caption = update["message"]["text"]
+    db_query(
+        f'insert into post_templates(job_type, photo_id, caption) values (1, {photo_id}, {caption});',
+        False,
+    )
     # TODO: Proceed to save_template.
     return ConversationHandler.END
