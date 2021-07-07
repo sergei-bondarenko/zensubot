@@ -144,10 +144,10 @@ def edit_template(update, context) -> int:
     # TODO: Selection of chats must be here.
     context.bot.send_message(update.effective_chat.id, str(update))
     context.bot.send_message(update.effective_chat.id, str(dir(context)))
-    if len(update["message"]["photo"]) > 1:
+    if "media_group_id" in update["message"]:
         context.bot.send_message(update.effective_chat.id, "Ты охуел несколько пикч отправлять? Пока это не реализовано.")
-    elif len(update["message"]["photo"]) == 1:
-        context.bot.send_photo(update.effective_chat.id, update["message"]["photo"][0]["file_id"], caption=update["message"]["caption"])
+    elif len(update["message"]["photo"]):
+        context.bot.send_photo(update.effective_chat.id, update["message"]["photo"][-1]["file_id"], caption=update["message"]["caption"])
     else:
         context.bot.send_message(update.effective_chat.id, update["message"]["text"])
     # TODO: Proceed to save_template.
