@@ -153,7 +153,7 @@ def edit_template(update, context) -> int:
         context.bot.send_message(update.effective_chat.id, update["message"]["text"])
         caption = update["message"]["text"]
     db_query(
-        f'insert into post_templates(job_type, photo_id, caption) values (1, "{photo_id}", "{caption}");',
+        f"update post_templates set photo_id = '{photo_id}', caption = '{caption}' where job_type = 1;",
         False,
     )
     # TODO: Proceed to save_template.
