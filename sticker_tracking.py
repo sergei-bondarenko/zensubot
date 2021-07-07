@@ -1,5 +1,6 @@
 import logging
 
+from telegram import ParseMode
 from telegram.error import BadRequest
 
 from database import db_query
@@ -168,46 +169,13 @@ def reply_and_confirm(update, context):
         if sticker_day in (cur_day, cur_day + 1) and check_previous_days(
             job_id, user_id, sticker_day
         ):
-            db_query(
-                f"insert into jobs_updates (user_id, job_id, sticker_id) values ({user_id}, {job_id}, {sticker_id})",
-                False,
-            )
 
-            data = db_query(
-                f"""select coalesce(concat('@',username), first_name) as name, d1, d2, d3, d4, d5 
-                            from 
-                                (select user_id, sum(case when day=1 then 1 else 0 end) d1, sum(case when day=2 then 1 else 0 end) d2, sum(case when day=3 then 1 else 0 end) d3
-                                    , sum(case when day =4 then 1 else 0 end) d4, sum(case when day =5 then 1 else 0 end) d5 
-                                from jobs_updates join stickers on jobs_updates.sticker_id = stickers.id 
-                                where job_id={job_id} 
-                                group by user_id) as t 
-                            join users on users.id = t.user_id;"""
-            )
-
-            text = text.split("\n\nУчастники:")[0]
-            added_text = "\n\nУчастники:\n"
-            for item in data:
-                added_text += (
-                    "".join([EM_TRUE if int(x) > 0 else EM_FALSE for x in item[1:]])
-                    + " "
-                )
-                added_text += item[0]
-                added_text += "\n"
-            text += added_text
-
-            try:
-                context.bot.edit_message_text(
-                    text=text, chat_id=group_id, message_id=message_id
-                )
-
-                logger.info(
-                    f"Edited job with id {job_id} after posted sticker id {sticker_id} by @{username} with firstname {user_firstname}"
-                )
-
+            if job_id > 70:
                 posted_message = context.bot.send_message(
                     chat_id=message.chat.id,
                     reply_to_message_id=update.message.message_id,
-                    text=f"Молодец! День {sticker_day} выполнен!",
+                    text='Цветочек, учимся сегодня читать сообщения. Мы перешли на новые<br><a href="https://t.me/addstickers/days5">СТИКЕРЫ</a><br><a href="https://t.me/addstickers/days5">СТИКЕРЫ</a><br><a href="https://t.me/addstickers/days5">СТИКЕРЫ</a>',
+                    parse_mode = ParseMode.HTML
                 )
 
                 context.job_queue.run_once(
@@ -215,12 +183,37 @@ def reply_and_confirm(update, context):
                     60,
                     context=[posted_message.message_id, message.chat.id],
                 )
+            else:
+                db_query(
+                    f"insert into jobs_updates (user_id, job_id, sticker_id) values ({user_id}, {job_id}, {sticker_id})",
+                    False,
+                )
 
-            except BadRequest:
-                # May be exception because edited message stays the same
+                data = db_query(
+                    f"""select coalesce(concat('@',username), first_name) as name, d1, d2, d3, d4, d5 
+                                from 
+                                    (select user_id, sum(case when day=1 then 1 else 0 end) d1, sum(case when day=2 then 1 else 0 end) d2, sum(case when day=3 then 1 else 0 end) d3
+                                        , sum(case when day =4 then 1 else 0 end) d4, sum(case when day =5 then 1 else 0 end) d5 
+                                    from jobs_updates join stickers on jobs_updates.sticker_id = stickers.id 
+                                    where job_id={job_id} 
+                                    group by user_id) as t 
+                                join users on users.id = t.user_id;"""
+                )
+
+                text = text.split("\n\nУчастники:")[0]
+                added_text = "\n\nУчастники:\n"
+                for item in data:
+                    added_text += (
+                        "".join([EM_TRUE if int(x) > 0 else EM_FALSE for x in item[1:]])
+                        + " "
+                    )
+                    added_text += item[0]
+                    added_text += "\n"
+                text += added_text
+
                 try:
-                    context.bot.edit_message_caption(
-                        chat_id=group_id, message_id=message_id, caption=text
+                    context.bot.edit_message_text(
+                        text=text, chat_id=group_id, message_id=message_id
                     )
 
                     logger.info(
@@ -240,7 +233,30 @@ def reply_and_confirm(update, context):
                     )
 
                 except BadRequest:
-                    pass
+                    # May be exception because edited message stays the same
+                    try:
+                        context.bot.edit_message_caption(
+                            chat_id=group_id, message_id=message_id, caption=text
+                        )
+
+                        logger.info(
+                            f"Edited job with id {job_id} after posted sticker id {sticker_id} by @{username} with firstname {user_firstname}"
+                        )
+
+                        posted_message = context.bot.send_message(
+                            chat_id=message.chat.id,
+                            reply_to_message_id=update.message.message_id,
+                            text=f"Молодец! День {sticker_day} выполнен!",
+                        )
+
+                        context.job_queue.run_once(
+                            delete_message,
+                            60,
+                            context=[posted_message.message_id, message.chat.id],
+                        )
+
+                    except BadRequest:
+                        pass
 
 
 def delete_message(context) -> None:
