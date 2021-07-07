@@ -174,7 +174,7 @@ def reply_and_confirm(update, context):
                 posted_message = context.bot.send_message(
                     chat_id=message.chat.id,
                     reply_to_message_id=update.message.message_id,
-                    text='Цветочек, учимся сегодня читать сообщения. Мы перешли на новые <a href="https://t.me/addstickers/days5">СТИКЕРЫ</a> <a href="https://t.me/addstickers/days5">СТИКЕРЫ</a> <a href="https://t.me/addstickers/days5">СТИКЕРЫ</a>',
+                    text='Цветочек, ты не был добавлен. Учимся сегодня читать сообщения. Мы перешли на новые <a href="https://t.me/addstickers/days5">СТИКЕРЫ</a> <a href="https://t.me/addstickers/days5">СТИКЕРЫ</a> <a href="https://t.me/addstickers/days5">СТИКЕРЫ</a>',
                     parse_mode = ParseMode.HTML
                 )
 
