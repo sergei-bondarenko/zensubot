@@ -143,7 +143,7 @@ def cancel(update, context) -> int:
 def edit_template(update, context) -> int:
     # TODO: Selection of chats must be here.
     context.bot.send_message(update.effective_chat.id, str(update))
-    context.bot.send_message(update.effective_chat.id, str(dir(context)))
+    context.bot.send_message(update.effective_chat.id, "media_group_id" in update["message"], len(update["message"]["photo"]))
     if "media_group_id" in update["message"]:
         context.bot.send_message(update.effective_chat.id, "Ты охуел несколько пикч отправлять? Пока это не реализовано.")
     elif len(update["message"]["photo"]):
