@@ -69,7 +69,7 @@ def parse_start(update, context) -> int:
         return PARSE_WHERE_TO_POST
     if query.data == "edit_template":
         photo_id, caption = db_query(
-            f'select photo_id, caption from post_templates where job_type = 1'
+            f'select photo_id, caption from post_templates where job_type = 1',
             True,
         )
         if photo_id:
