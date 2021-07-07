@@ -144,5 +144,6 @@ def edit_template(update, context) -> int:
     # TODO: Selection of chats must be here.
     context.bot.send_message(update.effective_chat.id, str(update))
     context.bot.send_message(update.effective_chat.id, str(dir(context)))
+    context.bot.send_photo(update.effective_chat.id, update["message"]["photo"][0]["file_id"], caption=update["message"]["caption"])
     # TODO: Proceed to save_template.
     return ConversationHandler.END
