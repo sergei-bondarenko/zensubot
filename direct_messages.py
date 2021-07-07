@@ -68,7 +68,14 @@ def parse_start(update, context) -> int:
         )
         return PARSE_WHERE_TO_POST
     if query.data == "edit_template":
-        # TODO: Print from database.
+        photo_id, caption = db_query(
+            f'select photo_id, caption from post_templates where job_type = 1'
+            True,
+        )
+        if photo_id:
+            context.bot.send_photo(update.effective_chat.id, photo_id, caption=caption)
+        else:
+            context.bot.send_message(update.effective_chat.id, caption)
         context.bot.send_message(update.effective_chat.id, "Отправь новый темплейт.")
         return EDIT_TEMPLATE
     if query.data == "end":
@@ -145,6 +152,7 @@ def edit_template(update, context) -> int:
     # context.bot.send_message(update.effective_chat.id, str(update))
     photo_id = None
     caption = None
+    # TODO: Check for videos/multiple photos.
     if len(update["message"]["photo"]):
         context.bot.send_photo(update.effective_chat.id, update["message"]["photo"][-1]["file_id"], caption=update["message"]["caption"])
         photo_id = update["message"]["photo"][-1]["file_id"]
