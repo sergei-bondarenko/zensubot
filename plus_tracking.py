@@ -33,6 +33,7 @@ def plus(update, context):
             )
 
     elif cur_amount < THRESHOLD:
+        print(chat_id)
         post_to = db_query(f"select title from chats where id = {chat_id}", False)[0][0]
         text = f"{cur_amount} из {THRESHOLD} + до поста в {post_to}"
         bot_message_to_chat(context, chat_id, text, AUTODESTRUCTION, replied_message)
