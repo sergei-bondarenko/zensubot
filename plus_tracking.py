@@ -7,7 +7,7 @@ def plus(update, context):
     AUTODESTRUCTION = 10
 
     print(update)
-    
+
     chat_id = update.effective_message.chat.id
 
     try:
@@ -20,8 +20,6 @@ def plus(update, context):
     to_chat_ids = db_query(
             f"select parent from chats_connection where child = {chat_id}"
         )
-    
-    print(to_chat_ids)
 
     if len(to_chat_ids) == 0:
         return None
