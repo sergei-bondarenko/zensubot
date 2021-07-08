@@ -114,7 +114,7 @@ def reply_and_confirm(update, context):
 
             # Collecting data about current job progress
             data = db_query(
-                f"""select coalesce(concat('@',username), first_name) as name, d1, d2, d3, d4, d5, total
+                f"""select user_id ,first_name as name, d1, d2, d3, d4, d5, total
                         from
                             (select user_id , sum(case when sday = 1 then power else 0 end) d1, sum(case when sday = 2 then power else 0 end) d2
                             				  , sum(case when sday = 3 then power else 0 end) d3, sum(case when sday = 4 then power else 0 end) d4
@@ -134,11 +134,11 @@ def reply_and_confirm(update, context):
             try:
                 if is_caption:
                     context.bot.edit_message_caption(
-                        chat_id=group_id, message_id=message_id, caption=text
+                        chat_id=group_id, message_id=message_id, caption=text, parse_mode = ParseMode.HTML
                     )
                 else:
                     context.bot.edit_message_text(
-                        text=text, chat_id=group_id, message_id=message_id
+                        text=text, chat_id=group_id, message_id=message_id, parse_mode = ParseMode.HTML
                     )
 
                 logger.info(
@@ -174,8 +174,8 @@ def reply_and_confirm(update, context):
                 posted_message = context.bot.send_message(
                     chat_id=message.chat.id,
                     reply_to_message_id=update.message.message_id,
-                    text='Цветочек, ты не был добавлен. Учимся сегодня читать сообщения. \nМы перешли на новые <a href="https://t.me/addstickers/days5">СТИКЕРЫ</a> <a href="https://t.me/addstickers/days5">СТИКЕРЫ</a> <a href="https://t.me/addstickers/days5">СТИКЕРЫ</a>',
-                    parse_mode = ParseMode.HTML
+                    text='Цветочек, ты не был добавлен. Учимся сегодня читать сообщения.\nМы перешли на новые <a href="https://t.me/addstickers/days5">СТИКЕРЫ</a> <a href="https://t.me/addstickers/days5">СТИКЕРЫ</a> <a href="https://t.me/addstickers/days5">СТИКЕРЫ</a>',
+                    parse_mode=ParseMode.HTML,
                 )
 
                 context.job_queue.run_once(
@@ -278,8 +278,9 @@ def check_previous_days(job_id, user_id, sticker_day):
 
 
 def get_posted_message(text, data, cur_day):
-    USERS = 'Участники'
-    LOOSERS = 'Долбаебы'
+    USERS = "Участники"
+    LOOSERS = "Долбаебы"
+    QUERY_OFFSET = 2
     text = text.split(f"\n\n{USERS}:")[0]
     text = text.split(f"\n\n{LOOSERS}:")[0]
 
@@ -289,7 +290,7 @@ def get_posted_message(text, data, cur_day):
     for item in data:
         is_first = True
         phrase = str()
-        for i, day in enumerate(item[1:6]):
+        for i, day in enumerate(item[QUERY_OFFSET : QUERY_OFFSET + 5]):
             day = int(day)
 
             if day == 0 and is_first and i + 1 < cur_day:
@@ -300,7 +301,7 @@ def get_posted_message(text, data, cur_day):
             else:
                 phrase += EM_FALSE
 
-        phrase += " " + item[0] + "\n"
+        phrase += " " + f'<a href="tg://user?id={item[0]}">{item[1]}</a>' + "\n"
 
         if is_first:
             phrase += str(item[-1] // 60) + "h " + f"{(item[-1] % 60):02d}" + "m\n\n"
