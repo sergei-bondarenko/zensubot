@@ -12,7 +12,7 @@ EM_FALSE = "⚫️"
 EM_FAIL = "💩"
 
 
-def reply_and_confirm(update, context):
+def stickers(update, context):
     message = update.effective_message
     user = update.effective_user
     is_caption = False

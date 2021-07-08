@@ -25,10 +25,10 @@ from direct_messages import (
     parse_type,
     parse_where_to_post,
     start,
-    edit_template
+    edit_template,
 )
 from post_scheduler import create_post_sc
-from sticker_tracking import reply_and_confirm
+from sticker_tracking import stickers
 
 TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN")
 
@@ -54,7 +54,9 @@ def main() -> None:
         allow_reentry=True,
         entry_points=[CommandHandler("start", start)],
         states={
-            PARSE_START: [CallbackQueryHandler(parse_start, pattern="add_post|edit_template|end")],
+            PARSE_START: [
+                CallbackQueryHandler(parse_start, pattern="add_post|edit_template|end")
+            ],
             PARSE_WHERE_TO_POST: [
                 CallbackQueryHandler(parse_where_to_post, pattern=r"-\d*")
             ],
@@ -70,8 +72,11 @@ def main() -> None:
         ChatMemberHandler(track_chats, ChatMemberHandler.MY_CHAT_MEMBER)
     )
 
-    q_handler = MessageHandler(Filters.sticker & Filters.reply, reply_and_confirm)
-    dispatcher.add_handler(q_handler)
+    stickers_handler = MessageHandler(Filters.sticker & Filters.reply, stickers)
+    dispatcher.add_handler(stickers_handler)
+
+    plus_handler = MessageHandler(Filters.reply & Filters.regex(r"^\+$"), plus)
+    dispatcher.add_handler(plus_handler)
 
     # Start the Bot
     updater.start_polling()
