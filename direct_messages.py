@@ -147,15 +147,15 @@ def cancel(update, context) -> int:
 
 
 def edit_template(update, context) -> int:
-   photo_id, caption = db_query(
-       f'select photo_id, caption from post_templates where job_type = 1',
-       True,
-   )[0]
-   if photo_id:
-       context.bot.send_photo(update.effective_chat.id, photo_id, caption=caption)
-   else:
-       context.bot.send_message(update.effective_chat.id, caption)
-   context.bot.send_message(update.effective_chat.id, "Отправь новый темплейт.")
+    photo_id, caption = db_query(
+        f'select photo_id, caption from post_templates where job_type = 1',
+        True,
+    )[0]
+    if photo_id:
+        context.bot.send_photo(update.effective_chat.id, photo_id, caption=caption)
+    else:
+        context.bot.send_message(update.effective_chat.id, caption)
+    context.bot.send_message(update.effective_chat.id, "Отправь новый темплейт.")
 
     # TODO: Selection of chats must be here.
     # context.bot.send_message(update.effective_chat.id, str(update))
