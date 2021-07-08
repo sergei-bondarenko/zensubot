@@ -1,5 +1,4 @@
 from database import db_query
-from sticker_tracking import delete_message
 from bot_functions import bot_message_to_chat
 
 
