@@ -68,15 +68,14 @@ def parse_start(update, context) -> int:
         )
         return PARSE_WHERE_TO_POST
     if query.data == "edit_template":
-        photo_id, caption = db_query(
-            f'select photo_id, caption from post_templates where job_type = 1',
-            True,
-        )[0]
-        if photo_id:
-            context.bot.send_photo(update.effective_chat.id, photo_id, caption=caption)
-        else:
-            context.bot.send_message(update.effective_chat.id, caption)
-        context.bot.send_message(update.effective_chat.id, "Отправь новый темплейт.")
+        keyboard = get_reply_keyboard(f"select id, type from jobs_types")
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        context.bot.edit_message_text(
+            text="Выбери тип пятидневки",
+            reply_markup=reply_markup,
+            chat_id=query.message.chat_id,
+            message_id=query.message.message_id,
+        )
         return EDIT_TEMPLATE
     if query.data == "end":
         context.bot.delete_message(
@@ -97,7 +96,7 @@ def parse_where_to_post(update, context) -> int:
     reply_markup = InlineKeyboardMarkup(keyboard)
 
     context.bot.edit_message_text(
-        text="Choose type of pyatidnevka",
+        text="Выбери тип пятидневки",
         reply_markup=reply_markup,
         chat_id=query.message.chat_id,
         message_id=query.message.message_id,
@@ -114,7 +113,7 @@ def parse_type(update, context) -> int:
     )
 
     context.bot.edit_message_text(
-        text="Write here your post",
+        text="Напиши здесь свой пост",
         chat_id=query.message.chat_id,
         message_id=query.message.message_id,
     )
@@ -139,7 +138,7 @@ def create_post(update, context) -> int:
         f"@{update.effective_user.username}, {update.effective_user.first_name} posted message to {context.user_data['chosen_group']}"
     )
 
-    context.bot.send_message(chat_id=update.effective_chat.id, text="Done!")
+    context.bot.send_message(chat_id=update.effective_chat.id, text="Готово!")
     return ConversationHandler.END
 
 
@@ -148,6 +147,16 @@ def cancel(update, context) -> int:
 
 
 def edit_template(update, context) -> int:
+   photo_id, caption = db_query(
+       f'select photo_id, caption from post_templates where job_type = 1',
+       True,
+   )[0]
+   if photo_id:
+       context.bot.send_photo(update.effective_chat.id, photo_id, caption=caption)
+   else:
+       context.bot.send_message(update.effective_chat.id, caption)
+   context.bot.send_message(update.effective_chat.id, "Отправь новый темплейт.")
+
     # TODO: Selection of chats must be here.
     # context.bot.send_message(update.effective_chat.id, str(update))
     photo_id = None

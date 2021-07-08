@@ -47,7 +47,7 @@ def main() -> None:
             ],
             PARSE_TYPE: [CallbackQueryHandler(parse_type, pattern=r"\d*")],
             CREATE_POST: [MessageHandler(Filters.all, create_post)],
-            EDIT_TEMPLATE: [MessageHandler(Filters.all, edit_template)],
+            EDIT_TEMPLATE: [CallbackQueryHandler(edit_template, pattern=r"\d*")]
         },
         fallbacks=[CommandHandler("cancel", cancel)],
     )
