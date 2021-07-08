@@ -10,8 +10,9 @@ from database import db_query
     PARSE_WHERE_TO_POST,
     PARSE_TYPE,
     CREATE_POST,
-    EDIT_TEMPLATE
-) = range(5)
+    EDIT_TEMPLATE,
+    SAVE_TEMPLATE
+) = range(6)
 
 logger = logging.getLogger(__name__)
 
@@ -147,6 +148,7 @@ def cancel(update, context) -> int:
 
 
 def edit_template(update, context) -> int:
+    context.bot.send_message(update.effective_chat.id, str(update))
     photo_id, caption = db_query(
         f'select photo_id, caption from post_templates where job_type = 1',
         True,
@@ -156,8 +158,10 @@ def edit_template(update, context) -> int:
     else:
         context.bot.send_message(update.effective_chat.id, caption)
     context.bot.send_message(update.effective_chat.id, "Отправь новый темплейт.")
+    return SAVE_TEMPLATE
 
-    # TODO: Selection of chats must be here.
+
+def save_template(update, context) -> int:
     # context.bot.send_message(update.effective_chat.id, str(update))
     photo_id = None
     caption = None

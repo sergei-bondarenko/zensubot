@@ -7,10 +7,10 @@ from telegram.ext import (CallbackQueryHandler, ChatMemberHandler,
 
 from chats_tracking import track_chats
 from database import CONNECTION
-from direct_messages import (CREATE_POST, EDIT_TEMPLATE, PARSE_START,
+from direct_messages import (CREATE_POST, EDIT_TEMPLATE, PARSE_START, SAVE_TEMPLATE,
                              PARSE_TYPE, PARSE_WHERE_TO_POST, cancel,
                              create_post, edit_template, parse_start,
-                             parse_type, parse_where_to_post, start)
+                             parse_type, parse_where_to_post, start, save_template)
 from plus_tracking import plus
 from post_scheduler import create_post_sc
 from sticker_tracking import stickers
@@ -47,7 +47,8 @@ def main() -> None:
             ],
             PARSE_TYPE: [CallbackQueryHandler(parse_type, pattern=r"\d*")],
             CREATE_POST: [MessageHandler(Filters.all, create_post)],
-            EDIT_TEMPLATE: [CallbackQueryHandler(edit_template, pattern=r"\d*")]
+            EDIT_TEMPLATE: [CallbackQueryHandler(edit_template, pattern=r"\d*")],
+            SAVE_TEMPLATE: [MessageHandler(Filters.all, save_template)]
         },
         fallbacks=[CommandHandler("cancel", cancel)],
     )
