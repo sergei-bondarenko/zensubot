@@ -6,8 +6,10 @@ def plus(update, context):
     THRESHOLD = 3
     AUTODESTRUCTION = 10
 
-    chat_id = update.effective_message.chat.id
+    print(update)
     
+    chat_id = update.effective_message.chat.id
+
     try:
         replied_message = update.effective_message.reply_to_message.forward_from_message_id
     except:
