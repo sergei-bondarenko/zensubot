@@ -174,7 +174,7 @@ def reply_and_confirm(update, context):
                 posted_message = context.bot.send_message(
                     chat_id=message.chat.id,
                     reply_to_message_id=update.message.message_id,
-                    text='Цветочек, ты не был добавлен. Учимся сегодня читать сообщения. Мы перешли на новые <a href="https://t.me/addstickers/days5">СТИКЕРЫ</a> <a href="https://t.me/addstickers/days5">СТИКЕРЫ</a> <a href="https://t.me/addstickers/days5">СТИКЕРЫ</a>',
+                    text='Цветочек, ты не был добавлен. Учимся сегодня читать сообщения. \nМы перешли на новые <a href="https://t.me/addstickers/days5">СТИКЕРЫ</a> <a href="https://t.me/addstickers/days5">СТИКЕРЫ</a> <a href="https://t.me/addstickers/days5">СТИКЕРЫ</a>',
                     parse_mode = ParseMode.HTML
                 )
 
@@ -278,8 +278,10 @@ def check_previous_days(job_id, user_id, sticker_day):
 
 
 def get_posted_message(text, data, cur_day):
-    text = text.split("\n\nУчастники:")[0]
-    text = text.split("\n\nДолбаебы:")[0]
+    USERS = 'Участники'
+    LOOSERS = 'Долбаебы'
+    text = text.split(f"\n\n{USERS}:")[0]
+    text = text.split(f"\n\n{LOOSERS}:")[0]
 
     passed = list()
     loosers = list()
@@ -308,9 +310,9 @@ def get_posted_message(text, data, cur_day):
 
     added_text = str()
     if len(passed) != 0:
-        added_text += "Участники:\n" + "".join(passed)
+        added_text += f"{USERS}:\n" + "".join(passed)
     if len(loosers) != 0:
-        added_text += "Долбаебы:\n" + "".join(loosers)
+        added_text += f"{LOOSERS}:\n" + "".join(loosers)
     text += "\n\n" + added_text
 
     return text
