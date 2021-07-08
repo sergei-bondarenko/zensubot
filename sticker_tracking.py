@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 EM_TRUE = "✅"
 EM_FALSE = "⚫️"
 EM_FAIL = "💩"
-
+#
 
 def reply_and_confirm(update, context):
     message = update.effective_message
