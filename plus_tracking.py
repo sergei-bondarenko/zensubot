@@ -16,8 +16,6 @@ def plus(update, context):
             f"select parent from chats_connection where child = {chat_id}"
         )
 
-    print(to_chat_ids)
-
     if len(to_chat_ids) == 0:
         return None
 
