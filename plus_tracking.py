@@ -32,6 +32,11 @@ def plus(update, context):
         return None
 
     if cur_amount == THRESHOLD:
+        db_query(
+            f"insert into plus_data (chat_id, message_id, user_id) values ({chat_id}, {replied_message}, {user_id})",
+            False,
+        )
+
         for chat in to_chat_ids:
             context.bot.copy_message(
                 chat_id=chat[0], from_chat_id=chat_id, message_id=replied_message
