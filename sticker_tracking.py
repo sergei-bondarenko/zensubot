@@ -4,7 +4,7 @@ from telegram import ParseMode
 from telegram.error import BadRequest
 
 from database import db_query
-from zensu_bot import bot_message_to_chat
+from bot_functions import bot_message_to_chat
 
 logger = logging.getLogger(__name__)
 

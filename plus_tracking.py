@@ -1,6 +1,6 @@
 from database import db_query
 from sticker_tracking import delete_message
-from zensu_bot import bot_message_to_chat
+from bot_functions import bot_message_to_chat
 
 
 def plus(update, context):
