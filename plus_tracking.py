@@ -9,11 +9,7 @@ def plus(update, context):
     print(update)
 
     chat_id = update.effective_message.chat.id
-
-    try:
-        replied_message = update.effective_message.reply_to_message.forward_from_message_id
-    except:
-        replied_message = update.effective_message.reply_to_message.message_id
+    replied_message = update.message.reply_to_message.message_id
 
     user_id = update.effective_user.id
 
