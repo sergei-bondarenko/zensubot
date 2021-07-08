@@ -148,9 +148,10 @@ def cancel(update, context) -> int:
 
 
 def edit_template(update, context) -> int:
-    context.bot.send_message(update.effective_chat.id, str(update))
+    query = update.callback_query
+    context.user_data["chosen_type"] = query.data
     photo_id, caption = db_query(
-        f'select photo_id, caption from post_templates where job_type = 1',
+        f'select photo_id, caption from post_templates where job_type = {query.data}',
         True,
     )[0]
     if photo_id:
