@@ -301,7 +301,8 @@ def get_posted_message(text, data, cur_day):
             else:
                 phrase += EM_FALSE
 
-        phrase += " " + f'<a href="tg://user?id={item[0]}">{item[1]}</a>' + "\n"
+        #phrase += " " + f'<a href="tg://user?id={item[0]}">{item[1]}</a>' + "\n"
+        phrase += " " + f'<a href="tg://user?id={item[0]}"></a>' + "\n"
 
         if is_first:
             phrase += str(item[-1] // 60) + "h " + f"{(item[-1] % 60):02d}" + "m\n\n"
