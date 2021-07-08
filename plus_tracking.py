@@ -30,7 +30,7 @@ def plus(update, context):
 
     if has_voted != 0:
         text = "Ты уже голосовал, грязный и мерзкий!"
-        bot_message_to_chat(context, chat_id, AUTODESTRUCTION, update.message.message_id,
+        bot_message_to_chat(context, chat_id, text, AUTODESTRUCTION, update.message.message_id,
         )
         return None
 
