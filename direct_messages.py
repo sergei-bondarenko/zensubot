@@ -163,7 +163,6 @@ def edit_template(update, context) -> int:
 
 
 def save_template(update, context) -> int:
-    # context.bot.send_message(update.effective_chat.id, str(update))
     photo_id = None
     caption = None
     # TODO: Check for videos/multiple photos.
@@ -175,8 +174,7 @@ def save_template(update, context) -> int:
         context.bot.send_message(update.effective_chat.id, update["message"]["text"])
         caption = update["message"]["text"]
     db_query(
-        f"update post_templates set photo_id = '{photo_id}', caption = '{caption}' where job_type = 1;",
+        f"update post_templates set photo_id = '{photo_id}', caption = '{caption}' where job_type = {context.user_data['chosen_type']};",
         False,
     )
-    # TODO: Proceed to save_template.
     return ConversationHandler.END
