@@ -4,6 +4,7 @@ from telegram import ParseMode
 from telegram.error import BadRequest
 
 from database import db_query
+from zensu_bot import bot_message_to_chat
 
 logger = logging.getLogger(__name__)
 
@@ -146,17 +147,7 @@ def stickers(update, context):
                 else:
                     text = f"Время добавлено!\nЗа сегодня всрато {work_today // 60}h {work_today % 60:02d}m!"
 
-                posted_message = context.bot.send_message(
-                    chat_id=message.chat.id,
-                    reply_to_message_id=update.message.message_id,
-                    text=text,
-                )
-
-                context.job_queue.run_once(
-                    delete_message,
-                    60,
-                    context=[posted_message.message_id, message.chat.id],
-                )
+                bot_message_to_chat(context, message.chat.id, text, 60, update.message.message_id)
 
             except BadRequest:
                 pass
@@ -164,20 +155,10 @@ def stickers(update, context):
         if sticker_day in (cur_day, cur_day + 1) and check_previous_days(
             job_id, user_id, sticker_day
         ):
-
+            
             if job_id > 70:
-                posted_message = context.bot.send_message(
-                    chat_id=message.chat.id,
-                    reply_to_message_id=update.message.message_id,
-                    text='Цветочек, ты не был добавлен. Учимся сегодня читать сообщения.\nМы перешли на новые <a href="https://t.me/addstickers/days5">СТИКЕРЫ</a> <a href="https://t.me/addstickers/days5">СТИКЕРЫ</a> <a href="https://t.me/addstickers/days5">СТИКЕРЫ</a>',
-                    parse_mode=ParseMode.HTML,
-                )
-
-                context.job_queue.run_once(
-                    delete_message,
-                    60,
-                    context=[posted_message.message_id, message.chat.id],
-                )
+                text = 'Цветочек, ты не был добавлен. Учимся сегодня читать сообщения.\nМы перешли на новые <a href="https://t.me/addstickers/days5">СТИКЕРЫ</a> <a href="https://t.me/addstickers/days5">СТИКЕРЫ</a> <a href="https://t.me/addstickers/days5">СТИКЕРЫ</a>'
+                bot_message_to_chat(context, message.chat.id, text, 60, update.message.message_id, ParseMode.HTML)
             else:
                 db_query(
                     f"insert into jobs_updates (user_id, job_id, sticker_id) values ({user_id}, {job_id}, {sticker_id})",
@@ -215,17 +196,8 @@ def stickers(update, context):
                         f"Edited job with id {job_id} after posted sticker id {sticker_id} by @{username} with firstname {user_firstname}"
                     )
 
-                    posted_message = context.bot.send_message(
-                        chat_id=message.chat.id,
-                        reply_to_message_id=update.message.message_id,
-                        text=f"Молодец! День {sticker_day} выполнен!",
-                    )
-
-                    context.job_queue.run_once(
-                        delete_message,
-                        60,
-                        context=[posted_message.message_id, message.chat.id],
-                    )
+                    text = f"Молодец! День {sticker_day} выполнен!"
+                    bot_message_to_chat(context, message.chat.id, text, 60, update.message.message_id)
 
                 except BadRequest:
                     # May be exception because edited message stays the same
@@ -238,25 +210,11 @@ def stickers(update, context):
                             f"Edited job with id {job_id} after posted sticker id {sticker_id} by @{username} with firstname {user_firstname}"
                         )
 
-                        posted_message = context.bot.send_message(
-                            chat_id=message.chat.id,
-                            reply_to_message_id=update.message.message_id,
-                            text=f"Молодец! День {sticker_day} выполнен!",
-                        )
-
-                        context.job_queue.run_once(
-                            delete_message,
-                            60,
-                            context=[posted_message.message_id, message.chat.id],
-                        )
+                        text = f"Молодец! День {sticker_day} выполнен!"
+                        bot_message_to_chat(context, message.chat.id, text, 60, update.message.message_id)                        
 
                     except BadRequest:
                         pass
-
-
-def delete_message(context) -> None:
-    job = context.job.context
-    context.bot.delete_message(chat_id=job[1], message_id=job[0])
 
 
 def check_previous_days(job_id, user_id, sticker_day):
