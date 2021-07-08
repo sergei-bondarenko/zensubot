@@ -5,9 +5,14 @@ from bot_functions import bot_message_to_chat
 def plus(update, context):
     THRESHOLD = 3
     AUTODESTRUCTION = 10
-    print(update)
+
     chat_id = update.effective_message.chat.id
-    replied_message = update.message.message_id
+    
+    try:
+        replied_message = update.effective_message.reply_to_message.forward_from_message_id
+    except:
+        replied_message = update.effective_message.reply_to_message.message_id
+
     user_id = update.effective_user.id
 
     to_chat_ids = db_query(
