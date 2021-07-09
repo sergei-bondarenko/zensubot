@@ -5,7 +5,7 @@ from bot_functions import bot_message_to_chat
 def plus(update, context):
     THRESHOLD = 3
     AUTODESTRUCTION = 0
-    ADMIN_STATUS = 'administrator'
+    STATUS = ["administrator", "creator"]
 
     chat_id = update.effective_message.chat.id
     replied_message = update.message.reply_to_message.message_id
@@ -13,21 +13,28 @@ def plus(update, context):
 
     user_id = update.effective_user.id
 
-    user_status = context.bot.get_chat_member(chat_id = chat_id, user_id = user_id).status
+    user_status = context.bot.get_chat_member(chat_id=chat_id, user_id=user_id).status
 
     print(user_status)
 
     # Filter only accepted users
-    if user_status != ADMIN_STATUS:
-        text = "Твой голос не учтен! Для голосования нужно быть почетным участником чата."
-        bot_message_to_chat(context, chat_id, text, 60, plus_message,
+    if user_status not in STATUS:
+        text = (
+            "Твой голос не учтен! Для голосования нужно быть почетным участником чата."
+        )
+        bot_message_to_chat(
+            context,
+            chat_id,
+            text,
+            60,
+            plus_message,
         )
         return None
 
     # Getting chats to post
     to_chat_ids = db_query(
-            f"select parent from chats_connection where child = {chat_id}"
-        )
+        f"select parent from chats_connection where child = {chat_id}"
+    )
 
     if len(to_chat_ids) == 0:
         return None
@@ -41,12 +48,17 @@ def plus(update, context):
 
     if has_voted != 0:
         text = "Ты уже голосовал, грязный и мерзкий!"
-        bot_message_to_chat(context, chat_id, text, AUTODESTRUCTION, plus_message,
+        bot_message_to_chat(
+            context,
+            chat_id,
+            text,
+            AUTODESTRUCTION,
+            plus_message,
         )
         return None
 
     if cur_amount == THRESHOLD:
-        
+
         db_query(
             f"insert into plus_data (chat_id, message_id, user_id) values ({chat_id}, {replied_message}, {user_id})",
             False,
@@ -58,7 +70,9 @@ def plus(update, context):
             )
 
     elif cur_amount < THRESHOLD:
-        post_to = db_query(f"select title from chats where id = {to_chat_ids[0][0]}")[0][0]
+        post_to = db_query(f"select title from chats where id = {to_chat_ids[0][0]}")[
+            0
+        ][0]
         text = f"{cur_amount} из {THRESHOLD} + до поста в {post_to}"
         bot_message_to_chat(context, chat_id, text, AUTODESTRUCTION, replied_message)
 
@@ -66,7 +80,7 @@ def plus(update, context):
             f"insert into plus_data (chat_id, message_id, user_id) values ({chat_id}, {replied_message}, {user_id})",
             False,
         )
-        print('query done')
+        print("query done")
 
     else:
         text = "Пост уже отправлен!"
