@@ -11,8 +11,9 @@ def callback_minute(context):
         True,
     )
     for job_type, created in data:
+        created_date = datetime.datetime.strptime(created, '%Y-%m-%d %H:%M:%S.%f')
         logger.info(
-            f"{job_type}: {created}"
+            f"{job_type}: {created_date}"
         )
 
 def create_post_sc(job):
