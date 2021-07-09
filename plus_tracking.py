@@ -15,12 +15,10 @@ def plus(update, context):
 
     user_status = context.bot.get_chat_member(chat_id=chat_id, user_id=user_id).status
 
-    print(user_status)
-
     # Filter only accepted users
     if user_status not in STATUS:
         text = (
-            "Твой голос не учтен! Для голосования нужно быть почетным участником чата."
+            "Твой голос не учтен! Для голосования нужно получить прописку в чате."
         )
         bot_message_to_chat(
             context,
@@ -80,7 +78,6 @@ def plus(update, context):
             f"insert into plus_data (chat_id, message_id, user_id) values ({chat_id}, {replied_message}, {user_id})",
             False,
         )
-        print("query done")
 
     else:
         text = "Пост уже отправлен!"
