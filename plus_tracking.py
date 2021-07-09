@@ -6,12 +6,15 @@ def plus(update, context):
     THRESHOLD = 3
     AUTODESTRUCTION = None
 
+    print(update)
+
     chat_id = update.effective_message.chat.id
     replied_message = update.message.reply_to_message.message_id
     plus_message = update.message.message_id
 
     user_id = update.effective_user.id
 
+    # Getting chats to post
     to_chat_ids = db_query(
             f"select parent from chats_connection where child = {chat_id}"
         )
@@ -19,11 +22,14 @@ def plus(update, context):
     if len(to_chat_ids) == 0:
         return None
 
+    # Getting info about post state and current user votes
     cur_amount, has_voted = db_query(
         f"""select count(1) + 1, coalesce(sum(case when user_id = {user_id} then 1 else 0 end), 0) 
             from plus_data 
             where chat_id = {chat_id} and message_id = {replied_message}"""
     )[0]
+
+    print(cur_amount, has_voted)
 
     if has_voted != 0:
         text = "Ты уже голосовал, грязный и мерзкий!"
@@ -32,6 +38,7 @@ def plus(update, context):
         return None
 
     if cur_amount == THRESHOLD:
+        
         db_query(
             f"insert into plus_data (chat_id, message_id, user_id) values ({chat_id}, {replied_message}, {user_id})",
             False,
@@ -46,7 +53,8 @@ def plus(update, context):
         post_to = db_query(f"select title from chats where id = {to_chat_ids[0][0]}")[0][0]
         text = f"{cur_amount} из {THRESHOLD} + до поста в {post_to}"
         bot_message_to_chat(context, chat_id, text, AUTODESTRUCTION, replied_message)
-
+        
+        print(f"insert into plus_data (chat_id, message_id, user_id) values ({chat_id}, {replied_message}, {user_id})")
         db_query(
             f"insert into plus_data (chat_id, message_id, user_id) values ({chat_id}, {replied_message}, {user_id})",
             False,
