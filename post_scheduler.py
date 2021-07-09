@@ -4,15 +4,11 @@ from datetime import datetime, timedelta
 
 def callback_minute(context):
     # context.bot.send_message(chat_id='@guhccssa', text='Тестирую отправку сообщения каждые 10 секунд.')
-    job_types = db_query(
-        'select job_type from post_templates',
+    data = db_query(
+        'select type, max(created) from jobs group by type',
         True,
     )
-    for job_type in job_types:
-        created = db_query(
-            f"select max(created) from jobs where type = {job_type}",
-            True,
-        )
+    for job_type, created in data:
         logger.info(
             f"{job_type}: {created}"
         )
