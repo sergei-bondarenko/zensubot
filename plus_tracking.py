@@ -4,9 +4,7 @@ from bot_functions import bot_message_to_chat
 
 def plus(update, context):
     THRESHOLD = 3
-    AUTODESTRUCTION = None
-
-    print(update)
+    AUTODESTRUCTION = 0
 
     chat_id = update.effective_message.chat.id
     replied_message = update.message.reply_to_message.message_id
@@ -28,8 +26,6 @@ def plus(update, context):
             from plus_data 
             where chat_id = {chat_id} and message_id = {replied_message}"""
     )[0]
-
-    print(cur_amount, has_voted)
 
     if has_voted != 0:
         text = "Ты уже голосовал, грязный и мерзкий!"
@@ -53,8 +49,7 @@ def plus(update, context):
         post_to = db_query(f"select title from chats where id = {to_chat_ids[0][0]}")[0][0]
         text = f"{cur_amount} из {THRESHOLD} + до поста в {post_to}"
         bot_message_to_chat(context, chat_id, text, AUTODESTRUCTION, replied_message)
-        
-        print(f"insert into plus_data (chat_id, message_id, user_id) values ({chat_id}, {replied_message}, {user_id})")
+
         db_query(
             f"insert into plus_data (chat_id, message_id, user_id) values ({chat_id}, {replied_message}, {user_id})",
             False,
