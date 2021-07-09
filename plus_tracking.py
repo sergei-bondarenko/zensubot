@@ -6,15 +6,17 @@ def plus(update, context):
     THRESHOLD = 3
     AUTODESTRUCTION = 0
 
-    
-
     chat_id = update.effective_message.chat.id
     replied_message = update.message.reply_to_message.message_id
     plus_message = update.message.message_id
 
     user_id = update.effective_user.id
 
-    print(context.bot.get_chat_member(chat_id = chat_id, user_id = user_id).status)
+    user_status = context.bot.get_chat_member(chat_id = chat_id, user_id = user_id).status
+
+    # Filter only accepted users
+    if user_status != 'administrator':
+        return None
 
     # Getting chats to post
     to_chat_ids = db_query(
