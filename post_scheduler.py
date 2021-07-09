@@ -1,6 +1,6 @@
 import logging
 from database import db_query
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 logger = logging.getLogger(__name__)
 
@@ -12,7 +12,7 @@ def callback_minute(context):
     )
     for job_type, created in data:
         logger.info(
-            f"{job_type}: {datetime.now() - created}"
+            f"{job_type}: {datetime.now(timezone.utc) - created}"
         )
 
 def create_post_sc(job):
