@@ -12,7 +12,7 @@ def callback_minute(context):
     )
     for job_type, created in data:
         logger.info(
-            f"{job_type}: {datetime.now() - created_date}"
+            f"{job_type}: {datetime.now() - created}"
         )
 
 def create_post_sc(job):
