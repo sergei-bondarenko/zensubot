@@ -6,6 +6,9 @@ def plus(update, context):
     THRESHOLD = 3
     AUTODESTRUCTION = 0
 
+    print(update)
+    print(context)
+
     chat_id = update.effective_message.chat.id
     replied_message = update.message.reply_to_message.message_id
     plus_message = update.message.message_id
