@@ -4,7 +4,7 @@ from bot_functions import bot_message_to_chat
 
 def plus(update, context):
     THRESHOLD = 3
-    AUTODESTRUCTION = 10
+    AUTODESTRUCTION = None
 
     chat_id = update.effective_message.chat.id
     replied_message = update.message.reply_to_message.message_id
