@@ -5,6 +5,7 @@ from bot_functions import bot_message_to_chat
 def plus(update, context):
     THRESHOLD = 3
     AUTODESTRUCTION = 0
+    ADMIN_STATUS = 'administrator'
 
     chat_id = update.effective_message.chat.id
     replied_message = update.message.reply_to_message.message_id
@@ -15,7 +16,10 @@ def plus(update, context):
     user_status = context.bot.get_chat_member(chat_id = chat_id, user_id = user_id).status
 
     # Filter only accepted users
-    if user_status != 'administrator':
+    if user_status != ADMIN_STATUS:
+        text = "Твой голос не учтен! Для голосования нужно быть почетным участником чата."
+        bot_message_to_chat(context, chat_id, text, 60, plus_message,
+        )
         return None
 
     # Getting chats to post
