@@ -155,9 +155,9 @@ def edit_template(update, context) -> int:
         True,
     )[0]
     if photo_id == "None":
-        context.bot.send_photo(update.effective_chat.id, photo_id, caption=caption)
-    else:
         context.bot.send_message(update.effective_chat.id, caption)
+    else:
+        context.bot.send_photo(update.effective_chat.id, photo_id, caption=caption)
     context.bot.send_message(update.effective_chat.id, "Отправь новый темплейт.")
     return SAVE_TEMPLATE
 
