@@ -26,6 +26,7 @@ def callback_minute(context):
             caption = fill_template(caption, count + 1)
 
             chat_id = db_query(f'select id from chats where jobs_type = {job_type}', True)[0]
+            context.bot.send_message("@sergei_bondarenko", chat_id)
             if photo_id == "None":
                 posted_message = context.bot.send_message(chat_id, caption)
             else:
