@@ -39,4 +39,4 @@ def callback_minute(context):
 
 def create_post_sc(job):
     interval = timedelta(seconds = 20)
-    # job_minute = job.run_repeating(callback = callback_minute, interval = interval)
+    job_minute = job.run_repeating(callback = callback_minute, interval = interval)
