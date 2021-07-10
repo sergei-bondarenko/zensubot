@@ -13,8 +13,6 @@ def plus(update, context):
 
     user_id = update.effective_user.id
 
-    print(update)
-
     user_status = context.bot.get_chat_member(chat_id=chat_id, user_id=user_id).status
 
     # Filter only accepted users
@@ -78,7 +76,7 @@ def plus(update, context):
             )
 
     elif cur_amount < THRESHOLD:
-        post_to = db_query(f"select title from chats where id in ({','.join(to_chat_ids)})")
+        post_to = db_query(f"select title from chats where id in ({','.join(map(str, to_chat_ids))})")
         post_to = {x[0] for x in post_to}
         text = f"{cur_amount} из {THRESHOLD} + до поста в {chr(10).join(post_to)}"
         bot_message_to_chat(context, chat_id, text, AUTODESTRUCTION, replied_message)
