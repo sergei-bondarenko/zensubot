@@ -163,17 +163,20 @@ def edit_template(update, context) -> int:
 
 
 def save_template(update, context) -> int:
-    photo_id = None
-    caption = None
+    photo_id, caption = db_query(
+        f'select photo_id, caption from post_templates where job_type = {context.user_data["chosen_type"]}',
+        True,
+    )[0]
     # TODO: Check for videos/multiple photos.
     if len(update["message"]["photo"]):
-        context.bot.send_photo(update.effective_chat.id, update["message"]["photo"][-1]["file_id"], caption=update["message"]["caption"])
         photo_id = update["message"]["photo"][-1]["file_id"]
         if len(update["message"]["caption"]):
             caption = update["message"]["caption"]
+        context.bot.send_photo(update.effective_chat.id, photo_id, caption=caption)
     else:
-        context.bot.send_message(update.effective_chat.id, update["message"]["text"])
+        photo_id = "None"
         caption = update["message"]["text"]
+        context.bot.send_message(update.effective_chat.id, caption)
     db_query(
         f"update post_templates set photo_id = '{photo_id}', caption = '{caption}' where job_type = {context.user_data['chosen_type']};",
         False,
