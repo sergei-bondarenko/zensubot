@@ -13,7 +13,6 @@ def plus(update, context):
 
     user_id = update.effective_user.id
 
-    print(context.bot.get_chat_member(chat_id=chat_id, user_id=user_id).status())
     print(update)
 
     user_status = context.bot.get_chat_member(chat_id=chat_id, user_id=user_id).status
