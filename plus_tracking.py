@@ -29,8 +29,7 @@ def plus(update, context):
 
     try:
         forward_from_chat_id = update.message.reply_to_message.forward_from_chat.id
-    except Exception as e:
-        print(e)
+    except AttributeError:
         forward_from_chat_id = 0
 
     # Getting chats to post
