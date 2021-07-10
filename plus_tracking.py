@@ -69,7 +69,7 @@ def plus(update, context):
 
         db_query(
             f"insert into plus_data (chat_id, message_id, user_id) values ({chat_id}, {replied_message}, {user_id})",
-            False, 1
+            False
         )
 
         for chat in to_chat_ids:
@@ -85,7 +85,7 @@ def plus(update, context):
 
         db_query(
             f"insert into plus_data (chat_id, message_id, user_id) values ({chat_id}, {replied_message}, {user_id})",
-            False, 1
+            False
         )
 
     else:

@@ -4,8 +4,8 @@ import psycopg2
 
 DATABASE_URL = os.environ.get("DATABASE_URL")
 
-def db_query(line, fetching=True, sync = False):
-    connection = psycopg2.connect(DATABASE_URL, sslmode="require", async_ = sync)
+def db_query(line, fetching=True):
+    connection = psycopg2.connect(DATABASE_URL, sslmode="require")
     with connection:
         with connection.cursor() as cur:
             cur.execute(line)
