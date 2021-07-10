@@ -14,7 +14,7 @@ def callback_minute(context):
         passed_time = datetime.now(timezone.utc) - created
         if passed_time >= timedelta(days = 5):
             logger.info(
-                f"{job_type}: {passed_time}"
+                f"{job_type}, {passed_time}, {count}"
             )
        # photo_id, caption = db_query(
        #     f'select photo_id, caption from post_templates where job_type = {query.data}',
