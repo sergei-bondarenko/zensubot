@@ -43,6 +43,7 @@ def plus(update, context):
     elif forward_from_chat_id in to_chat_ids:
         text = "Зачем ты голосуешь за пост, который уже есть в паблике?"
         bot_message_to_chat(context, chat_id, text, 60, plus_message)
+        return None
 
     # Getting info about post state and current user votes
     cur_amount, has_voted = db_query(
