@@ -6,7 +6,6 @@ from telegram.ext import (CallbackQueryHandler, ChatMemberHandler,
                           MessageHandler, Updater)
 
 from chats_tracking import track_chats
-from database import CONNECTION
 from direct_messages import (CREATE_POST, EDIT_TEMPLATE, PARSE_START, SAVE_TEMPLATE,
                              PARSE_TYPE, PARSE_WHERE_TO_POST, cancel,
                              create_post, edit_template, parse_start,
@@ -75,7 +74,6 @@ def main() -> None:
     # SIGTERM or SIGABRT. This should be used most of the time, since
     # start_polling() is non-blocking and will stop the bot gracefully.
     updater.idle()
-    CONNECTION.close()
 
 
 if __name__ == "__main__":

@@ -38,8 +38,10 @@ def plus(update, context):
     )
     to_chat_ids = {x[0] for x in to_chat_ids}
 
+    # Filter if chat is not enabled to pass plus
     if len(to_chat_ids) == 0:
         return None
+    # Filter if user tries to plus message from parent chat
     elif forward_from_chat_id in to_chat_ids:
         text = "Зачем ты голосуешь за пост, который уже есть в паблике?"
         bot_message_to_chat(context, chat_id, text, 60, plus_message)
@@ -67,7 +69,7 @@ def plus(update, context):
 
         db_query(
             f"insert into plus_data (chat_id, message_id, user_id) values ({chat_id}, {replied_message}, {user_id})",
-            False,
+            False, 1
         )
 
         for chat in to_chat_ids:
@@ -83,7 +85,7 @@ def plus(update, context):
 
         db_query(
             f"insert into plus_data (chat_id, message_id, user_id) values ({chat_id}, {replied_message}, {user_id})",
-            False,
+            False, 1
         )
 
     else:
