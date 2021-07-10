@@ -4,7 +4,6 @@ from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ConversationHandler
 
 from database import db_query
-from bot_functions import fill_template
 
 (
     PARSE_START,
@@ -155,12 +154,11 @@ def edit_template(update, context) -> int:
         f'select photo_id, caption from post_templates where job_type = {query.data}',
         True,
     )[0]
-    caption = fill_template(caption, 1337, 0)
     if photo_id == "None":
         context.bot.send_message(update.effective_chat.id, caption)
     else:
         context.bot.send_photo(update.effective_chat.id, photo_id, caption=caption)
-    context.bot.send_message(update.effective_chat.id, "Отправь новый темплейт.")
+    context.bot.send_message(update.effective_chat.id, "Отправь новый темплейт. Если отправишь только картинку, то текст останется без изменений.")
     return SAVE_TEMPLATE
 
 
@@ -171,7 +169,8 @@ def save_template(update, context) -> int:
     if len(update["message"]["photo"]):
         context.bot.send_photo(update.effective_chat.id, update["message"]["photo"][-1]["file_id"], caption=update["message"]["caption"])
         photo_id = update["message"]["photo"][-1]["file_id"]
-        caption = update["message"]["caption"]
+        if len(update["message"]["caption"]):
+            caption = update["message"]["caption"]
     else:
         context.bot.send_message(update.effective_chat.id, update["message"]["text"])
         caption = update["message"]["text"]

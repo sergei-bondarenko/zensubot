@@ -20,9 +20,8 @@ def delete_message(context) -> None:
     context.bot.delete_message(chat_id=job[1], message_id=job[0])
 
 
-def fill_template(text, count, job_type) -> str:
-    # TODO: offset by job_type
-    text = re.sub('#N', f"#{count}", text, flags=re.I)
+def fill_template(text, n) -> str:
+    text = re.sub('#N', f"#{n}", text, flags=re.I)
     for day in range(5):
        date = datetime.now(timezone(timedelta(hours=3))) + timedelta(days=day)
        date = date.strftime("%d.%m.%Y")
