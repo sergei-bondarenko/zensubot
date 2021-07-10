@@ -25,7 +25,7 @@ def callback_minute(context):
             )[0]
             caption = fill_template(caption, count + 1)
 
-            chat_id = db_query('select id from chats where jobs_type = {job_type}', True)[0]
+            chat_id = db_query(f'select id from chats where jobs_type = {job_type}', True)[0]
             logger.info(f"{caption}")
             logger.info(f"{chat_id}")
          #   if photo_id == "None":
