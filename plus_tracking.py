@@ -19,9 +19,7 @@ def plus(update, context):
 
     # Filter only accepted users
     if user_status not in STATUS:
-        text = (
-            "Твой голос не учтен! Для голосования нужно получить прописку в чате."
-        )
+        text = "Твой голос не учтен! Для голосования нужно получить прописку в чате."
         bot_message_to_chat(
             context,
             chat_id,
@@ -31,13 +29,23 @@ def plus(update, context):
         )
         return None
 
+    try:
+        forward_from_chat_id = update.message.reply_to_message.forward_from_chat.id
+    except Exception as e:
+        print(e)
+        forward_from_chat_id = 0
+
     # Getting chats to post
     to_chat_ids = db_query(
         f"select parent from chats_connection where child = {chat_id}"
     )
+    to_chat_ids = {x[0] for x in to_chat_ids}
 
     if len(to_chat_ids) == 0:
         return None
+    elif forward_from_chat_id in to_chat_ids:
+        text = "Зачем ты голосуешь за пост, который уже есть в паблике?"
+        bot_message_to_chat(context, chat_id, text, 60, plus_message)
 
     # Getting info about post state and current user votes
     cur_amount, has_voted = db_query(
@@ -66,14 +74,13 @@ def plus(update, context):
 
         for chat in to_chat_ids:
             context.bot.copy_message(
-                chat_id=chat[0], from_chat_id=chat_id, message_id=replied_message
+                chat_id=chat, from_chat_id=chat_id, message_id=replied_message
             )
 
     elif cur_amount < THRESHOLD:
-        post_to = db_query(f"select title from chats where id = {to_chat_ids[0][0]}")[
-            0
-        ][0]
-        text = f"{cur_amount} из {THRESHOLD} + до поста в {post_to}"
+        post_to = db_query(f"select title from chats where id in ({','.join(to_chat_ids)})")
+        post_to = {x[0] for x in post_to}
+        text = f"{cur_amount} из {THRESHOLD} + до поста в {'\n'.join(post_to)}"
         bot_message_to_chat(context, chat_id, text, AUTODESTRUCTION, replied_message)
 
         db_query(
