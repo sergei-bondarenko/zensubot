@@ -170,7 +170,7 @@ def save_template(update, context) -> int:
     # TODO: Check for videos/multiple photos.
     if len(update["message"]["photo"]):
         photo_id = update["message"]["photo"][-1]["file_id"]
-        if len(update["message"]["caption"]):
+        if update["message"]["caption"]:
             caption = update["message"]["caption"]
         context.bot.send_photo(update.effective_chat.id, photo_id, caption=caption)
     else:
