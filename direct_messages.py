@@ -167,15 +167,15 @@ def save_template(update, context) -> int:
     caption = None
     context.bot.send_message(update.effective_chat.id, str(update))
     # TODO: Check for videos/multiple photos.
-   # if len(update["message"]["photo"]):
-   #     context.bot.send_photo(update.effective_chat.id, update["message"]["photo"][-1]["file_id"], caption=update["message"]["caption"])
-   #     photo_id = update["message"]["photo"][-1]["file_id"]
-   #     caption = update["message"]["caption"]
-   # else:
-   #     context.bot.send_message(update.effective_chat.id, update["message"]["text"])
-   #     caption = update["message"]["text"]
-   # db_query(
-   #     f"update post_templates set photo_id = '{photo_id}', caption = '{caption}' where job_type = {context.user_data['chosen_type']};",
-   #     False,
-   # )
+    if len(update["message"]["photo"]):
+        context.bot.send_photo(update.effective_chat.id, update["message"]["photo"][-1]["file_id"], caption=update["message"]["caption"])
+        photo_id = update["message"]["photo"][-1]["file_id"]
+        caption = update["message"]["caption"]
+    else:
+        context.bot.send_message(update.effective_chat.id, update["message"]["text"])
+        caption = update["message"]["text"]
+    db_query(
+        f"update post_templates set photo_id = '{photo_id}', caption = '{caption}' where job_type = {context.user_data['chosen_type']};",
+        False,
+    )
     return ConversationHandler.END
