@@ -13,10 +13,10 @@ def callback_minute(context):
     )
     for job_type, created, count in data:
         passed_time = datetime.now(timezone.utc) - created
-        if passed_time >= timedelta(days = 5):
-            #logger.info(
-            #    f"{job_type}, {passed_time}, {count}"
-            #)
+
+        if job_type == 0:
+        # TODO: Uncomment if below.
+        # if passed_time >= timedelta(days = 5):
 
             # TODO: offset for different job_types.
             photo_id, caption = db_query(
@@ -24,11 +24,18 @@ def callback_minute(context):
                 True,
             )[0]
             caption = fill_template(caption, count + 1)
-       # if photo_id == "None":
-       #     context.bot.send_message(update.effective_chat.id, caption)
-       # else:
-       #     context.bot.send_photo(update.effective_chat.id, photo_id, caption=caption)
-       # context.bot.send_message(update.effective_chat.id, "Отправь новый темплейт.")
+
+            chat_id = db_query('select id from chats where jobs_type = {job_type}', True)[0]
+            logger.info(f"{caption}")
+            logger.info(f"{chat_id}")
+         #   if photo_id == "None":
+         #       context.bot.send_message(chat_id, caption)
+         #   else:
+         #       context.bot.send_photo(chat_id, photo_id, caption=caption)
+         #   db_query(
+         #       f'insert into jobs(message_id, chat_id, type) values ({posted_message.message_id}, {context.user_data["chosen_group"]}, {context.user_data["chosen_type"]});',
+         #       False,
+         #   )
 
 def create_post_sc(job):
     interval = timedelta(seconds = 20)
