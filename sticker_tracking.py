@@ -194,8 +194,8 @@ def get_posted_message(text, data, cur_day, cur_user_id):
             else:
                 phrase += EM_FALSE
 
-        phrase += f" {str(total // 60)}h {(total % 60):02d}m\n\n"
-        
+        phrase += f" {str(total // 60)}h {(total % 60):02d}m"
+
         if is_first:
             passed.append((name_phrase, phrase))
         else:
