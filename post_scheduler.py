@@ -7,7 +7,6 @@ logger = logging.getLogger(__name__)
 
 
 def callback_minute(context):
-    # context.bot.send_message(chat_id='@guhccssa', text='Тестирую отправку сообщения каждые 10 секунд.')
     data = db_query(
         'select type, max(created), count(1) from jobs group by type',
         True,
