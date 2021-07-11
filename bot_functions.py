@@ -21,7 +21,7 @@ def delete_message(context) -> None:
 
 
 def fill_template(text, n) -> str:
-    text = re.sub('#N', f"#{n}", text, flags=re.I)
+    text = re.sub('([#№])N', f"\g<1>{n}", text, flags=re.I)
     for day in range(5):
        date = datetime.now(timezone(timedelta(hours=3))) + timedelta(days=day)
        date = date.strftime("%d.%m.%Y")

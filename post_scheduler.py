@@ -18,12 +18,22 @@ def callback_minute(context):
         # TODO: Uncomment if below.
         # if passed_time >= timedelta(days = 5):
 
-            # TODO: offset for different job_types.
+            if job_type = 0:
+                offset = 2
+            elif job_type = 1:
+                offset = 4
+            elif job_type = 2:
+                offset = 2
+            elif job_type = 3:
+                offset = 2
+            elif job_type = 4:
+                offset = 1
+
             photo_id, caption = db_query(
                 f'select photo_id, caption from post_templates where job_type = {job_type}',
                 True,
             )[0]
-            caption = fill_template(caption, count + 1)
+            caption = fill_template(caption, count + offset + 1)
 
             chat_id = db_query(f'select id from chats where jobs_type = {job_type}', True)[0][0]
             if photo_id == "None":
@@ -35,6 +45,8 @@ def callback_minute(context):
                 False,
             )
             logger.info(f"Job type {job_type} posted to chat_id {chat_id}")
+            context.bot.unpin_all_chat_messages(chat_id=chat_id)
+            context.bot.pin_chat_message(chat_id, posted_message.message_id)
 
 def create_post_sc(job):
     interval = timedelta(seconds = 120)
