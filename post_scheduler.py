@@ -25,8 +25,7 @@ def callback_minute(context):
             )[0]
             caption = fill_template(caption, count + 1)
 
-            chat_id = db_query(f'select id from chats where jobs_type = {job_type}', True)[0]
-            logger.info(f"chat_id: {chat_id}")
+            chat_id = db_query(f'select id from chats where jobs_type = {job_type}', True)[0][0]
             if photo_id == "None":
                 posted_message = context.bot.send_message(chat_id, caption)
             else:
@@ -35,7 +34,8 @@ def callback_minute(context):
                 f'insert into jobs(message_id, chat_id, type) values ({posted_message.message_id}, {chat_id}, {job_type})',
                 False,
             )
+            logger.info(f"Job type {job_type} posted to chat_id {chat_id}")
 
 def create_post_sc(job):
     interval = timedelta(seconds = 120)
-    job_minute = job.run_repeating(callback = callback_minute, interval = interval)
+    # job_minute = job.run_repeating(callback = callback_minute, interval = interval)
