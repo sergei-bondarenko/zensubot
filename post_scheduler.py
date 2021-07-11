@@ -18,15 +18,15 @@ def callback_minute(context):
         # TODO: Uncomment if below.
         # if passed_time >= timedelta(days = 5):
 
-            if job_type = 0:
+            if job_type == 0:
                 offset = 2
-            elif job_type = 1:
+            elif job_type == 1:
                 offset = 4
-            elif job_type = 2:
+            elif job_type == 2:
                 offset = 2
-            elif job_type = 3:
+            elif job_type == 3:
                 offset = 2
-            elif job_type = 4:
+            elif job_type == 4:
                 offset = 1
 
             photo_id, caption = db_query(
