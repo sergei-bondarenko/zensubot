@@ -139,7 +139,7 @@ def create_post(update, context) -> int:
         f"@{update.effective_user.username}, {update.effective_user.first_name} posted message to {context.user_data['chosen_group']}"
     )
 
-    context.bot.send_message(chat_id=update.effective_chat.id, text="Готово!", parse_mode = 'HTML')
+    context.bot.send_message(chat_id=update.effective_chat.id, text="<b>Готово!</b>", parse_mode = 'HTML')
     return ConversationHandler.END
 
 
