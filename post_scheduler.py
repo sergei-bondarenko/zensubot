@@ -45,17 +45,17 @@ def callback_minute(context):
                 posted_message = context.bot.send_photo(chat_id, photo_id, caption=caption, parse_mode = ParseMode.HTML)
             
             last_message_id = db_query(f"select max(message_id) from jobs where chat_id = {chat_id}")[0][0]
-            context.bot.unpin_chat_message(chat_id = chat_id, message_id = last_message_id)
 
             db_query(
                 f'insert into jobs(message_id, chat_id, type) values ({posted_message.message_id}, {chat_id}, {job_type})',
                 False,
             )
             logger.info(f"Job type {job_type} posted to chat_id {chat_id}")
+            context.bot.unpin_chat_message(chat_id = chat_id, message_id = last_message_id)
             # context.bot.unpin_all_chat_messages(chat_id=chat_id)
             context.bot.pin_chat_message(chat_id, posted_message.message_id)
 
 
 def create_post_sc(job):
     interval = timedelta(seconds = 60)
-    # job_minute = job.run_repeating(callback = callback_minute, interval = interval)
+    job_minute = job.run_repeating(callback = callback_minute, interval = interval)
