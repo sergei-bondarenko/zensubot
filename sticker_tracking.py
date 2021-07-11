@@ -132,6 +132,7 @@ def stickers(update, context):
                         message_id=message_id,
                         caption=text,
                         parse_mode=ParseMode.HTML,
+                        disable_web_page_preview=True,
                     )
                 else:
                     context.bot.edit_message_text(
@@ -139,6 +140,7 @@ def stickers(update, context):
                         chat_id=group_id,
                         message_id=message_id,
                         parse_mode=ParseMode.HTML,
+                        disable_web_page_preview=True,
                     )
 
                 logger.info(
@@ -146,7 +148,7 @@ def stickers(update, context):
                 )
 
                 if work_today == sticker_power:
-                    text = f"Молодец! День {cur_day} выполнен!"
+                    text = f"Молодец! День {int(cur_day)} выполнен!"
                 else:
                     text = f"Время добавлено!\nЗа сегодня всрато {work_today // 60}h {work_today % 60:02d}m!"
 
