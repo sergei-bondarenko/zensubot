@@ -41,7 +41,7 @@ def callback_minute(context):
             if photo_id == "None":
                 posted_message = context.bot.send_message(chat_id, caption, parse_mode = ParseMode.HTML)
             else:
-                posted_message = context.bot.send_photo(chat_id, photo_id, caption=caption)
+                posted_message = context.bot.send_photo(chat_id, photo_id, caption=caption, parse_mode = ParseMode.HTML)
             
             last_message_id = db_query(f"select max(message_id) from jobs where chat_id = {chat_id}")[0][0]
             context.bot.unpin_chat_message(chat_id = chat_id, message_id = last_message_id)
