@@ -4,7 +4,7 @@ from telegram import ParseMode
 from telegram.error import BadRequest
 
 from database import db_query
-from bot_functions import bot_message_to_chat
+from bot_functions import bot_message_to_chat, fill_template
 
 logger = logging.getLogger(__name__)
 
@@ -50,10 +50,10 @@ def stickers(update, context):
 
     # Getting sticker id if it exist
     data = db_query(
-        f"select id, day, power from stickers where text_id='{message.sticker.file_unique_id}'"
+        f"select id, power from stickers where text_id='{message.sticker.file_unique_id}'"
     )
     if len(data) != 0:
-        sticker_id, sticker_day, sticker_power = data[0]
+        sticker_id, sticker_power = data[0]
 
     # Writing update to table if job_id and sticker_id is correct
     if job_id and sticker_id:
