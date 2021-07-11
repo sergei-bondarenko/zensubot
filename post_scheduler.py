@@ -17,8 +17,7 @@ def callback_minute(context):
     for job_type, created, count in data:
         passed_time = datetime.now(timezone.utc) - created
 
-        #if passed_time >= timedelta(days = 5):
-        if passed_time >= timedelta(days = 1):
+        if passed_time >= timedelta(days = 5):
         #if job_type == 0:
 
             if job_type == 0:
