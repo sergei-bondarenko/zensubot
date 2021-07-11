@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 EM_TRUE = "✅"
 EM_FALSE = "⚫️"
-EM_FAIL = "💩"
+EM_FAIL = "❌"
 
 
 def stickers(update, context):
@@ -70,11 +70,9 @@ def stickers(update, context):
             )
 
         # Getting current day since start of the job
-        cur_day = int(
-            db_query(
-                f"select DATE_PART('day', now()-created)+1 from jobs where id = {job_id}"
-            )[0][0]
-        )
+        cur_day, job_type, order_number = db_query(
+            f"select DATE_PART('day', now()-created)+1, type, order_number from jobs where id = {job_id}"
+        )[0]
 
         # updating users if today is start of the job
         if cur_day == 1:
@@ -120,6 +118,11 @@ def stickers(update, context):
                         ;"""
             )
 
+            text = db_query(
+                f"select caption from post_templates where job_type = {job_type}"
+            )[0][0]
+            text = fill_template(text, order_number)
+
             text, work_today = get_posted_message(text, data, cur_day, user_id)
 
             try:
@@ -147,32 +150,19 @@ def stickers(update, context):
                 else:
                     text = f"Время добавлено!\nЗа сегодня всрато {work_today // 60}h {work_today % 60:02d}m!"
 
-                bot_message_to_chat(context, message.chat.id, text, 60, update.message.message_id)
+                bot_message_to_chat(
+                    context, message.chat.id, text, 60, update.message.message_id
+                )
 
             except BadRequest:
                 pass
 
 
-def check_previous_days(job_id, user_id, sticker_day):
-    data = db_query(
-        f"select distinct day from jobs_updates join stickers on stickers.id = jobs_updates.sticker_id where job_id={job_id} and user_id = {user_id}"
-    )
-    data = {x[0] for x in data}
-    passed = True
-
-    for i in range(1, sticker_day):
-        passed = passed and (i in data)
-
-    return passed
-
-
 def get_posted_message(text, data, cur_day, cur_user_id):
-    USERS = "Участники"
-    LOOSERS = "Долбаебы"
+    USERS = "<b>Участники</b>"
     QUERY_OFFSET = 2
 
     text = text.split(f"\n\n{USERS}:")[0]
-    text = text.split(f"\n\n{LOOSERS}:")[0]
 
     passed = list()
     loosers = list()
@@ -184,7 +174,9 @@ def get_posted_message(text, data, cur_day, cur_user_id):
         user_firstname = item[1]
         total = item[-1]
 
+        name_phrase = f'<a href="tg://user?id={user_id}">{user_firstname}</a>'
         phrase = str()
+
         for i, day in enumerate(item[QUERY_OFFSET : QUERY_OFFSET + 5]):
             day = int(day)
 
@@ -200,19 +192,19 @@ def get_posted_message(text, data, cur_day, cur_user_id):
             else:
                 phrase += EM_FALSE
 
-        phrase += " " + f'<a href="tg://user?id={user_id}">{user_firstname}</a>' + "\n"
-
         if is_first:
             phrase += str(total // 60) + "h " + f"{(total % 60):02d}" + "m\n\n"
-            passed.append(phrase)
+            passed.append((name_phrase, phrase))
         else:
-            loosers.append(phrase)
+            loosers.append((name_phrase, phrase))
 
     added_text = str()
-    if len(passed) != 0:
-        added_text += f"{USERS}:\n" + "".join(passed)
-    if len(loosers) != 0:
-        added_text += f"{LOOSERS}:\n" + "".join(loosers)
+
+    for i, name_phrase, phrase in enumerate(passed):
+        added_text += f"{i+1}. {name_phrase}\n{phrase}\n\n"
+
+    for j, name_phrase, phrase in enumerate(loosers):
+        added_text += f"{i + j + 2}. <s>{name_phrase}</s>\n{phrase}\n\n"
     text += "\n\n" + added_text
 
     return text, work_today
