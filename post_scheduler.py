@@ -17,7 +17,8 @@ def callback_minute(context):
     for job_type, created, count in data:
         passed_time = datetime.now(timezone.utc) - created
 
-        if passed_time >= timedelta(days = 5):
+        #if passed_time >= timedelta(days = 5):
+        if job_type == 0:
 
             if job_type == 0:
                 offset = 2
@@ -55,5 +56,5 @@ def callback_minute(context):
 
 
 def create_post_sc(job):
-    interval = timedelta(seconds = 60)
-    # job_minute = job.run_repeating(callback = callback_minute, interval = interval)
+    interval = timedelta(seconds = 60*60)
+    job_minute = job.run_repeating(callback = callback_minute, interval = interval)
