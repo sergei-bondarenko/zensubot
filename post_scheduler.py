@@ -5,6 +5,7 @@ from bot_functions import fill_template
 
 logger = logging.getLogger(__name__)
 
+
 def callback_minute(context):
     # context.bot.send_message(chat_id='@guhccssa', text='Тестирую отправку сообщения каждые 10 секунд.')
     data = db_query(
@@ -14,9 +15,7 @@ def callback_minute(context):
     for job_type, created, count in data:
         passed_time = datetime.now(timezone.utc) - created
 
-        if job_type == 0:
-        # TODO: Uncomment if below.
-        # if passed_time >= timedelta(days = 5):
+        if passed_time >= timedelta(days = 5):
 
             if job_type == 0:
                 offset = 2
@@ -45,9 +44,10 @@ def callback_minute(context):
                 False,
             )
             logger.info(f"Job type {job_type} posted to chat_id {chat_id}")
-            context.bot.unpin_all_chat_messages(chat_id=chat_id)
+            # context.bot.unpin_all_chat_messages(chat_id=chat_id)
             context.bot.pin_chat_message(chat_id, posted_message.message_id)
 
+
 def create_post_sc(job):
-    interval = timedelta(seconds = 120)
+    interval = timedelta(seconds = 60)
     # job_minute = job.run_repeating(callback = callback_minute, interval = interval)
