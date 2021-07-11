@@ -132,7 +132,6 @@ def stickers(update, context):
                         message_id=message_id,
                         caption=text,
                         parse_mode=ParseMode.HTML,
-                        disable_web_page_preview=True,
                     )
                 else:
                     context.bot.edit_message_text(
