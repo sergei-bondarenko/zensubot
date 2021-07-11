@@ -1,7 +1,10 @@
 import logging
-from database import db_query
 from datetime import datetime, timedelta, timezone
+
+from telegram import ParseMode
+
 from bot_functions import fill_template
+from database import db_query
 
 logger = logging.getLogger(__name__)
 
@@ -35,7 +38,7 @@ def callback_minute(context):
 
             chat_id = db_query(f'select id from chats where jobs_type = {job_type}', True)[0][0]
             if photo_id == "None":
-                posted_message = context.bot.send_message(chat_id, caption)
+                posted_message = context.bot.send_message(chat_id, caption, parse_mode = ParseMode.HTML)
             else:
                 posted_message = context.bot.send_photo(chat_id, photo_id, caption=caption)
             
