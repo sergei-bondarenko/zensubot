@@ -17,8 +17,8 @@ def callback_minute(context):
     for job_type, created, count in data:
         passed_time = datetime.now(timezone.utc) - created
 
-        if passed_time >= timedelta(days = 5):
-        #if passed_time >= timedelta(days = 1):
+        #if passed_time >= timedelta(days = 5):
+        if passed_time >= timedelta(days = 1):
         #if job_type == 0:
 
             if job_type == 0:
@@ -51,9 +51,12 @@ def callback_minute(context):
                 False,
             )
             logger.info(f"Job type {job_type} posted to chat_id {chat_id}")
-            context.bot.unpin_chat_message(chat_id = chat_id, message_id = last_message_id)
-            # context.bot.unpin_all_chat_messages(chat_id=chat_id)
-            context.bot.pin_chat_message(chat_id, posted_message.message_id)
+            try:
+                context.bot.unpin_chat_message(chat_id = chat_id, message_id = last_message_id)
+                # context.bot.unpin_all_chat_messages(chat_id=chat_id)
+                context.bot.pin_chat_message(chat_id, posted_message.message_id)
+            except:
+                logger.info(f"Pin/unpin didn't work in chat_id {chat_id}")
 
 
 def create_post_sc(job):
