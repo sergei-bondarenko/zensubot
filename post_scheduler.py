@@ -10,10 +10,10 @@ logger = logging.getLogger(__name__)
 
 POST_WEEKDAY = 0
 POST_HOUR = 10
-POST_MINUTE = 30
+POST_MINUTE = 36
 
 def callback_minute(context):
-    cur_date = datetime.now(timezone.utc)
+    cur_date = datetime.now()
     data = db_query(
         'select type, max(created), count(1) from jobs group by type',
         True,
