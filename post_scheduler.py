@@ -9,8 +9,8 @@ from database import db_query
 logger = logging.getLogger(__name__)
 
 # UTC time of posting
-POST_WEEKDAY = 0
-POST_HOUR = 15
+POST_WEEKDAY = 6
+POST_HOUR = 21
 POST_MINUTE = 1
 
 def callback_minute(context):
