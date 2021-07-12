@@ -203,10 +203,10 @@ def get_posted_message(text, data, cur_day, cur_user_id):
     added_text = str()
 
     for i, (name_phrase, phrase) in enumerate(passed):
-        added_text += f"{i+1}. {name_phrase}\n{phrase}\n\n"
+        added_text += f"{chr(8204)}{i+1}. {name_phrase}\n{phrase}\n\n"
 
     for j, (name_phrase, phrase) in enumerate(loosers):
-        added_text += f"{i + j + 2}. <s>{name_phrase}</s>\n{phrase}\n\n"
+        added_text += f"{chr(8204)}{i + j + 2}. <s>{name_phrase}</s>\n{phrase}\n\n"
     text += "\n\n" + added_text
 
     return text, work_today
