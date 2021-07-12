@@ -23,8 +23,8 @@ def delete_message(context) -> None:
 def fill_template(text, n, start_date = datetime.now()) -> str:
     text = re.sub('([#№])N', f"\g<1>{n}", text, flags=re.I)
     for day in range(5):
-        open, close = ('','') if datetime.now() - start_date < timedelta(days=1) else ('<s>', '</s>')
         date = start_date + timedelta(days=day, hours=3)
+        open, close = ('','') if datetime.now() - date < timedelta(hours = 24 - 3) else ('<b><s>', '</s></b>')
         date = date.strftime("%d.%m.%Y")
-        text = re.sub(f"{day+1} [-–—] NN.NN.NNNN", f"{day+1} — {open}{date}{close}", text, flags=re.I)
+        text = re.sub(f"{day+1} [-–—] NN.NN.NNNN", f"{open}{day+1} — {date}{close}", text, flags=re.I)
     return text
