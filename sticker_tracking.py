@@ -47,8 +47,6 @@ def stickers(update, context):
     )
     if len(data) != 0:
         job_id, start_date = data[0]
-    print(start_date)
-    print(type(start_date))
 
     # Getting sticker id if it exist
     data = db_query(
@@ -123,7 +121,7 @@ def stickers(update, context):
             text = db_query(
                 f"select caption from post_templates where job_type = {job_type}"
             )[0][0]
-            text = fill_template(text, order_number)
+            text = fill_template(text, order_number, start_date)
 
             text, work_today = get_posted_message(text, data, cur_day, user_id)
 

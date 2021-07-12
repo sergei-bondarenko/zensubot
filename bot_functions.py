@@ -20,10 +20,11 @@ def delete_message(context) -> None:
     context.bot.delete_message(chat_id=job[1], message_id=job[0])
 
 
-def fill_template(text, n, start_date = datetime.now(timezone(timedelta(hours=3)))) -> str:
+def fill_template(text, n, start_date = datetime.now()) -> str:
     text = re.sub('([#№])N', f"\g<1>{n}", text, flags=re.I)
     for day in range(5):
-       date = start_date + timedelta(days=day)
-       date = date.strftime("%d.%m.%Y")
-       text = re.sub(f"{day+1} [-–—] NN.NN.NNNN", f"{day+1} — {date}", text, flags=re.I)
+        open, close = ('','') if datetime.now() - start_date < timedelta(days=1) else ('<s>', '</s>')
+        date = start_date + timedelta(days=day, hours=3)
+        date = date.strftime("%d.%m.%Y")
+        text = re.sub(f"{day+1} [-–—] NN.NN.NNNN", f"{day+1} — {open}{date}{close}", text, flags=re.I)
     return text
