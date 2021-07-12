@@ -67,4 +67,4 @@ def create_post_sc(job):
         interval = timedelta(seconds = 10*60)
         job.run_repeating(callback = callback_minute, interval = interval)
     else:
-        job.run_daily(callback = callback_minute, time = time(POST_HOUR, 0, 1, timezone.utc), days = [POST_WEEKDAY])
+        job.run_daily(callback = callback_minute, time = time(POST_HOUR, 0, 1, tzinfo = timezone.utc), days = [POST_WEEKDAY])
