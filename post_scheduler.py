@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 POST_WEEKDAY = 0
 POST_HOUR = 10
-POST_MINUTE = 36
+POST_MINUTE = 39
 
 def callback_minute(context):
     cur_date = datetime.now()
@@ -52,13 +52,8 @@ def callback_minute(context):
             """
             
             last_message_id = db_query(f"select max(message_id) from jobs where chat_id = {chat_id}")[0][0]
-
-            db_query(
-                (
-                    f"insert into jobs(message_id, chat_id, type, created) values",
-                    #f"({posted_message.message_id}, {chat_id}, {job_type}, '{cur_date.year}-{cur_date.month}-{cur_date.day} {POST_HOUR}:00')",
-                    f"({0}, {chat_id}, {job_type}, '{cur_date.year}-{cur_date.month}-{cur_date.day} {POST_HOUR}:00')",
-                ),
+            #f"({posted_message.message_id}, {chat_id}, {job_type}, '{cur_date.year}-{cur_date.month}-{cur_date.day} {POST_HOUR}:00')",
+            db_query(f"insert into jobs(message_id, chat_id, type, created) values ({0}, {chat_id}, {job_type}, '{cur_date.year}-{cur_date.month}-{cur_date.day} {POST_HOUR}:00')",
                 False,
             )
             logger.info(f"Job type {job_type} posted to chat_id {chat_id}")
