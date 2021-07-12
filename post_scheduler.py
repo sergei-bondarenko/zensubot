@@ -15,31 +15,20 @@ POST_MINUTE = 1
 def callback_minute(context):
     cur_date = datetime.now()
     data = db_query(
-        'select type, max(created), count(1) from jobs group by type',
+        'select type, max(created), count(1), max(order_number)+1 from jobs group by type',
         True,
     )
-    for job_type, created, count in data:
+    for job_type, created, count, order_number in data:
         passed_time = cur_date - created
 
         if passed_time >= timedelta(days = 5):
         #if job_type == 0:
 
-            if job_type == 0:
-                offset = 2
-            elif job_type == 1:
-                offset = 4
-            elif job_type == 2:
-                offset = 2
-            elif job_type == 3:
-                offset = 2
-            elif job_type == 4:
-                offset = 1
-
             photo_id, caption = db_query(
                 f'select photo_id, caption from post_templates where job_type = {job_type}',
                 True,
             )[0]
-            caption = fill_template(caption, count + offset + 1)
+            caption = fill_template(caption, order_number)
 
             chat_id = db_query(f'select id from chats where jobs_type = {job_type}', True)[0][0]
 
