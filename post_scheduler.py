@@ -9,9 +9,9 @@ from database import db_query
 logger = logging.getLogger(__name__)
 
 # UTC time of posting
-POST_WEEKDAY = 6
-POST_HOUR = 21
-POST_MINUTE = 1
+POST_WEEKDAY = 0
+POST_HOUR = 14
+POST_MINUTE = 30
 
 def callback_minute(context):
     cur_date = datetime.now()
@@ -22,7 +22,8 @@ def callback_minute(context):
     for job_type, created, order_number in data:
         passed_time = cur_date - created
 
-        if passed_time >= timedelta(days = 5):
+        #if passed_time >= timedelta(days = 7):
+        if passed_time >= timedelta(hours = 7):
         #if job_type == 0:
 
             photo_id, caption = db_query(
@@ -34,26 +35,27 @@ def callback_minute(context):
             chat_id = db_query(f'select id from chats where jobs_type = {job_type}', True)[0][0]
 
             
-            if photo_id == "None":
+            """if photo_id == "None":
                 posted_message = context.bot.send_message(chat_id, caption, parse_mode = ParseMode.HTML)
             else:
-                posted_message = context.bot.send_photo(chat_id, photo_id, caption=caption, parse_mode = ParseMode.HTML)
+                posted_message = context.bot.send_photo(chat_id, photo_id, caption=caption, parse_mode = ParseMode.HTML)"""
             
             last_message_id = db_query(f"select coalesce(max(message_id), 0) from jobs where chat_id = {chat_id}")[0][0]
 
+            #({posted_message.message_id}, {chat_id}, {job_type}
             db_query(f"""insert into jobs(message_id, chat_id, type, created) values 
-                        ({posted_message.message_id}, {chat_id}, {job_type}
+                        ({0}, {chat_id}, {job_type}
                         , '{cur_date.year}-{cur_date.month}-{cur_date.day} {POST_HOUR}:00')""",
                 False,
             )
             logger.info(f"Job type {job_type} posted to chat_id {chat_id}")
             
-            try:
+            """try:
                 context.bot.unpin_chat_message(chat_id = chat_id, message_id = last_message_id)
                 # context.bot.unpin_all_chat_messages(chat_id=chat_id)
                 context.bot.pin_chat_message(chat_id, posted_message.message_id)
             except:
-                logger.info(f"Pin/unpin didn't work in chat_id {chat_id}")
+                logger.info(f"Pin/unpin didn't work in chat_id {chat_id}")"""
             
 
 
