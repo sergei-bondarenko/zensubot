@@ -8,6 +8,7 @@ from database import db_query
 
 logger = logging.getLogger(__name__)
 
+# UTC TIME OF POSTING
 POST_WEEKDAY = 6
 POST_HOUR = 21
 POST_MINUTE = 1
@@ -15,10 +16,10 @@ POST_MINUTE = 1
 def callback_minute(context):
     cur_date = datetime.now()
     data = db_query(
-        'select type, max(created), count(1), max(order_number)+1 from jobs group by type',
+        'select type, max(created), max(order_number)+1 from jobs group by type',
         True,
     )
-    for job_type, created, count, order_number in data:
+    for job_type, created, order_number in data:
         passed_time = cur_date - created
 
         if passed_time >= timedelta(days = 5):
