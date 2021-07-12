@@ -60,10 +60,11 @@ def callback_minute(context):
 
 def create_post_sc(job):
     POST_HOUR = 21
+    POST_WEEKDAY = 6
     time_now = datetime.now(timezone.utc)
 
-    if time_now.weekday() == 6 and POST_HOUR <= time_now.hour <= 23:
+    if time_now.weekday() == POST_WEEKDAY and POST_HOUR <= time_now.hour <= 23:
         interval = timedelta(seconds = 10*60)
         job.run_repeating(callback = callback_minute, interval = interval)
     else:
-        job.run_daily(callback = callback_minute, time = time(POST_HOUR, 0, 1), days = (6))
+        job.run_daily(callback = callback_minute, time = time(POST_HOUR, 0, 1, timezone.utc), days = [POST_WEEKDAY])
