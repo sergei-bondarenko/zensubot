@@ -61,7 +61,7 @@ def callback_minute(context):
 def create_post_sc(job):
     POST_WEEKDAY = 6
     POST_HOUR = 21
-    POST_MINUTE = 0
+    POST_MINUTE = 1
     
     time_now = datetime.now(timezone.utc)
 
