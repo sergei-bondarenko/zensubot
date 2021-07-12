@@ -43,10 +43,12 @@ def stickers(update, context):
 
     # Getting active jobs if they exist
     data = db_query(
-        f"select id from jobs where message_id = {message_id} and chat_id = {group_id} and DATE_PART('day', now()-created)<=4"
+        f"select id, created from jobs where message_id = {message_id} and chat_id = {group_id} and DATE_PART('day', now()-created)<=4"
     )
     if len(data) != 0:
-        job_id = data[0][0]
+        job_id, start_date = data[0]
+    print(start_date)
+    print(type(start_date))
 
     # Getting sticker id if it exist
     data = db_query(
