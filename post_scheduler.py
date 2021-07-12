@@ -62,6 +62,6 @@ def create_post_sc(job):
 
     if time_now.weekday() == POST_WEEKDAY and POST_HOUR <= time_now.hour <= POST_HOUR+1:
         interval = timedelta(seconds = 2*60)
-        job.run_repeating(callback = callback_minute, interval = interval)
+        job.run_repeating(callback = callback_minute, interval = interval, last = time_now + timedelta(hours = 1))
     else:
         job.run_daily(callback = callback_minute, time = time(POST_HOUR, POST_MINUTE), days = [POST_WEEKDAY])
