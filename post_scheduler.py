@@ -10,8 +10,8 @@ logger = logging.getLogger(__name__)
 
 # UTC time of posting
 POST_WEEKDAY = 0
-POST_HOUR = 14
-POST_MINUTE = 30
+POST_HOUR = 15
+POST_MINUTE = 1
 
 def callback_minute(context):
     cur_date = datetime.now()
@@ -23,7 +23,7 @@ def callback_minute(context):
         passed_time = cur_date - created
 
         #if passed_time >= timedelta(days = 7):
-        if passed_time >= timedelta(hours = 7):
+        if passed_time >= timedelta(hours = 1):
         #if job_type == 0:
 
             photo_id, caption = db_query(
