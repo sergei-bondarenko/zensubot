@@ -1,5 +1,5 @@
 import logging
-from datetime import datetime, timedelta, timezone, time
+from datetime import datetime, timedelta, time
 
 from telegram import ParseMode
 
@@ -8,7 +8,7 @@ from database import db_query
 
 logger = logging.getLogger(__name__)
 
-# UTC TIME OF POSTING
+# UTC time of posting
 POST_WEEKDAY = 6
 POST_HOUR = 21
 POST_MINUTE = 1
@@ -58,10 +58,10 @@ def callback_minute(context):
 
 
 def create_post_sc(job):
-    time_now = datetime.now(timezone.utc)
+    time_now = datetime.now()
 
-    if time_now.weekday() == POST_WEEKDAY and POST_HOUR <= time_now.hour <= 23:
-        interval = timedelta(seconds = 10*60)
+    if time_now.weekday() == POST_WEEKDAY and POST_HOUR <= time_now.hour <= POST_HOUR+1:
+        interval = timedelta(seconds = 2*60)
         job.run_repeating(callback = callback_minute, interval = interval)
     else:
         job.run_daily(callback = callback_minute, time = time(POST_HOUR, POST_MINUTE), days = [POST_WEEKDAY])
