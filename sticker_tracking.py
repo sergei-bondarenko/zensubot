@@ -175,7 +175,8 @@ def get_posted_message(text, data, cur_day, cur_user_id):
         user_firstname = item[1]
         total = item[-1]
 
-        name_phrase = f'{chr(8206)}<a href="tg://user?id={user_id}">{user_firstname}</a>{chr(8206)}'
+        #chr(8206) is a mark for keep text format left to right
+        name_phrase = f'{chr(8206)}<a href="tg://user?id={user_id}">{user_firstname}</a>'
         phrase = str()
 
         for i, day in enumerate(item[QUERY_OFFSET : QUERY_OFFSET + 5]):
