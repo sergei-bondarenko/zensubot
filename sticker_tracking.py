@@ -50,6 +50,10 @@ class CollectData:
         message = update["message"]
         reply = message["reply_to_message"]
         user = message["from"]
+        print(update)
+        print(message)
+        print(reply)
+        print(user)
         try:
             # if job posted to channel
             self.job_chat_id = reply["forward_from_chat"]["id"]
