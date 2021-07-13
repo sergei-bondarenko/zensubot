@@ -104,7 +104,7 @@ def stickers(update, context):
 
             # Collecting data about current job progress
             data = db_query(
-                f"""select user_id ,first_name as name, d1, d2, d3, d4, d5, total
+                f"""select user_id, first_name, total, d1, d2, d3, d4, d5 
                         from
                             (select user_id , sum(case when sday = 1 then power else 0 end) d1, sum(case when sday = 2 then power else 0 end) d2
                             				  , sum(case when sday = 3 then power else 0 end) d3, sum(case when sday = 4 then power else 0 end) d4
@@ -162,25 +162,20 @@ def stickers(update, context):
 
 def get_posted_message(text, data, cur_day, cur_user_id):
     USERS = "<b>Участники</b>"
-    QUERY_OFFSET = 2
 
     text = text.split(f"\n\n{USERS}:")[0]
 
     passed = list()
     loosers = list()
 
-    for item in data:
+    for user_id, user_firstname, total, *days in data:
         is_first_fail = True
 
-        user_id = item[0]
-        user_firstname = item[1]
-        total = item[-1]
-
-        #chr(8206) is a mark for keep text format left to right
+        #chr(8206) is a mark to keep text format left to right
         name_phrase = f'{chr(8206)}<a href="tg://user?id={user_id}">{user_firstname}</a>'
         phrase = str()
 
-        for i, day in enumerate(item[QUERY_OFFSET : QUERY_OFFSET + 5]):
+        for i, day in enumerate(days):
             day = int(day)
 
             # Checking if today is the first activity of user
