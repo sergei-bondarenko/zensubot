@@ -24,10 +24,7 @@ def stickers(update, context):
         update_users(data)
 
         # Check if user is banned
-        if data.cur_day > 0:
-            is_banned = get_is_banned(context, data)
-        else:
-            is_banned = False
+        is_banned = get_is_banned(context, data) if data.cur_day > 0 else False
 
         if not is_banned:
             # Inserting new job_update
