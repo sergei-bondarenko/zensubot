@@ -82,7 +82,7 @@ def stickers(update, context):
             )
 
         # Check if user is banned
-        if cur_day > 2:
+        if cur_day > 1:
             is_banned = get_is_banned(
                 context,
                 job_id,
