@@ -15,155 +15,140 @@ EM_FAIL = "❌"
 
 
 def stickers(update, context):
-    message = update.effective_message
-    user = update.effective_user
-
-    print(update)
-
-    is_caption = False
-    is_banned = False
-
-    try:
-        message_id = message.reply_to_message.forward_from_message_id
-        group_id = message.reply_to_message.forward_from_chat.id
-        text = message.reply_to_message.text
-    except:
-        message_id = message.reply_to_message.message_id
-        group_id = message.reply_to_message.chat.id
-        text = message.reply_to_message.text
-
-    if text is None:
-        try:
-            text = message["reply_to_message"]["caption"]
-            is_caption = True
-        except:
-            pass
-
-    user_id = user.id
-    username = user.username
-    user_firstname = user.first_name
-
-    job_id, sticker_id = None, None
-
-    # Getting active jobs if they exist
-    data = db_query(
-        f"select id, created from jobs where message_id = {message_id} and chat_id = {group_id} and DATE_PART('day', now()-created) < {JOB_DAYS_DURATION}"
-    )
-    if len(data) != 0:
-        job_id, start_date = data[0]
-
-    # Getting sticker id if it exist
-    data = db_query(
-        f"select id, power from stickers where text_id='{message.sticker.file_unique_id}'"
-    )
-    if len(data) != 0:
-        sticker_id, sticker_power = data[0]
+    data = CollectData(update)
 
     # Writing update to table if job_id and sticker_id is correct
-    if job_id and sticker_id:
+    if data.job_id and data.sticker_id:
 
-        # Creating new users if they do not exist
-        data = db_query(f"select id from users where id = {user_id}")
-        if len(data) == 0:
-            db_query(
-                f"insert into users values ({user_id}, '{username}', '{user_firstname}')",
-                False,
-            )
-            logger.info(
-                f"User with id {user_id}, username {username}, firstname {user_firstname} added to database"
-            )
+        # Creating new users if they do not exist or updating old users
+        update_users(data)
 
         # Getting current day since start of the job
         cur_day, job_type, order_number = db_query(
-            f"select DATE_PART('day', now()-created), type, order_number from jobs where id = {job_id}"
+            f"""select DATE_PART('day', now()-created), type, order_number 
+                from jobs where id = {data.job_id}"""
         )[0]
-
-        # updating users if today is start of the job
-        if cur_day == 0:
-            db_query(
-                f"update users set username = '{username}', first_name = '{user_firstname}' where id = {user_id}",
-                False,
-            )
 
         # Check if user is banned
         if cur_day > 0:
-            is_banned = get_is_banned(
-                context,
-                job_id,
-                user_id,
-                cur_day,
-                message.chat.id,
-                update.message.message_id,
-            )
+            is_banned = get_is_banned(context, data, cur_day)
+        else:
+            is_banned = False
 
-        # New logic
-        if sticker_id > 50 and not is_banned:
-
+        if not is_banned:
             # Inserting new job_update
             db_query(
-                f"insert into jobs_updates (user_id, job_id, sticker_id) values ({user_id}, {job_id}, {sticker_id})",
+                f"insert into jobs_updates (user_id, job_id, sticker_id) values ({data.user_id}, {data.job_id}, {data.sticker_id})",
                 False,
             )
 
-            # Collecting data about current job progress
-            data = db_query(
-                f"""select user_id, first_name, total, d1, d2, d3, d4, d5 
-                        from
-                            (select user_id , sum(case when sday = 1 then power else 0 end) d1, sum(case when sday = 2 then power else 0 end) d2
-                            				  , sum(case when sday = 3 then power else 0 end) d3, sum(case when sday = 4 then power else 0 end) d4
-                            				  , sum(case when sday = 5 then power else 0 end) d5, sum(power) total
-                            from
-                                (select user_id, date_part('day', jobs_updates.created - jobs.created)+1 as sday, sticker_id
-                                from jobs_updates join jobs on jobs.id = jobs_updates.job_id
-                                where job_id = {job_id}) t join stickers on stickers.id = t.sticker_id
-                            group by user_id) t 
-                            join users on users.id=t.user_id 
-                            order by total desc
-                        ;"""
+            rebuild_message(context, data, order_number, cur_day, job_type)
+
+
+class CollectData:
+    def __init__(self, update):
+        message = update["message"]
+        reply = message["reply_to_message"]
+        user = message["from"]
+        try:
+            # if job posted to channel
+            self.job_chat_id = reply["forward_from_chat"]["id"]
+            self.job_message_id = reply["forward_from_message_id"]
+        except KeyError:
+            self.job_chat_id = message["chat"]["id"]
+            self.job_message_id = reply["message_id"]
+
+        self.user_id = user["id"]
+        self.username = user["username"]
+        self.user_firstname = user["first_name"]
+
+        self.chat_id_user_reply = message["chat"]["id"]
+        self.message_id_user_reply = message["message_id"]
+
+        self.is_caption = bool(reply.get("caption"))
+
+        # Getting active jobs if they exist
+        self.job_id, self.start_date = db_query(
+            f"select id, created from jobs where message_id = {self.job_message_id} and chat_id = {self.job_chat_id} and DATE_PART('day', now()-created) < {JOB_DAYS_DURATION}"
+        )[0]
+
+        # Getting sticker id if it exist
+        self.sticker_id, self.sticker_power = db_query(
+            f"select id, power from stickers where text_id='{message['sticker']['file_unique_id']}'"
+        )[0]
+
+
+def rebuild_message(context, data, order_number, cur_day, job_type):
+    # Collecting data about current job progress
+    query = db_query(
+        f"""select user_id, first_name, total, d1, d2, d3, d4, d5 
+                from
+                    (select user_id , sum(case when sday = 1 then power else 0 end) d1, sum(case when sday = 2 then power else 0 end) d2
+                                        , sum(case when sday = 3 then power else 0 end) d3, sum(case when sday = 4 then power else 0 end) d4
+                                        , sum(case when sday = 5 then power else 0 end) d5, sum(power) total
+                    from
+                        (select user_id, date_part('day', jobs_updates.created - jobs.created)+1 as sday, sticker_id
+                        from jobs_updates join jobs on jobs.id = jobs_updates.job_id
+                        where job_id = {data.job_id}) t join stickers on stickers.id = t.sticker_id
+                    group by user_id) t 
+                    join users on users.id=t.user_id 
+                    order by total desc
+                ;"""
+    )
+
+    text = db_query(f"select caption from post_templates where job_type = {job_type}")[
+        0
+    ][0]
+    text = fill_template(text, order_number, data.start_date)
+
+    text, work_today = get_posted_message(text, query, cur_day, data.user_id)
+
+    try:
+        if data.is_caption:
+            context.bot.edit_message_caption(
+                chat_id=data.job_id,
+                message_id=data.job_message_id,
+                caption=text,
+                parse_mode=ParseMode.HTML,
+            )
+        else:
+            context.bot.edit_message_text(
+                text=text,
+                chat_id=data.job_id,
+                message_id=data.job_message_id,
+                parse_mode=ParseMode.HTML,
+                disable_web_page_preview=True,
             )
 
-            text = db_query(
-                f"select caption from post_templates where job_type = {job_type}"
-            )[0][0]
-            text = fill_template(text, order_number, start_date)
+        logger.info(
+            f"Edited job with id {data.job_id} after posted sticker id {data.sticker_id} by @{data.username} with firstname {data.user_firstname}"
+        )
 
-            text, work_today = get_posted_message(text, data, cur_day, user_id)
+        if work_today == data.sticker_power:
+            text = f"Молодец! День {int(cur_day+1)} выполнен!"
+        else:
+            text = f"Время добавлено!\nЗа сегодня всрато {work_today // 60}h {work_today % 60:02d}m!"
 
-            try:
-                if is_caption:
-                    context.bot.edit_message_caption(
-                        chat_id=group_id,
-                        message_id=message_id,
-                        caption=text,
-                        parse_mode=ParseMode.HTML,
-                    )
-                else:
-                    context.bot.edit_message_text(
-                        text=text,
-                        chat_id=group_id,
-                        message_id=message_id,
-                        parse_mode=ParseMode.HTML,
-                        disable_web_page_preview=True,
-                    )
+        bot_message_to_chat(
+            context, data.chat_id_user_reply, text, 60, data.message_id_user_reply
+        )
 
-                logger.info(
-                    f"Edited job with id {job_id} after posted sticker id {sticker_id} by @{username} with firstname {user_firstname}"
-                )
-
-                if work_today == sticker_power:
-                    text = f"Молодец! День {int(cur_day+1)} выполнен!"
-                else:
-                    text = f"Время добавлено!\nЗа сегодня всрато {work_today // 60}h {work_today % 60:02d}m!"
-
-                bot_message_to_chat(
-                    context, message.chat.id, text, 60, update.message.message_id
-                )
-
-            except BadRequest:
-                pass
+    except BadRequest:
+        pass
 
 
-def get_posted_message(text, data, cur_day, cur_user_id):
+def update_users(data):
+    db_query(
+        f"""insert into users (id, username, first_name) 
+                values ({data.user_id}, '{data.username}', '{data.user_firstname}')
+                on conflict (id) do update 
+                set username = excluded.username, 
+                    first_name = excluded.first_name;""",
+        False,
+    )
+
+
+def get_posted_message(text, query, cur_day, cur_user_id):
     USERS = "<b>Участники</b>"
 
     text = text.split(f"\n\n{USERS}:")[0]
@@ -171,11 +156,13 @@ def get_posted_message(text, data, cur_day, cur_user_id):
     passed = list()
     loosers = list()
 
-    for user_id, user_firstname, total, *days in data:
+    for user_id, user_firstname, total, *days in query:
         is_first_fail = True
 
-        #chr(8206) is a mark to keep text format left to right
-        name_phrase = f'{chr(8206)}<a href="tg://user?id={user_id}">{user_firstname}</a>'
+        # chr(8206) is a mark to keep text format left to right
+        name_phrase = (
+            f'{chr(8206)}<a href="tg://user?id={user_id}">{user_firstname}</a>'
+        )
         phrase = str()
 
         for i, day in enumerate(days):
@@ -212,22 +199,22 @@ def get_posted_message(text, data, cur_day, cur_user_id):
     return text, work_today
 
 
-def get_is_banned(context, job_id, user_id, cur_day, chat_id, message_id):
+def get_is_banned(context, data, cur_day):
     is_banned = False
     yesterday = cur_day - 1
     data = db_query(
-            f"""select count(*)
+        f"""select count(*)
                         from jobs_updates join jobs on jobs.id = jobs_updates.job_id
-                        where job_id={job_id} and 
-                                user_id = {user_id} and 
+                        where job_id={data.job_id} and 
+                                user_id = {data.user_id} and 
                                 date_part('day', jobs_updates.created - jobs.created) = {yesterday};"""
-            )[0][0]
+    )[0][0]
     if data == 0:
         is_banned = True
 
         context.bot.send_message(
-            chat_id=chat_id,
-            reply_to_message_id=message_id,
+            chat_id=data.chat_id_user_reply,
+            reply_to_message_id=data.message_id_user_reply,
             text=f"Мда, долбаеб. Вчера день проебал, а сегодня хочешь отметиться?",
         )
 
