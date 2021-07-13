@@ -12,6 +12,7 @@ logger = logging.getLogger(__name__)
 POST_WEEKDAY = 6
 POST_HOUR = 21
 POST_MINUTE = 1
+JOB_DAYS_DURATION = 7
 
 def callback_minute(context):
     cur_date = datetime.now()
@@ -22,7 +23,7 @@ def callback_minute(context):
     for job_type, created, order_number in data:
         passed_time = cur_date - created
 
-        if passed_time >= timedelta(days = 7):
+        if passed_time >= timedelta(days = JOB_DAYS_DURATION):
         #if job_type == 0:
 
             photo_id, caption = db_query(

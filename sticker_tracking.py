@@ -3,8 +3,9 @@ import logging
 from telegram import ParseMode
 from telegram.error import BadRequest
 
-from database import db_query
 from bot_functions import bot_message_to_chat, fill_template
+from database import db_query
+from post_scheduler import JOB_DAYS_DURATION
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +44,7 @@ def stickers(update, context):
 
     # Getting active jobs if they exist
     data = db_query(
-        f"select id, created from jobs where message_id = {message_id} and chat_id = {group_id} and DATE_PART('day', now()-created)<=4"
+        f"select id, created from jobs where message_id = {message_id} and chat_id = {group_id} and DATE_PART('day', now()-created) < {JOB_DAYS_DURATION}"
     )
     if len(data) != 0:
         job_id, start_date = data[0]
@@ -71,18 +72,18 @@ def stickers(update, context):
 
         # Getting current day since start of the job
         cur_day, job_type, order_number = db_query(
-            f"select DATE_PART('day', now()-created)+1, type, order_number from jobs where id = {job_id}"
+            f"select DATE_PART('day', now()-created), type, order_number from jobs where id = {job_id}"
         )[0]
 
         # updating users if today is start of the job
-        if cur_day == 1:
+        if cur_day == 0:
             db_query(
                 f"update users set username = '{username}', first_name = '{user_firstname}' where id = {user_id}",
                 False,
             )
 
         # Check if user is banned
-        if cur_day > 1:
+        if cur_day > 0:
             is_banned = get_is_banned(
                 context,
                 job_id,
@@ -147,7 +148,7 @@ def stickers(update, context):
                 )
 
                 if work_today == sticker_power:
-                    text = f"Молодец! День {int(cur_day)} выполнен!"
+                    text = f"Молодец! День {int(cur_day+1)} выполнен!"
                 else:
                     text = f"Время добавлено!\nЗа сегодня всрато {work_today // 60}h {work_today % 60:02d}m!"
 
@@ -169,7 +170,7 @@ def get_posted_message(text, data, cur_day, cur_user_id):
     loosers = list()
 
     for item in data:
-        is_first = True
+        is_first_fail = True
 
         user_id = item[0]
         user_firstname = item[1]
@@ -183,12 +184,12 @@ def get_posted_message(text, data, cur_day, cur_user_id):
             day = int(day)
 
             # Checking if today is the first activity of user
-            if user_id == cur_user_id and i + 1 == cur_day:
+            if user_id == cur_user_id and i == cur_day:
                 work_today = day
 
-            if day == 0 and is_first and i + 1 < cur_day:
+            if day == 0 and is_first_fail and i < cur_day:
                 phrase += EM_FAIL
-                is_first = False
+                is_first_fail = False
             elif day > 0:
                 phrase += EM_TRUE
             else:
@@ -196,7 +197,7 @@ def get_posted_message(text, data, cur_day, cur_user_id):
 
         phrase += f" {str(total // 60)}h {(total % 60):02d}m"
 
-        if is_first:
+        if is_first_fail:
             passed.append((name_phrase, phrase))
         else:
             loosers.append((name_phrase, phrase))
@@ -215,16 +216,14 @@ def get_posted_message(text, data, cur_day, cur_user_id):
 
 def get_is_banned(context, job_id, user_id, cur_day, chat_id, message_id):
     is_banned = False
-
-    data = int(
-        db_query(
-            f"""select count(1)
+    yesterday = cur_day - 1
+    data = db_query(
+            f"""select count(*)
                         from jobs_updates join jobs on jobs.id = jobs_updates.job_id
                         where job_id={job_id} and 
                                 user_id = {user_id} and 
-                                date_part('day', jobs_updates.created - jobs.created) + 2 = {cur_day};"""
-        )[0][0]
-    )
+                                date_part('day', jobs_updates.created - jobs.created) = {yesterday};"""
+            )[0][0]
     if data == 0:
         is_banned = True
 
