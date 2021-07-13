@@ -49,16 +49,13 @@ class CollectData:
     def __init__(self, update):
         message = update["message"]
         reply = message["reply_to_message"]
-        user = update["message"]["from"]
-        print(update)
-        print(message)
-        print(reply)
-        print(user)
+        user = update.effective_user
         try:
             # if job posted to channel
             self.job_chat_id = reply["forward_from_chat"]["id"]
             self.job_message_id = reply["forward_from_message_id"]
         except TypeError:
+            # job posted to chat
             self.job_chat_id = message["chat"]["id"]
             self.job_message_id = reply["message_id"]
 
