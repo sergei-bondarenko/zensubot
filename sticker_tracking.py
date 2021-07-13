@@ -104,13 +104,10 @@ def rebuild_message(context, data, order_number, cur_day, job_type):
 
     text, work_today = get_posted_message(text, query, cur_day, data.user_id)
 
-    print(text)
-    print(data.job_id)
-    print(data.job_message_id)
     try:
         if data.is_caption:
             context.bot.edit_message_caption(
-                chat_id=data.job_id,
+                chat_id=data.job_chat_id,
                 message_id=data.job_message_id,
                 caption=text,
                 parse_mode=ParseMode.HTML,
@@ -118,7 +115,7 @@ def rebuild_message(context, data, order_number, cur_day, job_type):
         else:
             context.bot.edit_message_text(
                 text=text,
-                chat_id=data.job_id,
+                chat_id=data.job_chat_id,
                 message_id=data.job_message_id,
                 parse_mode=ParseMode.HTML,
                 disable_web_page_preview=True,
