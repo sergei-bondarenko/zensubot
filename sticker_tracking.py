@@ -54,7 +54,7 @@ class CollectData:
             # if job posted to channel
             self.job_chat_id = reply["forward_from_chat"]["id"]
             self.job_message_id = reply["forward_from_message_id"]
-        except KeyError:
+        except TypeError:
             self.job_chat_id = message["chat"]["id"]
             self.job_message_id = reply["message_id"]
 
