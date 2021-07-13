@@ -17,6 +17,9 @@ EM_FAIL = "❌"
 def stickers(update, context):
     message = update.effective_message
     user = update.effective_user
+
+    print(update)
+
     is_caption = False
     is_banned = False
 
