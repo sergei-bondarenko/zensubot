@@ -66,7 +66,7 @@ class CollectData:
                 where message_id = {self.job_message_id} 
                 and chat_id = {self.job_chat_id} 
                 and DATE_PART('day', now()-created) < {JOB_DAYS_DURATION}
-                and text_id = '{message['sticker']['file_unique_id']}''
+                and text_id = '{message['sticker']['file_unique_id']}'
                 """
         )[0]
 
