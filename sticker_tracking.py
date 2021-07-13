@@ -49,7 +49,7 @@ class CollectData:
     def __init__(self, update):
         message = update["message"]
         reply = message["reply_to_message"]
-        user = message["from"]
+        user = update["message"]["from"]
         print(update)
         print(message)
         print(reply)
