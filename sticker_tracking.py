@@ -101,9 +101,12 @@ def rebuild_message(context, data, order_number, cur_day, job_type):
         0
     ][0]
     text = fill_template(text, order_number, data.start_date)
-    print('fill_template')
+
     text, work_today = get_posted_message(text, query, cur_day, data.user_id)
-    print('get_posted_message')
+
+    print(text)
+    print(data.job_id)
+    print(data.job_message_id)
     try:
         if data.is_caption:
             context.bot.edit_message_caption(
