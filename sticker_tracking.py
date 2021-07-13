@@ -23,15 +23,9 @@ def stickers(update, context):
         # Creating new users if they do not exist or updating old users
         update_users(data)
 
-        # Getting current day since start of the job
-        cur_day, job_type, order_number = db_query(
-            f"""select DATE_PART('day', now()-created), type, order_number 
-                from jobs where id = {data.job_id}"""
-        )[0]
-
         # Check if user is banned
-        if cur_day > 0:
-            is_banned = get_is_banned(context, data, cur_day)
+        if data.cur_day > 0:
+            is_banned = get_is_banned(context, data)
         else:
             is_banned = False
 
@@ -42,7 +36,7 @@ def stickers(update, context):
                 False,
             )
 
-            rebuild_message(context, data, order_number, cur_day, job_type)
+            rebuild_message(context, data)
 
 
 class CollectData:
@@ -51,11 +45,11 @@ class CollectData:
         reply = message["reply_to_message"]
         user = update.effective_user
         try:
-            # if job posted to channel
+            # Job posted to channel
             self.job_chat_id = reply["forward_from_chat"]["id"]
             self.job_message_id = reply["forward_from_message_id"]
         except TypeError:
-            # job posted to chat
+            # Job posted to chat
             self.job_chat_id = message["chat"]["id"]
             self.job_message_id = reply["message_id"]
 
@@ -69,8 +63,12 @@ class CollectData:
         self.is_caption = bool(reply.caption)
 
         # Getting active jobs if they exist
-        self.job_id, self.start_date = db_query(
-            f"select id, created from jobs where message_id = {self.job_message_id} and chat_id = {self.job_chat_id} and DATE_PART('day', now()-created) < {JOB_DAYS_DURATION}"
+        self.job_id, self.start_date, self.cur_day, self.job_type, self.order_number = db_query(
+            f"""select id, created, DATE_PART('day', now()-created), type, order_number 
+                from jobs 
+                where message_id = {self.job_message_id} 
+                and chat_id = {self.job_chat_id} 
+                and DATE_PART('day', now()-created) < {JOB_DAYS_DURATION}"""
         )[0]
 
         # Getting sticker id if it exist
@@ -79,7 +77,7 @@ class CollectData:
         )[0]
 
 
-def rebuild_message(context, data, order_number, cur_day, job_type):
+def rebuild_message(context, data):
     # Collecting data about current job progress
     query = db_query(
         f"""select user_id, first_name, total, d1, d2, d3, d4, d5 
@@ -97,12 +95,12 @@ def rebuild_message(context, data, order_number, cur_day, job_type):
                 ;"""
     )
 
-    text = db_query(f"select caption from post_templates where job_type = {job_type}")[
+    text = db_query(f"select caption from post_templates where job_type = {data.job_type}")[
         0
     ][0]
-    text = fill_template(text, order_number, data.start_date)
+    text = fill_template(text, data.order_number, data.start_date)
 
-    text, work_today = get_posted_message(text, query, cur_day, data.user_id)
+    text, work_today = get_posted_message(text, query, data.cur_day, data.user_id)
 
     try:
         if data.is_caption:
@@ -126,7 +124,7 @@ def rebuild_message(context, data, order_number, cur_day, job_type):
         )
 
         if work_today == data.sticker_power:
-            text = f"Молодец! День {int(cur_day+1)} выполнен!"
+            text = f"Молодец! День {int(data.cur_day+1)} выполнен!"
         else:
             text = f"Время добавлено!\nЗа сегодня всрато {work_today // 60}h {work_today % 60:02d}m!"
 
@@ -200,15 +198,15 @@ def get_posted_message(text, query, cur_day, cur_user_id):
     return text, work_today
 
 
-def get_is_banned(context, data, cur_day):
+def get_is_banned(context, data):
     is_banned = False
-    yesterday = cur_day - 1
+    yesterday = data.cur_day - 1
     data = db_query(
         f"""select count(*)
-                        from jobs_updates join jobs on jobs.id = jobs_updates.job_id
-                        where job_id={data.job_id} and 
-                                user_id = {data.user_id} and 
-                                date_part('day', jobs_updates.created - jobs.created) = {yesterday};"""
+            from jobs_updates join jobs on jobs.id = jobs_updates.job_id
+            where job_id={data.job_id} and 
+                    user_id = {data.user_id} and 
+                    date_part('day', jobs_updates.created - jobs.created) = {yesterday};"""
     )[0][0]
     if data == 0:
         is_banned = True
