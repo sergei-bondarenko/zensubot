@@ -66,7 +66,7 @@ class CollectData:
         self.chat_id_user_reply = message["chat"]["id"]
         self.message_id_user_reply = message["message_id"]
 
-        self.is_caption = bool(reply.get("caption"))
+        self.is_caption = bool(reply.caption)
 
         # Getting active jobs if they exist
         self.job_id, self.start_date = db_query(
