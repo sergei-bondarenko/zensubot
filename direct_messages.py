@@ -1,4 +1,5 @@
 import logging
+import os
 
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ConversationHandler
@@ -215,7 +216,13 @@ def parse_response_type(update, context):
     return WRITE_RESPONSES
 
 def write_response(update, context):
-    print(context)
+    with open("file", 'wb') as f:
+        context.bot.get_file(update.message.document).download(out=f)
+    with open('file', 'rb') as f:
+        text = list(f)
+    os.remove('file')
+    print(text)
+    print(os.listdir())
     return ConversationHandler.END
 
 
