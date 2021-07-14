@@ -22,9 +22,9 @@ def stickers(update, context):
 
         # Creating new users if they do not exist or updating old users
         update_users(data)
-        # Check if user is banned
-        is_banned = get_is_banned(context, data) if data.cur_day > 0 else False
-        if not is_banned:
+
+        # Check if user is not allowed to post
+        if data.yesterday_work != 0 or data.cur_day == 0:
             # Inserting new job_update
             db_query(
                 f"insert into jobs_updates (user_id, job_id, sticker_id) values ({data.user_id}, {data.job_id}, {data.sticker_id})",
@@ -32,6 +32,13 @@ def stickers(update, context):
             )
 
             rebuild_message(context, data)
+        else:
+            bot_message_to_chat(
+                context,
+                data.chat_id_user_reply,
+                f"Мда, долбаеб. Вчера день проебал, а сегодня хочешь отметиться?",
+                reply_to_message=data.message_id_user_reply,
+            )
 
 
 class CollectData:
@@ -59,18 +66,23 @@ class CollectData:
 
         # Getting active jobs if they exist
         try:
-            self.job_id, self.start_date, self.cur_day, self.job_type, self.order_number, self.sticker_id, self.sticker_power= db_query(
-                f"""select jobs.id, created, DATE_PART('day', now()-created), type, order_number, stickers.id, power
-                    from jobs, stickers
+            (
+                self.job_id, self.start_date, self.cur_day, self.job_type, self.order_number,
+                self.sticker_id, self.sticker_power, self.yesterday_work,
+            ) = db_query(
+                f"""select jobs.id, jobs.created, DATE_PART('day', now()-jobs.created), type, order_number , stickers.id, power, count(jobs_updates.created)
+                    from jobs left join jobs_updates 
+                    on jobs.id=jobs_updates.job_id and user_id={self.user_id} and date_part('day', jobs_updates.created - jobs.created) = {self.cur_day-1}
+                    left join stickers on stickers.text_id = '{message['sticker']['file_unique_id']}'
                     where message_id = {self.job_message_id} 
                     and chat_id = {self.job_chat_id} 
-                    and DATE_PART('day', now()-created) < {JOB_DAYS_DURATION}
-                    and text_id = '{message['sticker']['file_unique_id']}'
-                    """
+                    and DATE_PART('day', now()-jobs.created) < {JOB_DAYS_DURATION}
+                    group by jobs.id, jobs.created, DATE_PART('day', now()-jobs.created), type, order_number , stickers.id, power
+            """
             )[0]
         except IndexError:
-            pass
-
+            # Job not exists
+            self.job_id = self.sticker_id = None
 
 
 def rebuild_message(context, data):
@@ -91,9 +103,9 @@ def rebuild_message(context, data):
                 ;"""
     )
 
-    text = db_query(f"select caption from post_templates where job_type = {data.job_type}")[
-        0
-    ][0]
+    text = db_query(
+        f"select caption from post_templates where job_type = {data.job_type}"
+    )[0][0]
     text = fill_template(text, data.order_number, data.start_date)
 
     text, work_today = get_posted_message(text, query, data.cur_day, data.user_id)
@@ -192,23 +204,3 @@ def get_posted_message(text, query, cur_day, cur_user_id):
     text += "\n\n" + added_text
 
     return text, work_today
-
-
-def get_is_banned(context, data):
-    is_banned = False
-    yesterday = data.cur_day - 1
-    query = db_query(
-        f"""select count(*)
-            from jobs_updates join jobs on jobs.id = jobs_updates.job_id
-            where job_id={data.job_id} and 
-                    user_id = {data.user_id} and 
-                    date_part('day', jobs_updates.created - jobs.created) = {yesterday};"""
-    )[0][0]
-    if query == 0:
-        is_banned = True
-        context.bot.send_message(
-            chat_id=data.chat_id_user_reply,
-            reply_to_message_id=data.message_id_user_reply,
-            text=f"Мда, долбаеб. Вчера день проебал, а сегодня хочешь отметиться?",
-        )
-    return is_banned
