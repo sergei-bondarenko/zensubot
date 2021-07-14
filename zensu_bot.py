@@ -89,7 +89,7 @@ def test_func(jobs):
     j = jobs.get_jobs_by_name('testing')[0]
     j.schedule_removal()
 
-def test_callback():
+def test_callback(context):
     print('Job run')
 
 if __name__ == "__main__":
