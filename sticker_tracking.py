@@ -58,15 +58,19 @@ class CollectData:
         self.is_caption = bool(reply.caption)
 
         # Getting active jobs if they exist
-        self.job_id, self.start_date, self.cur_day, self.job_type, self.order_number, self.sticker_id, self.sticker_power= db_query(
-            f"""select jobs.id, created, DATE_PART('day', now()-created), type, order_number, stickers.id, power
-                from jobs, stickers
-                where message_id = {self.job_message_id} 
-                and chat_id = {self.job_chat_id} 
-                and DATE_PART('day', now()-created) < {JOB_DAYS_DURATION}
-                and text_id = '{message['sticker']['file_unique_id']}'
-                """
-        )[0]
+        try:
+            self.job_id, self.start_date, self.cur_day, self.job_type, self.order_number, self.sticker_id, self.sticker_power= db_query(
+                f"""select jobs.id, created, DATE_PART('day', now()-created), type, order_number, stickers.id, power
+                    from jobs, stickers
+                    where message_id = {self.job_message_id} 
+                    and chat_id = {self.job_chat_id} 
+                    and DATE_PART('day', now()-created) < {JOB_DAYS_DURATION}
+                    and text_id = '{message['sticker']['file_unique_id']}'
+                    """
+            )[0]
+        except IndexError:
+            pass
+
 
 
 def rebuild_message(context, data):
