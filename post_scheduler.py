@@ -14,6 +14,7 @@ POST_HOUR = 21
 POST_MINUTE = 1
 JOB_DAYS_DURATION = 7
 
+
 def callback_minute(context):
     cur_date = datetime.now()
     data = db_query(
@@ -56,14 +57,18 @@ def callback_minute(context):
                 context.bot.pin_chat_message(chat_id, posted_message.message_id)
             except:
                 logger.info(f"Pin/unpin didn't work in chat_id {chat_id}")
+    
+    if context.job.name == 'post_err':
+        context.job.schedule_removal()
+        create_post_sc(context.job_queue, completed=True)
             
 
 
-def create_post_sc(job):
+def create_post_sc(job, completed = False):
     time_now = datetime.now()
 
-    if time_now.weekday() == POST_WEEKDAY and POST_HOUR <= time_now.hour <= POST_HOUR+1:
+    if time_now.weekday() == POST_WEEKDAY and POST_HOUR <= time_now.hour <= POST_HOUR+1 and not completed:
         interval = timedelta(seconds = 2*60)
-        job.run_repeating(callback = callback_minute, interval = interval, last = time_now + timedelta(hours = 1))
+        job.run_repeating(callback = callback_minute, interval = interval, last = time_now + timedelta(hours = 1), name = 'post_err')
     else:
-        job.run_daily(callback = callback_minute, time = time(POST_HOUR, POST_MINUTE), days = [POST_WEEKDAY])
+        job.run_daily(callback = callback_minute, time = time(POST_HOUR, POST_MINUTE), days = [POST_WEEKDAY], name = 'post_ok')

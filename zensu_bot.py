@@ -74,22 +74,13 @@ def main() -> None:
     create_post_sc(jobs)
 
     # Clean plus_data every 2 days
-    test_func(jobs)
+    
 
     # Run the bot until you press Ctrl-C or the process receives SIGINT,
     # SIGTERM or SIGABRT. This should be used most of the time, since
     # start_polling() is non-blocking and will stop the bot gracefully.
     updater.idle()
 
-
-def test_func(jobs):
-    jobs.run_repeating(callback = test_callback, interval = timedelta(seconds = 20), name='testing')
-
-def test_callback(context):
-    context.job.schedule_removal()
-    print('job removed')
-    test_func(context.job_queue)
-    print('job added')
 
 if __name__ == "__main__":
     main()
