@@ -218,11 +218,11 @@ def parse_response_type(update, context):
 def write_response(update, context):
     with open("file", 'wb') as f:
         context.bot.get_file(update.message.document).download(out=f)
-    with open('file', 'rb', encoding='utf-8') as f:
+    with open('file', 'rb') as f:
         text = list(f)
     os.remove('file')
     print(text)
-    print(os.listdir())
+    print(context.user_data)
     return ConversationHandler.END
 
 
