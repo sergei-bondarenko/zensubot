@@ -192,10 +192,14 @@ def edit_response_type(update, context):
     query = update.callback_query
     context.user_data["chosen_job_type"] = query.data
 
+    keyboard = get_reply_keyboard(f"select id, type from response_types")
+    reply_markup = InlineKeyboardMarkup(keyboard)
+
     context.bot.edit_message_text(
         text="Выбери тип ответа бота",
         chat_id=query.message.chat_id,
         message_id=query.message.message_id,
+        reply_markup=reply_markup,
     )
     return PARSE_RESPONSE_TYPE
 
