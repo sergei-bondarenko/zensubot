@@ -11,8 +11,11 @@ from database import db_query
     PARSE_TYPE,
     CREATE_POST,
     EDIT_TEMPLATE,
-    SAVE_TEMPLATE
-) = range(6)
+    SAVE_TEMPLATE,
+    EDIT_RESPONSE_TYPE,
+    PARSE_RESPONSE_TYPE,
+    WRITE_RESPONSES
+) = range(8)
 
 logger = logging.getLogger(__name__)
 
@@ -40,6 +43,7 @@ def start(update, context) -> int:
         reply_keyboard = [
             [InlineKeyboardButton("Добавить пост", callback_data="add_post")],
             [InlineKeyboardButton("Изменить шаблон", callback_data="edit_template")],
+            [InlineKeyboardButton("Добавить реплики бота", callback_data="responses")],
             [InlineKeyboardButton("Пойти нахуй", callback_data="end")]
         ]
     else:
@@ -68,7 +72,7 @@ def parse_start(update, context) -> int:
             message_id=query.message.message_id,
         )
         return PARSE_WHERE_TO_POST
-    if query.data == "edit_template":
+    if query.data in ("edit_template", "responses"):
         keyboard = get_reply_keyboard(f"select id, type from jobs_types")
         reply_markup = InlineKeyboardMarkup(keyboard)
         context.bot.edit_message_text(
@@ -77,7 +81,7 @@ def parse_start(update, context) -> int:
             chat_id=query.message.chat_id,
             message_id=query.message.message_id,
         )
-        return EDIT_TEMPLATE
+        return EDIT_TEMPLATE if query.data == "edit_template" else EDIT_RESPONSE_TYPE
     if query.data == "end":
         context.bot.delete_message(
             chat_id=query.message.chat_id, message_id=query.message.message_id
@@ -182,3 +186,33 @@ def save_template(update, context) -> int:
         False,
     )
     return ConversationHandler.END
+
+
+def edit_response_type(update, context):
+    query = update.callback_query
+    context.user_data["chosen_job_type"] = query.data
+
+    context.bot.edit_message_text(
+        text="Выбери тип ответа бота",
+        chat_id=query.message.chat_id,
+        message_id=query.message.message_id,
+    )
+    return PARSE_RESPONSE_TYPE
+
+def parse_response_type(update, context):
+    query = update.callback_query
+    context.user_data["chosen_response_type"] = query.data
+
+    context.bot.edit_message_text(
+        text="Отправь файл в формате .txt с одной фразой в каждой строчке",
+        chat_id=query.message.chat_id,
+        message_id=query.message.message_id,
+    )
+    return WRITE_RESPONSES
+
+def write_response(update, context):
+    print(context)
+    return ConversationHandler.END
+
+
+

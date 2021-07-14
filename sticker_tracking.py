@@ -9,10 +9,6 @@ from post_scheduler import JOB_DAYS_DURATION
 
 logger = logging.getLogger(__name__)
 
-EM_TRUE = "✅"
-EM_FALSE = "⚫️"
-EM_FAIL = "❌"
-
 
 def stickers(update, context):
     data = CollectData(update)
@@ -156,6 +152,9 @@ def update_users(data):
 
 
 def get_posted_message(text, query, cur_day, cur_user_id):
+    EM_TRUE = "✅"
+    EM_FALSE = "⚫️"
+    EM_FAIL = "❌"
     USERS = "<b>Участники</b>"
 
     text = text.split(f"\n\n{USERS}:")[0]

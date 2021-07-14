@@ -8,9 +8,11 @@ from telegram.ext import (CallbackQueryHandler, ChatMemberHandler,
 from chats_tracking import track_chats
 from database import clean_plus_data
 from direct_messages import (CREATE_POST, EDIT_TEMPLATE, PARSE_START, SAVE_TEMPLATE,
-                             PARSE_TYPE, PARSE_WHERE_TO_POST, cancel,
-                             create_post, edit_template, parse_start,
-                             parse_type, parse_where_to_post, start, save_template)
+                             PARSE_TYPE, PARSE_WHERE_TO_POST, 
+                             EDIT_RESPONSE_TYPE, PARSE_RESPONSE_TYPE, WRITE_RESPONSES,
+                             cancel, create_post, edit_template, parse_start, parse_type, 
+                             parse_where_to_post, start, save_template,
+                             edit_response_type, parse_response_type, write_response)
 from plus_tracking import plus
 from post_scheduler import create_post_sc
 from sticker_tracking import stickers
@@ -40,7 +42,7 @@ def main() -> None:
         entry_points=[CommandHandler("start", start)],
         states={
             PARSE_START: [
-                CallbackQueryHandler(parse_start, pattern="add_post|edit_template|end")
+                CallbackQueryHandler(parse_start, pattern="add_post|edit_template|responses|end")
             ],
             PARSE_WHERE_TO_POST: [
                 CallbackQueryHandler(parse_where_to_post, pattern=r"-\d*")
@@ -48,7 +50,10 @@ def main() -> None:
             PARSE_TYPE: [CallbackQueryHandler(parse_type, pattern=r"\d*")],
             CREATE_POST: [MessageHandler(Filters.all, create_post)],
             EDIT_TEMPLATE: [CallbackQueryHandler(edit_template, pattern=r"\d*")],
-            SAVE_TEMPLATE: [MessageHandler(Filters.all, save_template)]
+            SAVE_TEMPLATE: [MessageHandler(Filters.all, save_template)],
+            EDIT_RESPONSE_TYPE: [CallbackQueryHandler(edit_response_type, pattern=r"\d*")],
+            PARSE_RESPONSE_TYPE: [CallbackQueryHandler(parse_response_type, pattern=r"\d*")],
+            WRITE_RESPONSES: [MessageHandler(Filters.document.txt, write_response)]
         },
         fallbacks=[CommandHandler("cancel", cancel)],
     )
