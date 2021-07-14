@@ -1,4 +1,5 @@
 import os
+from datetime import datetime,timedelta
 
 import psycopg2
 
@@ -13,3 +14,9 @@ def db_query(line, fetching=True):
                 data = cur.fetchall()
                 return data
             return None
+
+
+def clean_plus_data(job):
+    def cleaner():
+        db_query("delete from plus_data where date_part('day', now() - created) >1", False)
+    job.run_repeating(callback = cleaner, interval = timedelta(days = 2), first = datetime(2021,1,1))

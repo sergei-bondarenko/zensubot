@@ -1,13 +1,12 @@
-from datetime import timedelta
 import logging
 import os
-import time
 
 from telegram.ext import (CallbackQueryHandler, ChatMemberHandler,
                           CommandHandler, ConversationHandler, Filters,
                           MessageHandler, Updater)
 
 from chats_tracking import track_chats
+from database import clean_plus_data
 from direct_messages import (CREATE_POST, EDIT_TEMPLATE, PARSE_START, SAVE_TEMPLATE,
                              PARSE_TYPE, PARSE_WHERE_TO_POST, cancel,
                              create_post, edit_template, parse_start,
@@ -74,7 +73,7 @@ def main() -> None:
     create_post_sc(jobs)
 
     # Clean plus_data every 2 days
-    
+    clean_plus_data(jobs)
 
     # Run the bot until you press Ctrl-C or the process receives SIGINT,
     # SIGTERM or SIGABRT. This should be used most of the time, since
