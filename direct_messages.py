@@ -221,7 +221,7 @@ def write_response(update, context):
     with open('file', 'rb') as f:
         text = list(f)
     os.remove('file')
-    print([x.decode(encoding = 'utf-8') for x in text])
+    print([x.decode(encoding = 'utf-8').strip() for x in text])
     print(context.user_data)
     return ConversationHandler.END
 
