@@ -88,13 +88,13 @@ class CollectData:
 def rebuild_message(context, data):
     # Collecting data about current job progress
     query = db_query(
-        f"""select user_id, first_name, total, d1, d2, d3, d4, d5 
+        f"""select user_id, first_name, total, d0, d1, d2, d3, d4
                 from
-                    (select user_id , sum(case when sday = 1 then power else 0 end) d1, sum(case when sday = 2 then power else 0 end) d2
-                                        , sum(case when sday = 3 then power else 0 end) d3, sum(case when sday = 4 then power else 0 end) d4
-                                        , sum(case when sday = 5 then power else 0 end) d5, sum(power) total
+                    (select user_id , sum(case when sday = 0 then power else 0 end) d0, sum(case when sday = 1 then power else 0 end) d1
+                                        , sum(case when sday = 2 then power else 0 end) d2, sum(case when sday = 3 then power else 0 end) d3
+                                        , sum(case when sday = 4 then power else 0 end) d4, sum(power) total
                     from
-                        (select user_id, date_part('day', jobs_updates.created - jobs.created)+1 as sday, sticker_id
+                        (select user_id, date_part('day', jobs_updates.created - jobs.created) as sday, sticker_id
                         from jobs_updates join jobs on jobs.id = jobs_updates.job_id
                         where job_id = {data.job_id}) t join stickers on stickers.id = t.sticker_id
                     group by user_id) t 

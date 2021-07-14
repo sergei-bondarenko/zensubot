@@ -1,5 +1,7 @@
+from datetime import timedelta
 import logging
 import os
+import time
 
 from telegram.ext import (CallbackQueryHandler, ChatMemberHandler,
                           CommandHandler, ConversationHandler, Filters,
@@ -66,15 +68,29 @@ def main() -> None:
     # Start the Bot
     updater.start_polling()
 
+    jobs = updater.job_queue
+
     # Schedule a post every 5 days.
-    job = updater.job_queue
-    create_post_sc(job)
+    create_post_sc(jobs)
+
+    # Clean plus_data every 2 days
+    test_func(jobs)
 
     # Run the bot until you press Ctrl-C or the process receives SIGINT,
     # SIGTERM or SIGABRT. This should be used most of the time, since
     # start_polling() is non-blocking and will stop the bot gracefully.
     updater.idle()
 
+
+def test_func(jobs):
+    jobs.run_repeating(callback = test_callback, interval = timedelta(seconds = 20), name='testing')
+    time.sleep(60)
+    print(jobs.get_jobs_by_name('testing'))
+    j = jobs.get_jobs_by_name('testing')[0]
+    j.schedule_removal()
+
+def test_callback():
+    print('Job run')
 
 if __name__ == "__main__":
     main()
