@@ -22,10 +22,9 @@ def stickers(update, context):
 
         # Creating new users if they do not exist or updating old users
         update_users(data)
-
+        print(data.cur_day)
         # Check if user is banned
         is_banned = get_is_banned(context, data) if data.cur_day > 0 else False
-
         if not is_banned:
             # Inserting new job_update
             db_query(
@@ -195,6 +194,7 @@ def get_posted_message(text, query, cur_day, cur_user_id):
 def get_is_banned(context, data):
     is_banned = False
     yesterday = data.cur_day - 1
+    print(yesterday)
     data = db_query(
         f"""select count(*)
             from jobs_updates join jobs on jobs.id = jobs_updates.job_id
@@ -202,13 +202,14 @@ def get_is_banned(context, data):
                     user_id = {data.user_id} and 
                     date_part('day', jobs_updates.created - jobs.created) = {yesterday};"""
     )[0][0]
+    print(data)
     if data == 0:
         is_banned = True
-
+        print(data.chat_id_user_reply, data.message_id_user_reply)
         context.bot.send_message(
             chat_id=data.chat_id_user_reply,
             reply_to_message_id=data.message_id_user_reply,
             text=f"Мда, долбаеб. Вчера день проебал, а сегодня хочешь отметиться?",
         )
-
+    print(is_banned)
     return is_banned
