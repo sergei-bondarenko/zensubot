@@ -84,15 +84,12 @@ def main() -> None:
 
 def test_func(jobs):
     jobs.run_repeating(callback = test_callback, interval = timedelta(seconds = 20), name='testing')
-    time.sleep(60)
-    print(jobs.get_jobs_by_name('testingq'))
-    j = jobs.get_jobs_by_name('testingq')[0]
-    j.schedule_removal()
 
 def test_callback(context):
-    print(context.job)
-    print(context.job.name)
-    print('Job run')
+    context.job.schedule_removal()
+    print('job removed')
+    test_func(context.job_queue)
+    print('job added')
 
 if __name__ == "__main__":
     main()
