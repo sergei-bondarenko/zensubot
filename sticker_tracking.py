@@ -202,7 +202,6 @@ def get_is_banned(context, data):
     )[0][0]
     if query == 0:
         is_banned = True
-        print(data.chat_id_user_reply, data.message_id_user_reply)
         context.bot.send_message(
             chat_id=data.chat_id_user_reply,
             reply_to_message_id=data.message_id_user_reply,
