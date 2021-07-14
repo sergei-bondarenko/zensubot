@@ -15,7 +15,7 @@ from database import db_query
     EDIT_RESPONSE_TYPE,
     PARSE_RESPONSE_TYPE,
     WRITE_RESPONSES
-) = range(8)
+) = range(9)
 
 logger = logging.getLogger(__name__)
 
