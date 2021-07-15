@@ -69,7 +69,7 @@ class CollectData:
             ) = db_query(
                 f"""select jobs.id, jobs.created, DATE_PART('day', now()-jobs.created), type, order_number , stickers.id, power, count(jobs_updates.created)
                     from jobs left join jobs_updates 
-                    on jobs.id=jobs_updates.job_id and user_id={self.user_id} and date_part('day', jobs_updates.created - jobs.created) = DATE_PART('day', now()-jobs.created) - 1
+                    on jobs.id=jobs_updates.job_id and user_id={self.user_id} and date_part('day', jobs_updates.created - jobs.created) = least(4, DATE_PART('day', now()-jobs.created) - 1)
                     left join stickers on stickers.text_id = '{message['sticker']['file_unique_id']}'
                     where message_id = {self.job_message_id} 
                     and chat_id = {self.job_chat_id} 
