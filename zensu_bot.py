@@ -1,9 +1,11 @@
 import logging
 import os
 
+from telegram import InlineQueryResultArticle, InputTextMessageContent, ParseMode
 from telegram.ext import (CallbackQueryHandler, ChatMemberHandler,
                           CommandHandler, ConversationHandler, Filters,
-                          MessageHandler, Updater)
+                          MessageHandler, Updater, InlineQueryHandler)
+from telegram.utils.helpers import escape_markdown
 
 from chats_tracking import track_chats
 from database import clean_plus_data
@@ -17,6 +19,7 @@ from plus_tracking import plus
 from post_scheduler import create_post_sc
 from responses import Responses
 from sticker_tracking import stickers
+from uuid import uuid4
 
 TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN")
 
@@ -28,6 +31,37 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
+
+def inlinequery(update, context) -> None:
+    """Handle the inline query."""
+    query = update.inline_query.query
+
+    if query == "":
+        return
+
+    results = [
+        InlineQueryResultArticle(
+            id=str(uuid4()),
+            title="Caps",
+            input_message_content=InputTextMessageContent(query.upper()),
+        ),
+        InlineQueryResultArticle(
+            id=str(uuid4()),
+            title="Bold",
+            input_message_content=InputTextMessageContent(
+                f"*{escape_markdown(query)}*", parse_mode=ParseMode.MARKDOWN
+            ),
+        ),
+        InlineQueryResultArticle(
+            id=str(uuid4()),
+            title="Italic",
+            input_message_content=InputTextMessageContent(
+                f"_{escape_markdown(query)}_", parse_mode=ParseMode.MARKDOWN
+            ),
+        ),
+    ]
+
+    update.inline_query.answer(results)
 
 def main() -> None:
     """Run the bot."""
@@ -69,6 +103,8 @@ def main() -> None:
 
     plus_handler = MessageHandler(Filters.reply & Filters.regex(r"^\+$"), plus)
     dispatcher.add_handler(plus_handler)
+
+    dispatcher.add_handler(InlineQueryHandler(inlinequery))
 
     # Collect bot responses
     Responses.collect()
