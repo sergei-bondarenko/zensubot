@@ -226,7 +226,9 @@ def write_response(update, context):
                 '{text}')
                 on conflict (job_type, response_type) do update 
                 set phrase = excluded.phrase;""", False)
+    print(Responses.responses)
     Responses.update(job_type, response_type, text)
+    print(Responses.responses)
     context.bot.send_message(chat_id=update.effective_chat.id, text="Готово!")
     return ConversationHandler.END
 
