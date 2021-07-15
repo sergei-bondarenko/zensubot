@@ -221,7 +221,11 @@ def write_response(update, context):
     with open('file', 'rb') as f:
         text = f.read().decode(encoding = 'utf-8')
     os.remove('file')
-    print(text)
+    db_query(f"""insert into responses (job_type, response_type, phrase) values 
+                ({context.user_data['chosen_job_type']}, 
+                {context.user_data['chosen_response_type']}),
+                '{text}'""")
+    context.bot.send_message(chat_id=update.effective_chat.id, text="Готово!")
     return ConversationHandler.END
 
 
