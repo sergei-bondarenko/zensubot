@@ -134,7 +134,7 @@ def rebuild_message(context, data):
             text = f"Время добавлено!\nЗа сегодня ты потрудился {work_today // 60}h {work_today % 60:02d}m!"
 
         bot_message_to_chat(
-            context, data.chat_id_user_reply, text, 60, data.message_id_user_reply
+            context, data.chat_id_user_reply, text, 60, data.message_id_user_reply, ParseMode.HTML
         )
 
     except BadRequest:
