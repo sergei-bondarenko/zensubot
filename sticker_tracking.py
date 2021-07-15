@@ -129,9 +129,9 @@ def rebuild_message(context, data):
         )
 
         if work_today == data.sticker_power:
-            text = f"Молодец! День {int(data.cur_day+1)} выполнен!\n{Responses.get(data.job_type, 1)}"
+            text = f"Молодец! День {int(data.cur_day+1)} выполнен!\n\n{Responses.get(data.job_type, 1)}"
         else:
-            text = f"Время добавлено!\nЗа сегодня всрато {work_today // 60}h {work_today % 60:02d}m!"
+            text = f"Время добавлено!\nЗа сегодня ты потрудился {work_today // 60}h {work_today % 60:02d}m!"
 
         bot_message_to_chat(
             context, data.chat_id_user_reply, text, 60, data.message_id_user_reply
