@@ -219,10 +219,9 @@ def write_response(update, context):
     with open("file", 'wb') as f:
         context.bot.get_file(update.message.document).download(out=f)
     with open('file', 'rb') as f:
-        text = list(f)
+        text = f.read().decode(encoding = 'utf-8')
     os.remove('file')
-    print([x.decode(encoding = 'utf-8').strip() for x in text])
-    print(context.user_data)
+    print(text)
     return ConversationHandler.END
 
 
