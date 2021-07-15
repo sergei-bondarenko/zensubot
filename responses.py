@@ -16,6 +16,8 @@ class Responses:
     def get(cls, job_type, response_type):
         try:
             text = cls.responses[job_type][response_type]
+            print(text)
+            print(text.split("\n"))
             phrases = [x.strip() for x in text.split("\n") if len(x)!= 1]
             return random.choice(phrases)
         except KeyError:
