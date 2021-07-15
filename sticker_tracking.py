@@ -135,8 +135,6 @@ def rebuild_message(context, data):
             text = f"Молодец! День {int(data.cur_day+1)} выполнен!\n\n{question+line+greet}"
         else:
             text = f"Время добавлено!\nЗа сегодня ты потрудился {work_today // 60}h {work_today % 60:02d}m!"
-        
-        text += f"\n\n{Responses.get(data.job_type, 2)}"
 
         bot_message_to_chat(
             context, data.chat_id_user_reply, text, 10*60, data.message_id_user_reply, ParseMode.HTML
