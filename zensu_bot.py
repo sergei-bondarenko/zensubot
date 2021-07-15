@@ -15,6 +15,7 @@ from direct_messages import (CREATE_POST, EDIT_TEMPLATE, PARSE_START, SAVE_TEMPL
                              edit_response_type, parse_response_type, write_response)
 from plus_tracking import plus
 from post_scheduler import create_post_sc
+from responses import Responses
 from sticker_tracking import stickers
 
 TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN")
@@ -68,6 +69,9 @@ def main() -> None:
 
     plus_handler = MessageHandler(Filters.reply & Filters.regex(r"^\+$"), plus)
     dispatcher.add_handler(plus_handler)
+
+    # Collect bot responses
+    Responses.collect()
 
     # Start the Bot
     updater.start_polling()

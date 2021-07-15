@@ -1,10 +1,10 @@
 import logging
-import os
 
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ConversationHandler
 
 from database import db_query
+from responses import Responses
 
 (
     PARSE_START,
@@ -216,14 +216,17 @@ def parse_response_type(update, context):
     return WRITE_RESPONSES
 
 def write_response(update, context):
+    job_type = context.user_data['chosen_job_type']
+    response_type = context.user_data['chosen_response_type']
     b_array = context.bot.get_file(update.message.document).download_as_bytearray()
     text = b_array.decode(encoding = 'utf-8')
     db_query(f"""insert into responses (job_type, response_type, phrase) values 
-                ({context.user_data['chosen_job_type']}, 
-                {context.user_data['chosen_response_type']},
+                ({job_type}, 
+                {response_type},
                 '{text}')
                 on conflict (job_type, response_type) do update 
                 set phrase = excluded.phrase;""", False)
+    Responses.update(job_type, response_type, text)
     context.bot.send_message(chat_id=update.effective_chat.id, text="Готово!")
     return ConversationHandler.END
 

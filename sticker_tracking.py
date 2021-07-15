@@ -1,4 +1,5 @@
 import logging
+from responses import Responses
 
 from telegram import ParseMode
 from telegram.error import BadRequest
@@ -128,7 +129,7 @@ def rebuild_message(context, data):
         )
 
         if work_today == data.sticker_power:
-            text = f"Молодец! День {int(data.cur_day+1)} выполнен!"
+            text = f"Молодец! День {int(data.cur_day+1)} выполнен!\n{Responses.get(data.job_type, 1)}"
         else:
             text = f"Время добавлено!\nЗа сегодня всрато {work_today // 60}h {work_today % 60:02d}m!"
 
