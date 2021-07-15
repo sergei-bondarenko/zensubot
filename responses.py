@@ -19,7 +19,7 @@ class Responses:
             phrases = [x.strip() for x in text.split("\n") if len(x)!= 1]
             return random.choice(phrases)
         except KeyError:
-            return None
+            return ''
     
     @classmethod
     def update(cls, job_type, response_type, text):
