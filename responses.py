@@ -4,7 +4,7 @@ from database import db_query
 
 
 class Responses:
-    repsponses = dict()
+    responses = dict()
 
     @classmethod
     def collect(cls):
@@ -15,7 +15,7 @@ class Responses:
     @classmethod
     def get(cls, job_type, response_type):
         try:
-            text = cls.repsponses[job_type][response_type]
+            text = cls.responses[job_type][response_type]
             phrases = text.split("\n")
             print(phrases)
             return random.choice(phrases)
@@ -24,4 +24,4 @@ class Responses:
     
     @classmethod
     def update(cls, job_type, response_type, text):
-        cls.repsponses[job_type] = {response_type: text}
+        cls.responses[job_type] = {response_type: text}
