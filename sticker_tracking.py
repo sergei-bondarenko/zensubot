@@ -129,15 +129,17 @@ def rebuild_message(context, data):
         )
 
         if work_today == data.sticker_power:
+            first_day = True
             question = Responses.get(data.job_type, 1)
             greet = Responses.get(data.job_type, 2)
             line = '' if question == '' else '\n'
             text = f"Молодец! День {int(data.cur_day+1)} выполнен!\n\n{question+line+greet}"
         else:
+            first_day = False
             text = f"Время добавлено!\nЗа сегодня ты потрудился {work_today // 60}h {work_today % 60:02d}m!"
 
         bot_message_to_chat(
-            context, data.chat_id_user_reply, text, 10*60, data.message_id_user_reply, ParseMode.HTML
+            context, data.chat_id_user_reply, text, 0 if first_day else 60, data.message_id_user_reply, ParseMode.HTML
         )
 
     except BadRequest:
