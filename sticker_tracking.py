@@ -132,8 +132,8 @@ def rebuild_message(context, data):
             first_today = True
             question = Responses.get(data.job_type, 1)
             greet = Responses.get(data.job_type, 2)
-            line = '' if question == '' else '\n'
-            text = f"Молодец! День {int(data.cur_day+1)} выполнен!\n\n{question+line+greet}"
+            line = '' if greet == '' else '\n\n'
+            text = f"Молодец! День {int(data.cur_day+1)} выполнен!\n\n{greet + line + question}"
         else:
             first_today = False
             text = f"Время добавлено!\nЗа сегодня ты потрудился {work_today // 60}h {work_today % 60:02d}m!"
