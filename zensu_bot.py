@@ -4,7 +4,7 @@ import os
 
 from telegram.ext import (CallbackQueryHandler, ChatMemberHandler,
                           CommandHandler, ConversationHandler, Filters,
-                          MessageHandler, Updater)
+                          MessageHandler, Updater, InlineQueryHandler)
 
 from chats_tracking import track_chats
 from database import clean_plus_data
@@ -15,6 +15,7 @@ from direct_messages import (CREATE_POST, EDIT_TEMPLATE, PARSE_START, SAVE_TEMPL
                              parse_where_to_post, start, save_template,
                              edit_response_type, parse_response_type, write_response,
                              stat)
+from inline import inline_stat
 from plus_tracking import plus
 from post_scheduler import create_post_sc
 from responses import Responses
@@ -75,6 +76,9 @@ def main() -> None:
 
     stat_handler = CommandHandler("stat", stat)
     dispatcher.add_handler(stat_handler)
+
+    inline_stat_handler = InlineQueryHandler(inline_stat)
+    dispatcher.add_handler(inline_stat_handler)
 
     # Collect bot responses
     Responses.collect()

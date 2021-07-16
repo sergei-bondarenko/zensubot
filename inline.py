@@ -24,4 +24,4 @@ def inline_stat(update, context) -> None:
         )
 
 def get_stats():
-    return None
+    return 'Тест'
