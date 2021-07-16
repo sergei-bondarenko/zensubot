@@ -3,7 +3,7 @@ from uuid import uuid4
 from telegram import InlineQueryResultArticle, InputTextMessageContent, ParseMode
 
 
-def inlinequery(update, context) -> None:
+def inline_stat(update, context) -> None:
     """Handle the inline query."""
     query = update.inline_query.query
 
@@ -16,7 +16,7 @@ def inlinequery(update, context) -> None:
                     input_message_content=InputTextMessageContent(
                         "<>Медитации 2/3 54h 20m", ParseMode=ParseMode.HTML
                     ),
-                    thumb_url="file:///pic.png"
+                    thumb_url="https://imgur.com/a/L5r76lt"
                 )
             ]
         )
