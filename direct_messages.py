@@ -262,7 +262,7 @@ def get_stat(update):
     text += "</pre>"
     link = post_to_telegraph(text)
 
-    text = f'''Твои <a href="{link}">достижения</a> на сегодняшний день, <a href="tg://user?id={user_id}">{user_name}</a>'''
+    text = f'''Твоя статистика готова, <a href="tg://user?id={user_id}">{user_name}</a>/n/n{link}'''
     return text
 
 
@@ -272,7 +272,7 @@ def post_to_telegraph(text):
     telegraph.create_account(short_name='zensu')
 
     response = telegraph.create_page(
-        f'zensu 5days',
+        f'5 days',
         html_content=text,
         author_name = '@zensu', 
         author_url='https://t.me/zensu'
