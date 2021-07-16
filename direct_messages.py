@@ -235,17 +235,18 @@ def write_response(update, context):
 
 
 def stat(update, context):
-    message = update.message
     context.bot.send_message(chat_id = update.effective_message.chat_id, 
                             text = get_stat(update),
                             parse_mode = ParseMode.HTML)
 
 def get_stat(update):
+    user_id = update.effective_user["id"]
     user_name = update.effective_user["first_name"]
+
     query = db_query(f"""select type, sum(case when max = 4 then 1 else 0 end) as ended, count(max) as started, coalesce(sum(summ), 0)::integer
                             from
                                 (select jobs_types."type", max(jobs_types.id) as types_id, jobs.id, max(date_part('day', jobs_updates.created - jobs.created)), sum(coalesce(stickers.power, 15 * power(2,sticker_id%5-1))) as summ
-                                    from jobs_types left join jobs on jobs.type = jobs_types.id left join jobs_updates on jobs.id = jobs_updates.job_id and user_id = 1439799277 left join stickers on stickers.id = jobs_updates.sticker_id 
+                                    from jobs_types left join jobs on jobs.type = jobs_types.id left join jobs_updates on jobs.id = jobs_updates.job_id and user_id = {user_id} left join stickers on stickers.id = jobs_updates.sticker_id 
                                     where  jobs_types.id != 0
                                     group by jobs_types."type", jobs.id) t
                             group by type, types_id
@@ -257,8 +258,12 @@ def get_stat(update):
     for i, (type, ended, started, sum) in enumerate(query):
         margin = ' ‎ ‎  ‎ ‎  ‎' if i == 0 else ' ‎ ‎   ‎' if i == 1 else '' if i==2 else ' ‎ ‎ ‎ ‎'
         text += f"""{type}{margin} ‎ ‎  ‎{ended}/{started} ‎ ‎ ‎ ‎      ‎{int(sum)}<br>"""
+
     text += "</pre>"
-    post_to_telegraph(text)
+    link = post_to_telegraph(text)
+
+    text = f'''Твои <a href="{link}">достижения</a> на сегодня, 
+                <a href="tg://user?id={user_id}">{user_name}</a>'''
     return text
 
 
@@ -274,4 +279,4 @@ def post_to_telegraph(text):
         author_url='https://t.me/zensu'
     )
 
-    print('https://telegra.ph/{}'.format(response['path']))
+    return 'https://telegra.ph/{}'.format(response['path'])
