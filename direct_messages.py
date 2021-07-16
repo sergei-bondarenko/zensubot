@@ -233,4 +233,8 @@ def write_response(update, context):
     return ConversationHandler.END
 
 
+def stat(update, context):
+    user_id = update.effective_user["id"]
+    message = update.message
+    message.reply_html('<b>yes<\b>')
 

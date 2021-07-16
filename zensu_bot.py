@@ -4,7 +4,7 @@ import os
 
 from telegram.ext import (CallbackQueryHandler, ChatMemberHandler,
                           CommandHandler, ConversationHandler, Filters,
-                          MessageHandler, Updater, InlineQueryHandler)
+                          MessageHandler, Updater)
 
 from chats_tracking import track_chats
 from database import clean_plus_data
@@ -13,8 +13,8 @@ from direct_messages import (CREATE_POST, EDIT_TEMPLATE, PARSE_START, SAVE_TEMPL
                              EDIT_RESPONSE_TYPE, PARSE_RESPONSE_TYPE, WRITE_RESPONSES,
                              cancel, create_post, edit_template, parse_start, parse_type, 
                              parse_where_to_post, start, save_template,
-                             edit_response_type, parse_response_type, write_response)
-from inline import inline_stat
+                             edit_response_type, parse_response_type, write_response,
+                             stat)
 from plus_tracking import plus
 from post_scheduler import create_post_sc
 from responses import Responses
@@ -73,8 +73,8 @@ def main() -> None:
     plus_handler = MessageHandler(Filters.reply & Filters.regex(r"^\+$"), plus)
     dispatcher.add_handler(plus_handler)
 
-    inline_stat_handler = InlineQueryHandler(inline_stat)
-    dispatcher.add_handler(inline_stat_handler)
+    stat_handler = CommandHandler("stat", stat)
+    dispatcher.add_handler(stat_handler)
 
     # Collect bot responses
     Responses.collect()
