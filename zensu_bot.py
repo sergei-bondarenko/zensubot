@@ -78,8 +78,8 @@ def main() -> None:
     stat_handler = CommandHandler("stat", stat)
     dispatcher.add_handler(stat_handler)
 
-    inline_stat_handler = InlineQueryHandler(inline_stat)
-    dispatcher.add_handler(inline_stat_handler)
+    #inline_stat_handler = InlineQueryHandler(inline_stat)
+    #dispatcher.add_handler(inline_stat_handler)
 
     # Collect bot responses
     Responses.collect()
