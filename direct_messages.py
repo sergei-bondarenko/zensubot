@@ -235,9 +235,27 @@ def write_response(update, context):
 
 def stat(update, context):
     message = update.message
-    context.bot.send_message(chat_id = update.effective_message.chat_id, text = get_stat(update), parse_mode = ParseMode.HTML)
+    context.bot.send_message(chat_id = update.effective_message.chat_id, 
+                             text = get_stat(update),
+                             parse_mode = ParseMode.HTML)
 
 def get_stat(update):
     user_id = update.effective_user["id"]
-    return f"<b>Тест</b>\n{user_id}"
+    user_name = update.effective_user["first_name"]
+    query = db_query(f"""select type, sum(case when max = 4 then 1 else 0 end) as ended, count(max) as started, coalesce(sum(summ), 0)
+                            from
+                                (select jobs_types."type", max(jobs_types.id) as types_id, jobs.id, max(date_part('day', jobs_updates.created - jobs.created)), sum(coalesce(stickers.power, 15 * power(2,sticker_id%5-1))) as summ
+                                    from jobs_types left join jobs on jobs.type = jobs_types.id left join jobs_updates on jobs.id = jobs_updates.job_id and user_id = 919075076 left join stickers on stickers.id = jobs_updates.sticker_id 
+                                    where  jobs_types.id != 0
+                                    group by jobs_types."type", jobs.id) t
+                            group by type, types_id
+                            order by types_id""")
+
+    text = f'<b>Статистика пятидневок <a href="tg://user?id={user_id}">{user_name}</a></b>\n'
+    text += f"<pre>Тип\tЗакончено/Начато\tВремя</pre>"
+
+    for type, ended, started, sum in query:
+        text += f"<pre>{type}\t{ended}/{started}\t{sum}</pre>"
+
+    return text
 
