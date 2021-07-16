@@ -1,5 +1,6 @@
 import logging
 
+import imgkit
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ParseMode
 from telegram.ext import ConversationHandler
 
@@ -235,9 +236,10 @@ def write_response(update, context):
 
 def stat(update, context):
     message = update.message
-    context.bot.send_message(chat_id = update.effective_message.chat_id, 
-                             text = get_stat(update),
-                             parse_mode = ParseMode.HTML)
+    context.bot.send_photo(chat_id = update.effective_message.chat_id, 
+                            photo = open('out.jpg', 'rb'),
+                            caption = get_stat(update),
+                            parse_mode = ParseMode.HTML)
 
 def get_stat(update):
     user_id = update.effective_user["id"]
@@ -252,10 +254,12 @@ def get_stat(update):
                             order by types_id""")
 
     text = f'<b>Статистика пятидневок <a href="tg://user?id={user_id}">{user_name}</a></b>\n\n'
-    text += f"<pre>Тип\tЗакончено/Начато\tВремя</pre>\n"
+    text += f"<pre>Тип\tЗакончено\tВремя</pre>\n"
 
     for type, ended, started, sum in query:
         text += f"<pre>{type}\t{ended}/{started}\t{int(sum)}</pre>\n"
+
+    imgkit.from_string(text, 'out.jpg')
 
     return text
 
