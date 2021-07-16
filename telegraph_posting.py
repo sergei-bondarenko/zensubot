@@ -9,7 +9,7 @@ class TelegraphPost:
             f'zensu',
             html_content=text,
             author_name = '@zensu', 
-            author_url='https://t.me/zensu'
+            author_url='https://t.me/zen'
         )
 
         return 'https://telegra.ph/{}'.format(response['path'])
