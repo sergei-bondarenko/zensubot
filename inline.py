@@ -15,7 +15,7 @@ def inline_stat(update, context) -> None:
                     id=str(uuid4()),
                     title="Получить статистику по пятидневкам",
                     input_message_content=InputTextMessageContent(
-                        f"{get_stat(update)}", ParseMode=ParseMode.HTML
+                        f"{get_stat(update)}", parse_mode=ParseMode.HTML
                     ),
                     thumb_url="https://i.imgur.com/2G1ZxcU.jpeg",
                     thumb_height=100,

@@ -235,7 +235,7 @@ def write_response(update, context):
 
 def stat(update, context):
     message = update.message
-    message.reply_text(text = get_stat(update), parse_mode = ParseMode.HTML)
+    context.bot.send_message(chat_id = update.effective_message.chat_id, text = get_stat(update), parse_mode = ParseMode.HTML)
 
 def get_stat(update):
     user_id = update.effective_user["id"]
