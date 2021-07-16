@@ -253,11 +253,13 @@ def get_stat(update):
                             order by types_id""")
 
     text = f'<b>Статистика пятидневок {user_name}</b><br>'
-    text += f" ‎ ‎ ‎Тип ‎ ‎ ‎ ‎ ‎ ‎Закончено ‎Время"
+    text += f"<pre> ‎ ‎ ‎Тип ‎ ‎ ‎ ‎ ‎ ‎Закончено ‎Время"
 
     for i, (type, ended, started, sum) in enumerate(query):
         margin = ' ‎ ‎  ‎ ‎  ‎' if i == 0 else ' ‎ ‎   ‎' if i == 1 else '' if i==2 else ' ‎ ‎ ‎ ‎'
-        text += f"{type}{margin} ‎ ‎  ‎{ended}/{started} ‎ ‎ ‎ ‎      ‎{int(sum)}"
+        text += f"""{type}{margin} ‎ ‎  ‎{ended}/{started} ‎ ‎ ‎ ‎      ‎{int(sum)}
+"""
+    text += "</pre>"
     post_to_telegraph(text)
     return text
 
