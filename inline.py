@@ -2,6 +2,7 @@ from uuid import uuid4
 
 from telegram import InlineQueryResultArticle, InputTextMessageContent, ParseMode
 
+from direct_messages import get_stat
 
 def inline_stat(update, context) -> None:
     """Handle the inline query."""
@@ -14,7 +15,7 @@ def inline_stat(update, context) -> None:
                     id=str(uuid4()),
                     title="Получить статистику по пятидневкам",
                     input_message_content=InputTextMessageContent(
-                        f"{get_stats()}", ParseMode=ParseMode.HTML
+                        f"{get_stat(update)}", ParseMode=ParseMode.HTML
                     ),
                     thumb_url="https://i.imgur.com/2G1ZxcU.jpeg",
                     thumb_height=100,
@@ -22,6 +23,3 @@ def inline_stat(update, context) -> None:
                 )
             ]
         )
-
-def get_stats():
-    return 'Тест'

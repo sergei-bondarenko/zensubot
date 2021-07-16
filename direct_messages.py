@@ -1,6 +1,6 @@
 import logging
 
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ParseMode
 from telegram.ext import ConversationHandler
 
 from database import db_query
@@ -234,7 +234,10 @@ def write_response(update, context):
 
 
 def stat(update, context):
-    user_id = update.effective_user["id"]
     message = update.message
-    message.reply_html('<b>yes</b>')
+    message.reply_text(text = get_stat(user_id), parse_mode = ParseMode.HTML)
+
+def get_stat(update):
+    user_id = update.effective_user["id"]
+    return f"<b>Тест</b>\n{user_id}"
 
