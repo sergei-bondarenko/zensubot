@@ -243,7 +243,7 @@ def stat(update, context):
 
 def get_stat(update):
     EMPTY_SYMBOL = ' ‎'
-    
+
     user_id = update.effective_user["id"]
     user_name = update.effective_user["first_name"]
 
@@ -266,5 +266,5 @@ def get_stat(update):
     text += "</pre>"
     link = TelegraphPost.post_to_telegraph(text)
 
-    text = f'''Твоя статистика готова, <a href="tg://user?id={user_id}">{user_name}</a>\n\n<pre>{link}</pre>'''
+    text = f'''Твоя статистика готова, <a href="tg://user?id={user_id}">{user_name}</a>\n\n{link}'''
     return text
