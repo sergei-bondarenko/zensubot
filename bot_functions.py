@@ -29,3 +29,7 @@ def fill_template(text, n, start_date = datetime.now()) -> str:
         date = date.strftime("%d.%m.%Y")
         text = re.sub(f"{day+1} [-–—] NN.NN.NNNN", f"{open}{day+1} — {date}{close}", text, flags=re.I)
     return text
+
+
+def minutes_to_hours(minutes):
+    return f"{minutes // 60}h {(minutes % 60):02d}m"

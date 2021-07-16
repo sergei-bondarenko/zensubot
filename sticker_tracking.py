@@ -4,7 +4,7 @@ from responses import Responses
 from telegram import ParseMode
 from telegram.error import BadRequest
 
-from bot_functions import bot_message_to_chat, fill_template
+from bot_functions import bot_message_to_chat, fill_template, minutes_to_hours
 from database import db_query
 from post_scheduler import JOB_DAYS_DURATION
 
@@ -136,7 +136,7 @@ def rebuild_message(context, data):
             text = f"Молодец! День {int(data.cur_day+1)} выполнен!\n\n{greet + line + question}"
         else:
             first_today = False
-            text = f"Время добавлено!\nЗа сегодня ты потрудился {work_today // 60}h {work_today % 60:02d}m!"
+            text = f"Время добавлено!\nЗа сегодня ты потрудился {minutes_to_hours(work_today)}!"
 
         bot_message_to_chat(
             context, data.chat_id_user_reply, text, 0 if first_today else 60, data.message_id_user_reply, ParseMode.HTML
@@ -192,7 +192,7 @@ def get_posted_message(text, query, cur_day, cur_user_id):
             else:
                 phrase += EM_FALSE
 
-        phrase += f" {str(total // 60)}h {(total % 60):02d}m"
+        phrase += f" {minutes_to_hours(total)}"
 
         if is_first_fail:
             passed.append((name_phrase, phrase))

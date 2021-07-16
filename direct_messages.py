@@ -3,6 +3,7 @@ import logging
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ParseMode
 from telegram.ext import ConversationHandler
 
+from bot_functions import minutes_to_hours
 from database import db_query
 from responses import Responses
 from telegraph import Telegraph
@@ -237,7 +238,8 @@ def write_response(update, context):
 def stat(update, context):
     context.bot.send_message(chat_id = update.effective_message.chat_id, 
                             text = get_stat(update),
-                            parse_mode = ParseMode.HTML)
+                            parse_mode = ParseMode.HTML,
+                            disable_web_page_preview = True)
 
 def get_stat(update):
     user_id = update.effective_user["id"]
@@ -255,9 +257,9 @@ def get_stat(update):
     text = f'<b>Статистика пятидневок {user_name}</b><br>'
     text += f"<pre> ‎ ‎ ‎Тип ‎ ‎ ‎ ‎ ‎ ‎Закончено ‎‏‏‎ ‎Время<br>"
 
-    for i, (type, ended, started, sum) in enumerate(query):
+    for i, (type, ended, started, summ) in enumerate(query):
         margin = ' ‎ ‎  ‎ ‎  ‎' if i == 0 else ' ‎ ‎   ‎' if i == 1 else '' if i==2 else ' ‎ ‎ ‎ ‎'
-        text += f"""{type}{margin} ‎ ‎  ‎{ended}/{started} ‎ ‎ ‎ ‎      ‎{int(sum)}<br>"""
+        text += f"""{type}{margin} ‎ ‎  ‎{ended}/{started} ‎ ‎ ‎ ‎      ‎{minutes_to_hours(summ)}<br>"""
 
     text += "</pre>"
     link = post_to_telegraph(text)
