@@ -13,8 +13,9 @@ def inline_stat(update, context) -> None:
                 InlineQueryResultArticle(
                     id=str(uuid4()),
                     title="Получить статистику по пятидневкам",
+                    description="Описание",
                     input_message_content=InputTextMessageContent(
-                        "<>Медитации 2/3 54h 20m", ParseMode=ParseMode.HTML
+                        "<b>Медитации</b> 2/3 54h 20m", ParseMode=ParseMode.HTML
                     ),
                     thumb_url="https://i.imgur.com/o46IfVV.jpeg"
                 )
