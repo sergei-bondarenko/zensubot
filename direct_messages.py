@@ -1,5 +1,6 @@
 import logging
 
+from prettytable import PrettyTable
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ParseMode
 from telegram.ext import ConversationHandler
 
@@ -254,8 +255,15 @@ def get_stat(update):
     text = f'<b>Статистика пятидневок <a href="tg://user?id={user_id}">{user_name}</a></b>\n\n'
     text += f"<pre>Тип\tЗакончено\tВремя</pre>\n"
 
+    x = PrettyTable()
+    x.field_names = ['Тип', 'Закончено', 'Время']
+
     for type, ended, started, sum in query:
         text += f"<pre>{type}\t{ended}/{started}\t{int(sum)}</pre>\n"
+        x.add_row([type, f"{ended}/{started}", int(sum)])
+    
+    print(x)
+    text = x.get_string()
 
     return text
 
