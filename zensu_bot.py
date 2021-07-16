@@ -37,7 +37,11 @@ def inlinequery(update, context) -> None:
     query = update.inline_query.query
 
     if query == "":
-        return
+        update.inline_query.answer(InlineQueryResultArticle(
+            id=str(uuid4()),
+            title="Получить статистику по пятидневкам",
+            input_message_content=InputTextMessageContent("Медитации 2/3 54h 20m"),
+        ))
 
     results = [
         InlineQueryResultArticle(
