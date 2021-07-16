@@ -1,4 +1,5 @@
 import logging
+from telegraph_posting import TelegraphPost
 
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ParseMode
 from telegram.ext import ConversationHandler
@@ -6,7 +7,6 @@ from telegram.ext import ConversationHandler
 from bot_functions import minutes_to_hours
 from database import db_query
 from responses import Responses
-from telegraph import Telegraph
 
 (
     PARSE_START,
@@ -242,6 +242,8 @@ def stat(update, context):
                             disable_web_page_preview = True)
 
 def get_stat(update):
+    EMPTY_SYMBOL = ' ‎'
+    
     user_id = update.effective_user["id"]
     user_name = update.effective_user["first_name"]
 
@@ -253,7 +255,7 @@ def get_stat(update):
                                     group by jobs_types."type", jobs.id) t
                             group by type, types_id
                             order by types_id""")
-
+    
     text = f'<b>Статистика пятидневок {user_name}</b><br>'
     text += f"<pre> ‎ ‎ ‎Тип ‎ ‎ ‎ ‎ ‎ ‎Закончено ‎‏‏‎ ‎Время<br>"
 
@@ -262,22 +264,7 @@ def get_stat(update):
         text += f"""{type}{margin} ‎ ‎  ‎{ended}/{started} ‎ ‎ ‎ ‎      ‎{minutes_to_hours(summ)}<br>"""
 
     text += "</pre>"
-    link = post_to_telegraph(text)
+    link = TelegraphPost.post_to_telegraph(text)
 
-    text = f'''Твоя статистика готова, <a href="tg://user?id={user_id}">{user_name}</a>\n\n{link}'''
+    text = f'''Твоя статистика готова, <a href="tg://user?id={user_id}">{user_name}</a>\n\n<pre>{link}</pre>'''
     return text
-
-
-def post_to_telegraph(text):
-    telegraph = Telegraph()
-
-    telegraph.create_account(short_name='zensu')
-
-    response = telegraph.create_page(
-        f'5 days',
-        html_content=text,
-        author_name = '@zensu', 
-        author_url='https://t.me/zensu'
-    )
-
-    return 'https://telegra.ph/{}'.format(response['path'])

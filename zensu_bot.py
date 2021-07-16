@@ -20,6 +20,7 @@ from plus_tracking import plus
 from post_scheduler import create_post_sc
 from responses import Responses
 from sticker_tracking import stickers
+from telegraph_posting import TelegraphPost
 
 
 TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN")
@@ -82,6 +83,9 @@ def main() -> None:
 
     # Collect bot responses
     Responses.collect()
+
+    # Login to telegra.ph
+    TelegraphPost.login()
 
     # Start the Bot
     updater.start_polling()
