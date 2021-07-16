@@ -6,6 +6,7 @@ from telegram.ext import ConversationHandler
 
 from database import db_query
 from responses import Responses
+from telegraph import Telegraph
 
 (
     PARSE_START,
@@ -262,8 +263,22 @@ def get_stat(update):
         text += f"<pre>{type}\t{ended}/{started}\t{int(sum)}</pre>\n"
         x.add_row([type, f"{ended}/{started}", int(sum)])
     
-    print(x)
-    text = f"<pre>{x.get_string()}</pre>"
-
+    x = x.get_string()
+    post_to_telegraph(x)
+    post_to_telegraph(text)
     return text
 
+
+def post_to_telegraph(text):
+    telegraph = Telegraph()
+
+    telegraph.create_account(short_name='zensu')
+
+    response = telegraph.create_page(
+        'Пятидневки',
+        html_content=text,
+        author_name = '@zensu', 
+        author_url='https://t.me/zensu'
+    )
+
+    print('https://telegra.ph/{}'.format(response['path']))
