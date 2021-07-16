@@ -1,7 +1,7 @@
 import logging
 import os
 
-from telegram import InlineQueryResultArticle, InputTextMessageContent, ParseMode
+
 from telegram.ext import (CallbackQueryHandler, ChatMemberHandler,
                           CommandHandler, ConversationHandler, Filters,
                           MessageHandler, Updater, InlineQueryHandler)
@@ -15,11 +15,12 @@ from direct_messages import (CREATE_POST, EDIT_TEMPLATE, PARSE_START, SAVE_TEMPL
                              cancel, create_post, edit_template, parse_start, parse_type, 
                              parse_where_to_post, start, save_template,
                              edit_response_type, parse_response_type, write_response)
+from inline import inlinequery
 from plus_tracking import plus
 from post_scheduler import create_post_sc
 from responses import Responses
 from sticker_tracking import stickers
-from uuid import uuid4
+
 
 TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN")
 
@@ -31,18 +32,6 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
-
-def inlinequery(update, context) -> None:
-    """Handle the inline query."""
-    query = update.inline_query.query
-
-    if query == "":
-        update.inline_query.answer([InlineQueryResultArticle(
-            id=str(uuid4()),
-            title="Получить статистику по пятидневкам",
-            input_message_content=InputTextMessageContent("Медитации 2/3 54h 20m"),
-        )])
-        
 
 def main() -> None:
     """Run the bot."""
