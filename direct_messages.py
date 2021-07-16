@@ -241,7 +241,6 @@ def stat(update, context):
                             parse_mode = ParseMode.HTML)
 
 def get_stat(update):
-    user_id = update.effective_user["id"]
     user_name = update.effective_user["first_name"]
     query = db_query(f"""select type, sum(case when max = 4 then 1 else 0 end) as ended, count(max) as started, coalesce(sum(summ), 0)::integer
                             from
@@ -252,24 +251,23 @@ def get_stat(update):
                             group by type, types_id
                             order by types_id""")
 
-    text = f'<b>Статистика пятидневок {user_name}</b><br>'
-    text += f"<pre> ‎ ‎ ‎Тип ‎ ‎ ‎ ‎ ‎ ‎Закончено ‎Время<br>"
+    text = f"<pre> ‎ ‎ ‎Тип ‎ ‎ ‎ ‎ ‎ ‎Закончено ‎Время<br>"
 
     for i, (type, ended, started, sum) in enumerate(query):
         margin = ' ‎ ‎  ‎ ‎  ‎' if i == 0 else ' ‎ ‎   ‎' if i == 1 else '' if i==2 else ' ‎ ‎ ‎ ‎'
         text += f"""{type}{margin} ‎ ‎  ‎{ended}/{started} ‎ ‎ ‎ ‎      ‎{int(sum)}<br>"""
     text += "</pre>"
-    post_to_telegraph(text)
+    post_to_telegraph(text, user_name)
     return text
 
 
-def post_to_telegraph(text):
+def post_to_telegraph(text, user_name):
     telegraph = Telegraph()
 
     telegraph.create_account(short_name='zensu')
 
     response = telegraph.create_page(
-        'Пятидневки',
+        f'<b>Статистика пятидневок {user_name}</b><br>',
         html_content=text,
         author_name = '@zensu', 
         author_url='https://t.me/zensu'
