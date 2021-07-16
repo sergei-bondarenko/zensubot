@@ -251,11 +251,11 @@ def get_stat(update):
                             group by type, types_id
                             order by types_id""")
 
-    text = f'<b>Статистика пятидневок <a href="tg://user?id={user_id}">{user_name}</a></b>\n'
-    text += f"<pre>Тип\tЗакончено/Начато\tВремя</pre>"
+    text = f'<b>Статистика пятидневок <a href="tg://user?id={user_id}">{user_name}</a></b>\n\n'
+    text += f"<pre>Тип\tЗакончено/Начато\tВремя</pre>\n"
 
     for type, ended, started, sum in query:
-        text += f"<pre>{type}\t{ended}/{started}\t{sum}</pre>"
+        text += f"<pre>{type}\t{ended}/{started}\t{sum}</pre>\n"
 
     return text
 
