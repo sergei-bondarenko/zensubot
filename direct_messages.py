@@ -251,23 +251,24 @@ def get_stat(update):
                             group by type, types_id
                             order by types_id""")
 
-    text = f"<pre> ‎ ‎ ‎Тип ‎ ‎ ‎ ‎ ‎ ‎Закончено ‎Время<br>"
+    text = f'<b>Статистика пятидневок {user_name}</b><br>'
+    text += f"<pre> ‎ ‎ ‎Тип ‎ ‎ ‎ ‎ ‎ ‎Закончено ‎Время<br>"
 
     for i, (type, ended, started, sum) in enumerate(query):
         margin = ' ‎ ‎  ‎ ‎  ‎' if i == 0 else ' ‎ ‎   ‎' if i == 1 else '' if i==2 else ' ‎ ‎ ‎ ‎'
         text += f"""{type}{margin} ‎ ‎  ‎{ended}/{started} ‎ ‎ ‎ ‎      ‎{int(sum)}<br>"""
     text += "</pre>"
-    post_to_telegraph(text, user_name)
+    post_to_telegraph(text)
     return text
 
 
-def post_to_telegraph(text, user_name):
+def post_to_telegraph(text):
     telegraph = Telegraph()
 
     telegraph.create_account(short_name='zensu')
 
     response = telegraph.create_page(
-        f'<b>Статистика пятидневок {user_name}</b><br>',
+        f'zensu 5days',
         html_content=text,
         author_name = '@zensu', 
         author_url='https://t.me/zensu'
