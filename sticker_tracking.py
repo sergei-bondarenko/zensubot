@@ -136,7 +136,7 @@ def rebuild_message(context, data):
             text = f"Молодец! День {int(data.cur_day+1)} выполнен!\n\n{greet + line + question}"
         else:
             first_today = False
-            text = f"Время добавлено!\nЗа сегодня ты потрудился {minutes_to_hours(work_today)}!"
+            text = f"За сегодня добавлено {minutes_to_hours(work_today)}!"
 
         bot_message_to_chat(
             context, data.chat_id_user_reply, text, 0 if first_today else 60, data.message_id_user_reply, ParseMode.HTML
