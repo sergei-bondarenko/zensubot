@@ -263,7 +263,7 @@ def get_stat(update):
         x.add_row([type, f"{ended}/{started}", int(sum)])
     
     print(x)
-    text = x.get_string()
+    text = f"<pre>{x.get_string()}</pre>"
 
     return text
 
