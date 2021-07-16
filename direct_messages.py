@@ -236,5 +236,5 @@ def write_response(update, context):
 def stat(update, context):
     user_id = update.effective_user["id"]
     message = update.message
-    message.reply_html('<b>yes<\b>')
+    message.reply_html('<b>yes</b>')
 
