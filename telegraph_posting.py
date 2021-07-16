@@ -6,7 +6,7 @@ class TelegraphPost:
     @classmethod
     def post_to_telegraph(cls, text):
         response = cls.telegraph.create_page(
-            f'5 days',
+            f'zensu',
             html_content=text,
             author_name = '@zensu', 
             author_url='https://t.me/zensu'
