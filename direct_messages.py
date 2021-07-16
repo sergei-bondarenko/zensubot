@@ -256,7 +256,7 @@ def get_stat(update):
     text += f"<pre>Тип     Закончено   Время"
 
     for type, ended, started, sum in query:
-        text += f"<pre>{type}  {ended}/{started}  {int(sum)}"
+        text += f"{type}  {ended}/{started}  {int(sum)}"
     text += "</pre>"
     post_to_telegraph(text)
     return text
