@@ -16,7 +16,7 @@ def inline_stat(update, context) -> None:
                     input_message_content=InputTextMessageContent(
                         "<>Медитации 2/3 54h 20m", ParseMode=ParseMode.HTML
                     ),
-                    thumb_url="https://imgur.com/a/L5r76lt"
+                    thumb_url="https://i.imgur.com/o46IfVV.jpeg"
                 )
             ]
         )
