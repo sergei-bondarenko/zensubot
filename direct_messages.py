@@ -256,7 +256,7 @@ def get_stat(update):
     text += f"<pre> ‎ ‎Тип ‎ ‎ ‎ ‎ ‎Закончено ‎ ‎ ‎ ‎ ‎ ‎Время</pre>"
 
     for i, (type, ended, started, sum) in enumerate(query):
-        margin = ' ‎ ‎  ‎ ‎ ' if i == 0 else ' ‎ ‎  ' if i == 1 else '' if i==2 else '  ‎ ‎  ‎'
+        margin = ' ‎ ‎  ‎ ‎  ‎' if i == 0 else ' ‎ ‎   ‎' if i == 1 else '' if i==2 else '  ‎ ‎   ‎‎'
         text += f"<pre>{type}{margin} ‎ ‎  ‎{ended}/{started} ‎ ‎ ‎ ‎      ‎{int(sum)}</pre>"
     post_to_telegraph(text)
     return text
