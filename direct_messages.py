@@ -262,7 +262,7 @@ def get_stat(update):
     text += "</pre>"
     link = post_to_telegraph(text)
 
-    text = f'''Твоя статистика готова, <a href="tg://user?id={user_id}">{user_name}</a>/n/n{link}'''
+    text = f'''Твоя статистика готова, <a href="tg://user?id={user_id}">{user_name}</a>\n\n{link}'''
     return text
 
 
