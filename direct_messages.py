@@ -242,10 +242,10 @@ def stat(update, context):
 def get_stat(update):
     user_id = update.effective_user["id"]
     user_name = update.effective_user["first_name"]
-    query = db_query(f"""select type, sum(case when max = 4 then 1 else 0 end) as ended, count(max) as started, coalesce(sum(summ), 0)
+    query = db_query(f"""select type, sum(case when max = 4 then 1 else 0 end) as ended, count(max) as started, coalesce(sum(summ), 0)::integer
                             from
                                 (select jobs_types."type", max(jobs_types.id) as types_id, jobs.id, max(date_part('day', jobs_updates.created - jobs.created)), sum(coalesce(stickers.power, 15 * power(2,sticker_id%5-1))) as summ
-                                    from jobs_types left join jobs on jobs.type = jobs_types.id left join jobs_updates on jobs.id = jobs_updates.job_id and user_id = 919075076 left join stickers on stickers.id = jobs_updates.sticker_id 
+                                    from jobs_types left join jobs on jobs.type = jobs_types.id left join jobs_updates on jobs.id = jobs_updates.job_id and user_id = 1439799277 left join stickers on stickers.id = jobs_updates.sticker_id 
                                     where  jobs_types.id != 0
                                     group by jobs_types."type", jobs.id) t
                             group by type, types_id
@@ -255,7 +255,7 @@ def get_stat(update):
     text += f"<pre>Тип\tЗакончено/Начато\tВремя</pre>\n"
 
     for type, ended, started, sum in query:
-        text += f"<pre>{type}\t{ended}/{started}\t{sum}</pre>\n"
+        text += f"<pre>{type}\t{ended}/{started}\t{int(sum)}</pre>\n"
 
     return text
 
