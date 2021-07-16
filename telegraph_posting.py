@@ -6,10 +6,10 @@ class TelegraphPost:
     @classmethod
     def post_to_telegraph(cls, text):
         response = cls.telegraph.create_page(
-            f'zensu',
+            f'zen',
             html_content=text,
             author_name = '@zensu', 
-            author_url='https://t.me/zen'
+            author_url='https://t.me/zensu'
         )
 
         return 'https://telegra.ph/{}'.format(response['path'])
