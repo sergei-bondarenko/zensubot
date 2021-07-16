@@ -252,7 +252,7 @@ def get_stat(update):
                             order by types_id""")
 
     text = f'<b>Статистика пятидневок {user_name}</b><br>'
-    text += f"<pre> ‎ ‎ ‎Тип ‎ ‎ ‎ ‎ ‎ ‎Закончено ‎Время<br>"
+    text += f"<pre> ‎ ‎ ‎Тип ‎ ‎ ‎ ‎ ‎ ‎Закончено ‎‏‏‎ ‎Время<br>"
 
     for i, (type, ended, started, sum) in enumerate(query):
         margin = ' ‎ ‎  ‎ ‎  ‎' if i == 0 else ' ‎ ‎   ‎' if i == 1 else '' if i==2 else ' ‎ ‎ ‎ ‎'
