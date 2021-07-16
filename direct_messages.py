@@ -252,12 +252,12 @@ def get_stat(update):
                             group by type, types_id
                             order by types_id""")
 
-    text = f'<b>Статистика пятидневок <a href="tg://user?id={user_id}">{user_name}</a></b>\n\n'
-    text += f"<pre>Тип\tЗакончено\tВремя</pre>\n"
+    text = f'<b>Статистика пятидневок <a href="tg://user?id={user_id}">{user_name}</a></b><br><br>'
+    text += f"<pre>Тип     Закончено   Время</pre><br>"
 
     for type, ended, started, sum in query:
-        text += f"<pre>{type}\t{ended}/{started}\t{int(sum)}</pre>\n"
-        
+        text += f"<pre>{type}  {ended}/{started}  {int(sum)}</pre><br>"
+
     post_to_telegraph(text)
     return text
 
