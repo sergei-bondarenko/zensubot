@@ -42,30 +42,7 @@ def inlinequery(update, context) -> None:
             title="Получить статистику по пятидневкам",
             input_message_content=InputTextMessageContent("Медитации 2/3 54h 20m"),
         )])
-
-    results = [
-        InlineQueryResultArticle(
-            id=str(uuid4()),
-            title="Caps",
-            input_message_content=InputTextMessageContent(query.upper()),
-        ),
-        InlineQueryResultArticle(
-            id=str(uuid4()),
-            title="Bold",
-            input_message_content=InputTextMessageContent(
-                f"*{escape_markdown(query)}*", parse_mode=ParseMode.MARKDOWN
-            ),
-        ),
-        InlineQueryResultArticle(
-            id=str(uuid4()),
-            title="Italic",
-            input_message_content=InputTextMessageContent(
-                f"_{escape_markdown(query)}_", parse_mode=ParseMode.MARKDOWN
-            ),
-        ),
-    ]
-
-    update.inline_query.answer(results)
+        
 
 def main() -> None:
     """Run the bot."""
