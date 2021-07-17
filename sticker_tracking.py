@@ -149,7 +149,7 @@ def get_posted_message(text, data):
 
     # Collecting data about current job progress
     query = db_query(
-        f"""select user_id, first_name, total, d0, d1, d2, d3, d4
+        f"""select user_id, first_name, total, d0, d1, d2, d3, d4, d5, d6
                 from
                     (select user_id , sum(case when sday = 0 then power else 0 end) d0, sum(case when sday = 1 then power else 0 end) d1
                                         , sum(case when sday = 2 then power else 0 end) d2, sum(case when sday = 3 then power else 0 end) d3
