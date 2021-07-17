@@ -1,31 +1,32 @@
-from bot_functions import CollectData, bot_message_to_chat, rebuild_message
+from bot_functions import bot_message_to_chat
 from database import db_query
+from post_updater import PostUpdater
 
 
 def stickers(update, context):
-    data = CollectData(update)
+    upd = PostUpdater(update)
 
     # Writing update to table if job_id and sticker_id is correct
-    if data.job_id and data.sticker_id:
+    if upd.job_id and upd.sticker_id:
 
         # Creating new users if they do not exist or updating old users
-        update_users(data)
+        update_users(upd)
 
         # Check if user is not allowed to post
-        if data.yesterday_work != 0 or data.cur_day == 0:
+        if upd.yesterday_work != 0 or upd.cur_day == 0:
             # Inserting new job_update
             db_query(
                 f"insert into jobs_updates (user_id, job_id, sticker_id) values ({data.user_id}, {data.job_id}, {data.sticker_id})",
                 False,
             )
 
-            rebuild_message(context, data)
+            upd.rebuild_message(context)
         else:
             bot_message_to_chat(
                 context,
-                data.chat_id_user_reply,
+                upd.chat_id_user_reply,
                 f"Мда, долбаеб. Вчера день проебал, а сегодня хочешь отметиться?",
-                reply_to_message=data.message_id_user_reply,
+                reply_to_message=upd.message_id_user_reply,
             )
 
 
