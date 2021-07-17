@@ -1,14 +1,13 @@
 import logging
-from refresh_posts import refresh_posts
-from telegraph_posting import TelegraphPost
 
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ParseMode
 from telegram.ext import ConversationHandler
 
 from bot_functions import minutes_to_hours
 from database import db_query
-from responses import Responses
 from refresh_posts import refresh_posts
+from responses import Responses
+from telegraph_posting import TelegraphPost
 
 (
     PARSE_START,
