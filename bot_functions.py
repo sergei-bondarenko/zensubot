@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 from telegram import ParseMode
 from telegram.error import BadRequest
 
+from constants import EM_TRUE, EM_FAIL, EM_FALSE, EM_WEEKEND, JOB_DAYS_DURATION, USERS
 from database import db_query
 from responses import Responses
 
@@ -88,7 +89,7 @@ class CollectData:
                         left join stickers on stickers.text_id = '{message['sticker']['file_unique_id']}'
                         where message_id = {self.job_message_id} 
                         and chat_id = {self.job_chat_id} 
-                        and DATE_PART('day', now()-jobs.created) < 7
+                        and DATE_PART('day', now()-jobs.created) < {JOB_DAYS_DURATION}
                         group by jobs.id, jobs.created, DATE_PART('day', now()-jobs.created), type, order_number , stickers.id, power
                 """
                 )[0]
@@ -144,12 +145,6 @@ def rebuild_message(context, data):
 
 
 def get_posted_message(text, data):
-    EM_TRUE = "✅"
-    EM_FALSE = "⚫️"
-    EM_FAIL = "❌"
-    WEEKEND = "🔥"
-    USERS = "<b>Участники</b>"
-
     # Collecting data about current job progress
     query = db_query(
         f"""select user_id, first_name, total, d0, d1, d2, d3, d4, d5, d6
@@ -173,7 +168,7 @@ def get_posted_message(text, data):
     passed = list()
     loosers = list() 
     work_today = 0
-    
+
     for user_id, user_firstname, total, *days in query:
         is_first_fail = True
         weekends = list()
@@ -192,7 +187,7 @@ def get_posted_message(text, data):
             
             if i >= 5:
                 if work > 0:
-                    weekends.append(WEEKEND)
+                    weekends.append(EM_WEEKEND)
             elif work == 0 and is_first_fail and i < data.cur_day:
                 phrase += EM_FAIL
                 is_first_fail = False

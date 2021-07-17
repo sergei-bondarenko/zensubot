@@ -4,15 +4,10 @@ from datetime import datetime, timedelta, time
 from telegram import ParseMode
 
 from bot_functions import fill_template
+from constants import POST_WEEKDAY, POST_HOUR, POST_MINUTE, JOB_DAYS_DURATION
 from database import db_query
 
 logger = logging.getLogger(__name__)
-
-# UTC time of posting
-POST_WEEKDAY = 6
-POST_HOUR = 21
-POST_MINUTE = 1
-JOB_DAYS_DURATION = 7
 
 
 def callback_minute(context):
