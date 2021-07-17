@@ -31,6 +31,10 @@ def send_notification(context):
             f"select distinct(user_id) from jobs_updates where job_id = {job_id} and created >= '{two_days_ago}'",
             True,
         ))
+
+        message = ""
+        for user_id in all_users - completed_users:
+            pass
         logger.info(f"{job_id}: completed {completed_users}")
         logger.info(f"{job_id}: all {all_users}")
         logger.info(f"{job_id}: non-completed {all_users - completed_users}")
@@ -39,5 +43,5 @@ def send_notification(context):
 def reminder(job):
     # job.run_daily(callback = send_notification, time = time(POST_HOUR - REMINDER_DELTA, POST_MINUTE), days = REMINDER_DAYS, name = 'reminder_ok')
 
-    job.run_repeating(callback = send_notification, interval = timedelta(seconds = 20), name = 'reminder_ok')
+    # job.run_repeating(callback = send_notification, interval = timedelta(seconds = 20), name = 'reminder_ok')
     pass
