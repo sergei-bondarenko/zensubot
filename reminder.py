@@ -1,6 +1,7 @@
 import logging
 from datetime import datetime, timedelta, time
 
+from database import db_query
 from constants import POST_HOUR, POST_MINUTE, REMINDER_DELTA, REMINDER_DAYS
 
 
