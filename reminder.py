@@ -16,7 +16,7 @@ def send_notification(context):
         True,
     )
     for job_id, created, message_id, chat_id in data:
-        logger.info(job_id, created, message_id, chat_id)
+        logger.info(str(job_id), str(created), str(message_id), str(chat_id))
 
 def reminder(job):
     # job.run_daily(callback = send_notification, time = time(POST_HOUR - REMINDER_DELTA, POST_MINUTE), days = REMINDER_DAYS, name = 'reminder_ok')
