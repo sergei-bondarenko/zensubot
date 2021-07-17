@@ -48,7 +48,7 @@ def main() -> None:
         entry_points=[CommandHandler("start", start)],
         states={
             PARSE_START: [
-                CallbackQueryHandler(parse_start, pattern="add_post|edit_template|responses|end")
+                CallbackQueryHandler(parse_start, pattern="add_post|edit_template|responses|rebuild|end")
             ],
             PARSE_WHERE_TO_POST: [
                 CallbackQueryHandler(parse_where_to_post, pattern=r"-\d*")
