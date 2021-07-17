@@ -100,6 +100,9 @@ def parse_start(update, context) -> int:
                 message_id=query.message.message_id)
             data = CollectData(None, True, *row)
             rebuild_message(context, data)
+        context.bot.delete_message(
+            chat_id=query.message.chat_id, message_id=query.message.message_id
+        )
         context.bot.send_message(chat_id=update.effective_chat.id, text="Готово!")
         return ConversationHandler.END
     if query.data == "end":
