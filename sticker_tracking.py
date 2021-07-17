@@ -193,7 +193,7 @@ def get_posted_message(text, data):
                 is_first_fail = False
             elif work > 0:
                 phrase += EM_TRUE
-            else:
+            elif i < 5:
                 phrase += EM_FALSE
 
         phrase += f" {minutes_to_hours(total)}"
