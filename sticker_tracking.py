@@ -83,29 +83,12 @@ class CollectData:
 
 
 def rebuild_message(context, data):
-    # Collecting data about current job progress
-    query = db_query(
-        f"""select user_id, first_name, total, d0, d1, d2, d3, d4
-                from
-                    (select user_id , sum(case when sday = 0 then power else 0 end) d0, sum(case when sday = 1 then power else 0 end) d1
-                                        , sum(case when sday = 2 then power else 0 end) d2, sum(case when sday = 3 then power else 0 end) d3
-                                        , sum(case when sday = 4 then power else 0 end) d4, sum(power) total
-                    from
-                        (select user_id, date_part('day', jobs_updates.created - jobs.created) as sday, sticker_id
-                        from jobs_updates join jobs on jobs.id = jobs_updates.job_id
-                        where job_id = {data.job_id}) t join stickers on stickers.id = t.sticker_id
-                    group by user_id) t 
-                    join users on users.id=t.user_id 
-                    order by total desc
-                ;"""
-    )
-
     text = db_query(
         f"select caption from post_templates where job_type = {data.job_type}"
     )[0][0]
     text = fill_template(text, data.order_number, data.start_date)
 
-    text, work_today = get_posted_message(text, query, data.cur_day, data.user_id)
+    text, work_today = get_posted_message(text, data)
 
     try:
         if data.is_caption:
@@ -157,20 +140,39 @@ def update_users(data):
     )
 
 
-def get_posted_message(text, query, cur_day, cur_user_id):
+def get_posted_message(text, data):
     EM_TRUE = "✅"
     EM_FALSE = "⚫️"
     EM_FAIL = "❌"
+    WEEKEND = "🔥"
     USERS = "<b>Участники</b>"
+
+    # Collecting data about current job progress
+    query = db_query(
+        f"""select user_id, first_name, total, d0, d1, d2, d3, d4
+                from
+                    (select user_id , sum(case when sday = 0 then power else 0 end) d0, sum(case when sday = 1 then power else 0 end) d1
+                                        , sum(case when sday = 2 then power else 0 end) d2, sum(case when sday = 3 then power else 0 end) d3
+                                        , sum(case when sday = 4 then power else 0 end) d4, sum(case when sday = 5 then power else 0 end) d5
+                                        , sum(case when sday = 6 then power else 0 end) d6, sum(power) total
+                    from
+                        (select user_id, date_part('day', jobs_updates.created - jobs.created) as sday, sticker_id
+                        from jobs_updates join jobs on jobs.id = jobs_updates.job_id
+                        where job_id = {data.job_id}) t join stickers on stickers.id = t.sticker_id
+                    group by user_id) t 
+                    join users on users.id=t.user_id 
+                    order by total desc
+                ;"""
+    )
 
     text = text.split(f"\n\n{USERS}:")[0]
 
     passed = list()
-    loosers = list()
+    loosers = list() 
 
     for user_id, user_firstname, total, *days in query:
         is_first_fail = True
-
+        weekends = list()
         # chr(8206) is a mark to keep text format left to right
         name_phrase = (
             f'{chr(8206)}<a href="tg://user?id={user_id}">{user_firstname}</a>'
@@ -181,10 +183,12 @@ def get_posted_message(text, query, cur_day, cur_user_id):
             day = int(day)
 
             # Checking if today is the first activity of user
-            if user_id == cur_user_id and i == cur_day:
+            if user_id == data.cur_user_id and i == data.cur_day:
                 work_today = day
-
-            if day == 0 and is_first_fail and i < cur_day:
+            
+            if day >= 5:
+                weekends.append(WEEKEND)
+            elif day == 0 and is_first_fail and i < data.cur_day:
                 phrase += EM_FAIL
                 is_first_fail = False
             elif day > 0:
@@ -200,9 +204,10 @@ def get_posted_message(text, query, cur_day, cur_user_id):
             loosers.append((name_phrase, phrase))
 
     added_text = str()
+    weekends = ''.join(WEEKEND)
 
     for i, (name_phrase, phrase) in enumerate(passed):
-        added_text += f"{i+1}. {name_phrase}\n{phrase}\n\n"
+        added_text += f"{i+1}. {name_phrase} {weekends}\n{phrase}\n\n"
 
     for j, (name_phrase, phrase) in enumerate(loosers):
         added_text += f"{i + j + 2}. <s>{name_phrase}</s>\n{phrase}\n\n"
