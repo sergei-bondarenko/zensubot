@@ -172,7 +172,8 @@ def get_posted_message(text, data):
 
     passed = list()
     loosers = list() 
-
+    work_today = 0
+    
     for user_id, user_firstname, total, *days in query:
         is_first_fail = True
         weekends = list()
