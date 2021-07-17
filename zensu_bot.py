@@ -22,6 +22,7 @@ from responses import Responses
 from refresh_posts import refresh_posts_job
 from sticker_tracking import stickers
 from telegraph_posting import TelegraphPost
+from reminder import reminder
 
 
 TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN")
@@ -101,6 +102,9 @@ def main() -> None:
 
     # Update posts every day except scheduled day of posting
     refresh_posts_job(jobs)
+
+    # Remind before the end of the day to post a sticker.
+    reminder(jobs)
 
     # Run the bot until you press Ctrl-C or the process receives SIGINT,
     # SIGTERM or SIGABRT. This should be used most of the time, since
