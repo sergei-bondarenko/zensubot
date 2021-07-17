@@ -19,6 +19,7 @@ from inline import inline_stat
 from plus_tracking import plus
 from post_scheduler import create_post_sc
 from responses import Responses
+from refresh_posts import refresh_posts_job
 from sticker_tracking import stickers
 from telegraph_posting import TelegraphPost
 
@@ -97,6 +98,9 @@ def main() -> None:
 
     # Clean plus_data every 2 days
     clean_plus_data(jobs)
+
+    # Update posts every day except scheduled day of posting
+    refresh_posts_job(jobs)
 
     # Run the bot until you press Ctrl-C or the process receives SIGINT,
     # SIGTERM or SIGABRT. This should be used most of the time, since
