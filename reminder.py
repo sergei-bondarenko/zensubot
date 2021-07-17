@@ -16,23 +16,24 @@ def send_notification(context):
     two_days_ago = two_days_ago.strftime('%Y-%m-%d') + f" {POST_HOUR}:{POST_MINUTE}:00"
 
     jobs = db_query(
-        'select t2.id, t2.message_id, t2.chat_id from (select min(id) as id, type from jobs group by type) t1 '
+        'select t2.id, t2.message_id, t2.chat_id from (select max(id) as id, type from jobs group by type) t1 '
         'left join (select * from jobs) t2 on (t1.id = t2.id)',
         True,
     )
     for job_id, message_id, chat_id in jobs:
         # Get users which already have sent stickers today.
-        completed_users = db_query(
-            f"select user_id from jobs_updates where job_id = {job_id} and created > '{yesterday}'",
+        completed_users = set(db_query(
+            f"select distinct(user_id) from jobs_updates where job_id = {job_id} and created > '{yesterday}'",
             True,
-        )
-        # Get users which have not sent stickers today, but sent it previous day.
-        noncompleted_users = db_query(
-            f"select user_id from jobs_updates where job_id = {job_id} and created >= '{two_days_ago}' and created <= '{yesterday}'",
+        ))
+        # Get all users from two previous days.
+        all_users = set(db_query(
+            f"select distinct(user_id) from jobs_updates where job_id = {job_id} and created >= '{two_days_ago}'",
             True,
-        )
-        logger.info(f"{job_id}: completed {completed_users}, {type(completed_users)}")
-        logger.info(f"{job_id}: noncompleted {noncompleted_users}, {type(noncompleted_users)}")
+        ))
+        logger.info(f"{job_id}: completed {completed_users}")
+        logger.info(f"{job_id}: all {all_users}")
+        logger.info(f"{job_id}: non-completed {all_users - completed_users}")
 
 
 def reminder(job):
