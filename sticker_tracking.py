@@ -179,19 +179,19 @@ def get_posted_message(text, data):
         )
         phrase = str()
 
-        for i, day in enumerate(days):
-            day = int(day)
+        for i, work in enumerate(days):
+            work = int(work)
 
             # Checking if today is the first activity of user
             if user_id == data.user_id and i == data.cur_day:
-                work_today = day
+                work_today = work
             
-            if i >= 5:
+            if i >= 5 and work>0:
                 weekends.append(WEEKEND)
-            elif day == 0 and is_first_fail and i < data.cur_day:
+            elif work == 0 and is_first_fail and i < data.cur_day:
                 phrase += EM_FAIL
                 is_first_fail = False
-            elif day > 0:
+            elif work > 0:
                 phrase += EM_TRUE
             else:
                 phrase += EM_FALSE
