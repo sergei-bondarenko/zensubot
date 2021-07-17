@@ -186,14 +186,15 @@ def get_posted_message(text, data):
             if user_id == data.user_id and i == data.cur_day:
                 work_today = work
             
-            if i >= 5 and work>0:
-                weekends.append(WEEKEND)
+            if i >= 5:
+                if work > 0:
+                    weekends.append(WEEKEND)
             elif work == 0 and is_first_fail and i < data.cur_day:
                 phrase += EM_FAIL
                 is_first_fail = False
             elif work > 0:
                 phrase += EM_TRUE
-            elif i < 5:
+            else:
                 phrase += EM_FALSE
 
         phrase += f" {minutes_to_hours(total)}"
