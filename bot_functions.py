@@ -35,4 +35,4 @@ def minutes_to_hours(minutes, mode = 0):
     if mode == 0:
         return f"{minutes // 60}h {(minutes % 60):02d}m"
     if mode == 1:
-        return f"{round(minutes / 60, 1)}h"
+        return f"{round(minutes / 60, 1):g}h"
