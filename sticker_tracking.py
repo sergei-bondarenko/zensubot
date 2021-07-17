@@ -186,7 +186,7 @@ def get_posted_message(text, data):
             if user_id == data.user_id and i == data.cur_day:
                 work_today = day
             
-            if day >= 5:
+            if i >= 5:
                 weekends.append(WEEKEND)
             elif day == 0 and is_first_fail and i < data.cur_day:
                 phrase += EM_FAIL
