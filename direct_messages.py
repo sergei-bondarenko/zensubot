@@ -4,8 +4,9 @@ from telegraph_posting import TelegraphPost
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ParseMode
 from telegram.ext import ConversationHandler
 
-from bot_functions import minutes_to_hours
+from bot_functions import CollectData, minutes_to_hours, rebuild_message
 from database import db_query
+from post_scheduler import JOB_DAYS_DURATION
 from responses import Responses
 
 (
@@ -47,6 +48,7 @@ def start(update, context) -> int:
             [InlineKeyboardButton("Добавить пост", callback_data="add_post")],
             [InlineKeyboardButton("Изменить шаблон", callback_data="edit_template")],
             [InlineKeyboardButton("Добавить реплики бота", callback_data="responses")],
+            [InlineKeyboardButton("Обновить посты", callback_data="rebuild")],
             [InlineKeyboardButton("Пойти нахуй", callback_data="end")]
         ]
     else:
@@ -85,6 +87,19 @@ def parse_start(update, context) -> int:
             message_id=query.message.message_id,
         )
         return EDIT_TEMPLATE if query.data == "edit_template" else EDIT_RESPONSE_TYPE
+    if query.data == "rebuild":
+        context.bot.delete_message(
+            chat_id=query.message.chat_id, message_id=query.message.message_id
+        )
+        q = f"""select jobs.* , date_part('day', now()-created), 0, case when photo_id != 'None' then true else false end
+                    from jobs left join post_templates on job_type = type
+                    where date_part('day', now()-created) < {JOB_DAYS_DURATION} and type != 0"""
+        for vals in db_query(q):
+            print(vals)
+            data = CollectData(None, True, *vals)
+            rebuild_message(context, data)
+        context.bot.send_message(chat_id=update.effective_chat.id, text="Готово!")
+        return ConversationHandler.END
     if query.data == "end":
         context.bot.delete_message(
             chat_id=query.message.chat_id, message_id=query.message.message_id
