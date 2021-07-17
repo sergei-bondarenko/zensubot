@@ -204,7 +204,7 @@ def get_posted_message(text, data):
             loosers.append((name_phrase, phrase))
 
     added_text = str()
-    weekends = ''.join(WEEKEND)
+    weekends = ''.join(weekends)
 
     for i, (name_phrase, phrase) in enumerate(passed):
         added_text += f"{i+1}. {name_phrase} {weekends}\n{phrase}\n\n"
