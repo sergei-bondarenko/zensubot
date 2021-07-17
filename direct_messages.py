@@ -1,13 +1,14 @@
 import logging
+from refresh_posts import refresh_posts
 from telegraph_posting import TelegraphPost
 
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ParseMode
 from telegram.ext import ConversationHandler
 
-from bot_functions import CollectData, minutes_to_hours, rebuild_message
+from bot_functions import minutes_to_hours
 from database import db_query
-from post_scheduler import JOB_DAYS_DURATION
 from responses import Responses
+from refresh_posts import refresh_posts
 
 (
     PARSE_START,
@@ -88,18 +89,13 @@ def parse_start(update, context) -> int:
         )
         return EDIT_TEMPLATE if query.data == "edit_template" else EDIT_RESPONSE_TYPE
     if query.data == "rebuild":
-        
-        q = f"""select jobs.* , date_part('day', now()-created), 0, case when photo_id != 'None' then true else false end
-                    from jobs left join post_templates on job_type = type
-                    where date_part('day', now()-created) < {JOB_DAYS_DURATION} and type != 0"""
-        rows = db_query(q)
-        for i, row in enumerate(rows):
-            data = CollectData(None, True, *row)
-            rebuild_message(context, data)
-            context.bot.edit_message_text(
-                text = f"Выполнено {i+1}/{len(rows)}!",
-                chat_id=query.message.chat_id, 
-                message_id=query.message.message_id)
+        refresh_posts(context)
+
+        context.bot.edit_message_text(
+            text = f"Готово!",
+            chat_id=query.message.chat_id, 
+            message_id=query.message.message_id)
+
         return ConversationHandler.END
     if query.data == "end":
         context.bot.delete_message(
