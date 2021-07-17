@@ -11,9 +11,9 @@ logger = logging.getLogger(__name__)
 def send_notification(context):
     cur_date = datetime.now()
     yesterday = cur_date - timedelta(days=1)
-    yesterday_str = yesterday.strftime('%Y-%m-%d') + f" {POST_HOUR}:{POST_MINUTE}:00"
+    yesterday = yesterday.strftime('%Y-%m-%d') + f" {POST_HOUR}:{POST_MINUTE}:00"
     two_days_ago = cur_date - timedelta(days=2)
-    two_days_ago_str = two_days_ago.strftime('%Y-%m-%d') + f" {POST_HOUR}:{POST_MINUTE}:00"
+    two_days_ago = two_days_ago.strftime('%Y-%m-%d') + f" {POST_HOUR}:{POST_MINUTE}:00"
 
     jobs = db_query(
         'select t2.id, t2.message_id, t2.chat_id from (select min(id) as id, type from jobs group by type) t1 '
@@ -23,12 +23,12 @@ def send_notification(context):
     for job_id, message_id, chat_id in jobs:
         # Get users which already have sent stickers today.
         completed_users = db_query(
-            f"select user_id from jobs_updates where job_id = {job_id} and created > '{yesterday_str}'",
+            f"select user_id from jobs_updates where job_id = {job_id} and created > '{yesterday}'",
             True,
         )
         # Get users which have not sent stickers today, but sent it previous day.
         noncompleted_users = db_query(
-            f"select user_id from jobs_updates where job_id = {job_id} and created >= '{two_days_ago}' and created <= '{yesterday_str}'",
+            f"select user_id from jobs_updates where job_id = {job_id} and created >= '{two_days_ago}' and created <= '{yesterday}'",
             True,
         )
         logger.info(f"{job_id}: completed {completed_users}, {type(completed_users)}")
