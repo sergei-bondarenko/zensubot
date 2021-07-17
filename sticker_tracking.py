@@ -197,16 +197,16 @@ def get_posted_message(text, data):
                 phrase += EM_FALSE
 
         phrase += f" {minutes_to_hours(total)}"
+        weekends = ''.join(weekends)
 
         if is_first_fail:
-            passed.append((name_phrase, phrase))
+            passed.append((name_phrase, phrase, weekends))
         else:
             loosers.append((name_phrase, phrase))
 
     added_text = str()
-    weekends = ''.join(weekends)
 
-    for i, (name_phrase, phrase) in enumerate(passed):
+    for i, (name_phrase, phrase, weekends) in enumerate(passed):
         added_text += f"{i+1}. {name_phrase} {weekends}\n{phrase}\n\n"
 
     for j, (name_phrase, phrase) in enumerate(loosers):
