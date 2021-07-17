@@ -13,4 +13,4 @@ def refresh_posts(context):
         rebuild_message(context, data)
 
 def refresh_posts_job(job):
-    job.run_daily(callback = refresh_posts, time = time(12, POST_MINUTE), days = [x for x in range(POST_WEEKDAY)], name = 'refresh_posts')
+    job.run_daily(callback = refresh_posts, time = time(POST_HOUR, POST_MINUTE), days = [x for x in range(POST_WEEKDAY)], name = 'refresh_posts')
