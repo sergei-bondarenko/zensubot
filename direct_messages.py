@@ -266,7 +266,7 @@ def get_stat(update, context):
     text += "</pre>"
     link = TelegraphPost.post_to_telegraph(text)
 
-    bot_message_to_chat(context, '@hvugfyfx', text, delete = 0)
+    bot_message_to_chat(context, '@hvugfyfx', text.replace('<br>', '\n'), delete = 0, parse_mode='HTML')
 
     text = f'''Твоя статистика готова, <a href="tg://user?id={user_id}">{user_name}</a>\n\n{link}'''
     return text
