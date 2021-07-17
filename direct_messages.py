@@ -88,15 +88,17 @@ def parse_start(update, context) -> int:
         )
         return EDIT_TEMPLATE if query.data == "edit_template" else EDIT_RESPONSE_TYPE
     if query.data == "rebuild":
-        context.bot.delete_message(
-            chat_id=query.message.chat_id, message_id=query.message.message_id
-        )
+        
         q = f"""select jobs.* , date_part('day', now()-created), 0, case when photo_id != 'None' then true else false end
                     from jobs left join post_templates on job_type = type
                     where date_part('day', now()-created) < {JOB_DAYS_DURATION} and type != 0"""
-        for vals in db_query(q):
-            print(vals)
-            data = CollectData(None, True, *vals)
+        rows = db_query(q)
+        for i, row in enumerate(rows):
+            context.bot.edit_message_text(
+                text = f"Выполнено {i+1}/{len(rows)}!",
+                chat_id=query.message.chat_id, 
+                message_id=query.message.message_id)
+            data = CollectData(None, True, *row)
             rebuild_message(context, data)
         context.bot.send_message(chat_id=update.effective_chat.id, text="Готово!")
         return ConversationHandler.END
