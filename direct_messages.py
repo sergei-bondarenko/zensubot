@@ -4,7 +4,7 @@ from telegraph_posting import TelegraphPost
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ParseMode
 from telegram.ext import ConversationHandler
 
-from bot_functions import bot_message_to_chat, minutes_to_hours
+from bot_functions import minutes_to_hours
 from database import db_query
 from responses import Responses
 
@@ -237,11 +237,11 @@ def write_response(update, context):
 
 def stat(update, context):
     context.bot.send_message(chat_id = update.effective_message.chat_id, 
-                            text = get_stat(update, context),
+                            text = get_stat(update),
                             parse_mode = ParseMode.HTML,
                             disable_web_page_preview = True)
 
-def get_stat(update, context):
+def get_stat(update):
     EMPTY_SYMBOL = ' ‎'
 
     user_id = update.effective_user["id"]
@@ -265,8 +265,6 @@ def get_stat(update, context):
 
     text += "</pre>"
     link = TelegraphPost.post_to_telegraph(text)
-
-    bot_message_to_chat(context, '@hvugfyfx', text.replace('<br>', '\n'), delete = 0, parse_mode='HTML')
 
     text = f'''Твоя статистика готова, <a href="tg://user?id={user_id}">{user_name}</a>\n\n{link}'''
     return text
