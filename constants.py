@@ -10,3 +10,7 @@ POST_HOUR = 21
 POST_MINUTE = 1
 JOB_DAYS_DURATION = 7
 
+
+# Remind 3 hours before the end of the day from Tue to Fri.
+REMINDER_DELTA = 3
+REMINDER_DAYS = [1, 2, 3, 4]
