@@ -87,7 +87,8 @@ def rebuild_message(context, data):
         f"select caption from post_templates where job_type = {data.job_type}"
     )[0][0]
     text = fill_template(text, data.order_number, data.start_date)
-
+    #order_number, start_date, job_id, cur_day
+    #user_id may be 0
     text, work_today = get_posted_message(text, data)
 
     try:
