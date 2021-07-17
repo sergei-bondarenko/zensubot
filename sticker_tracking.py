@@ -183,7 +183,7 @@ def get_posted_message(text, data):
             day = int(day)
 
             # Checking if today is the first activity of user
-            if user_id == data.cur_user_id and i == data.cur_day:
+            if user_id == data.user_id and i == data.cur_day:
                 work_today = day
             
             if day >= 5:
