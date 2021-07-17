@@ -6,7 +6,6 @@ from telegram import ParseMode
 from telegram.error import BadRequest
 
 from database import db_query
-from post_scheduler import JOB_DAYS_DURATION
 from responses import Responses
 
 logger = logging.getLogger(__name__)
@@ -89,7 +88,7 @@ class CollectData:
                         left join stickers on stickers.text_id = '{message['sticker']['file_unique_id']}'
                         where message_id = {self.job_message_id} 
                         and chat_id = {self.job_chat_id} 
-                        and DATE_PART('day', now()-jobs.created) < {JOB_DAYS_DURATION}
+                        and DATE_PART('day', now()-jobs.created) < 7
                         group by jobs.id, jobs.created, DATE_PART('day', now()-jobs.created), type, order_number , stickers.id, power
                 """
                 )[0]
