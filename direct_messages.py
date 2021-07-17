@@ -94,16 +94,12 @@ def parse_start(update, context) -> int:
                     where date_part('day', now()-created) < {JOB_DAYS_DURATION} and type != 0"""
         rows = db_query(q)
         for i, row in enumerate(rows):
+            data = CollectData(None, True, *row)
+            rebuild_message(context, data)
             context.bot.edit_message_text(
                 text = f"Выполнено {i+1}/{len(rows)}!",
                 chat_id=query.message.chat_id, 
                 message_id=query.message.message_id)
-            data = CollectData(None, True, *row)
-            rebuild_message(context, data)
-        context.bot.delete_message(
-            chat_id=query.message.chat_id, message_id=query.message.message_id
-        )
-        context.bot.send_message(chat_id=update.effective_chat.id, text="Готово!")
         return ConversationHandler.END
     if query.data == "end":
         context.bot.delete_message(
