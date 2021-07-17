@@ -16,7 +16,7 @@ def stickers(update, context):
         if upd.yesterday_work != 0 or upd.cur_day == 0:
             # Inserting new job_update
             db_query(
-                f"insert into jobs_updates (user_id, job_id, sticker_id) values ({data.user_id}, {data.job_id}, {data.sticker_id})",
+                f"insert into jobs_updates (user_id, job_id, sticker_id) values ({upd.user_id}, {upd.job_id}, {upd.sticker_id})",
                 False,
             )
 
