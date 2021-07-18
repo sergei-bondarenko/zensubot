@@ -8,6 +8,8 @@ from bot_functions import bot_message_to_chat
 
 
 logger = logging.getLogger(__name__)
+
+# TODO: remove this.
 # post_time = f"{POST_HOUR}:{POST_MINUTE}:00"
 post_time = f"19:00:00"
 
@@ -25,10 +27,9 @@ def send_notification(context):
         True,
     )
     for job_id, message_id, chat_id in jobs:
-        logger.info(f"{job_id}: {type(job_id)}")
+        # TODO: remove this.
         if job_id != 140:
             continue
-        logger.info(f"{job_id}: {type(job_id)}")
 
         # Get users which already have sent stickers today.
         completed_users = set(db_query(
@@ -57,7 +58,7 @@ def send_notification(context):
 
 def reminder(job):
     # job.run_daily(callback = send_notification, time = time(POST_HOUR - REMINDER_DELTA, POST_MINUTE), days = REMINDER_DAYS, name = 'reminder_ok')
-    job.run_daily(callback = send_notification, time = time(9, 45), days = [6], name = 'reminder_ok')
+    job.run_daily(callback = send_notification, time = time(9, 48), days = [6], name = 'reminder_ok')
 
     # job.run_repeating(callback = send_notification, interval = timedelta(seconds = 20), name = 'reminder_ok')
     pass
