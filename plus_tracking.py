@@ -15,6 +15,10 @@ def plus(update, context):
 
     user_status = context.bot.get_chat_member(chat_id=chat_id, user_id=user_id).status
 
+    import logging
+    logger = logging.getLogger(__name__)
+    logger.info(f"message: {update.message.reply_to_message}")
+
     # Filter only accepted users
     if user_status not in STATUS:
         text = "Твой голос не учтен! Для голосования нужно получить прописку в чате."
