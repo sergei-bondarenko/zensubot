@@ -8,10 +8,7 @@ from bot_functions import bot_message_to_chat
 
 
 logger = logging.getLogger(__name__)
-
-# TODO: remove this.
-# post_time = f"{POST_HOUR}:{POST_MINUTE}:00"
-post_time = f"21:00:00"
+post_time = f"{POST_HOUR}:{POST_MINUTE}:00"
 
 
 def send_notification(context, chat_id, message_id, completed_users_query, all_users_query):
@@ -36,20 +33,14 @@ def reminder_callback(context):
     two_days_ago = cur_date - timedelta(days=2)
     two_days_ago = two_days_ago.strftime('%Y-%m-%d') + f" {post_time}"
 
-    # TODO: Switch to zero.
-    # Check the participants of last week on Monday.
-    if cur_date.weekday() == 6:
-    # if cur_date.weekday() == 0:
+    # Check the participants of the last week on Monday.
+    if cur_date.weekday() == 0:
         jobs_types = db_query('select id from jobs_types', True)
         for job_type in jobs_types:
             jobs = db_query(f"select id, message_id, chat_id from jobs where type = {job_type[0]} order by id desc limit 2", True)
             if len(jobs) == 2:
                 job_id, message_id, chat_id = jobs[0]
                 old_job_id, _, _ = jobs[1]
-
-                # TODO: remove this.
-                if old_job_id != 140:
-                    continue
                 send_notification(context, chat_id, message_id,
                     f"select distinct(user_id) from jobs_updates where job_id = {job_id}",
                     f"select distinct(user_id) from jobs_updates where job_id = {old_job_id}")
@@ -62,18 +53,9 @@ def reminder_callback(context):
             True,
         )
         for job_id, message_id, chat_id in jobs:
-            # TODO: remove this.
-            if job_id != 140:
-                continue
-    
             send_notification(context, chat_id, message_id,
                 f"select distinct(user_id) from jobs_updates where job_id = {job_id} and created > '{yesterday}'",
                 f"select distinct(user_id) from jobs_updates where job_id = {job_id} and created >= '{two_days_ago}'")
 
 def reminder(job):
-    # TODO: remove comments and "pass" here.
-    # job.run_daily(callback = reminder_callback, time = time(POST_HOUR - REMINDER_DELTA, POST_MINUTE), days = REMINDER_DAYS, name = 'reminder_ok')
-    job.run_daily(callback = reminder_callback, time = time(16, 19), days = [6], name = 'reminder_ok')
-
-    # job.run_repeating(callback = reminder_callback, interval = timedelta(seconds = 20), name = 'reminder_ok')
-    pass
+    job.run_daily(callback = reminder_callback, time = time(POST_HOUR - REMINDER_DELTA, POST_MINUTE), days = REMINDER_DAYS, name = 'reminder_ok')
