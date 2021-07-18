@@ -16,7 +16,7 @@ post_time = f"21:00:00"
 
 def send_notification(context):
     logger.info(f"context: {context}")
-    logger.info(f"context type: {type(context)}")
+    logger.info(f"context dir: {dir(context)}")
     cur_date = datetime.now()
     yesterday = cur_date - timedelta(days=1)
     yesterday = yesterday.strftime('%Y-%m-%d') + f" {post_time}"
@@ -62,7 +62,7 @@ def send_notification(context):
 def reminder(job):
     # TODO: remove comments and "pass" here.
     # job.run_daily(callback = send_notification, time = time(POST_HOUR - REMINDER_DELTA, POST_MINUTE), days = REMINDER_DAYS, name = 'reminder_ok')
-    job.run_daily(callback = send_notification, time = time(9, 58), days = [6], name = 'reminder_ok')
+    job.run_daily(callback = send_notification, time = time(10, 00), days = [6], name = 'reminder_ok')
 
     # job.run_repeating(callback = send_notification, interval = timedelta(seconds = 20), name = 'reminder_ok')
     pass
