@@ -7,7 +7,7 @@ from constants import POST_HOUR, POST_MINUTE, REMINDER_DELTA, REMINDER_DAYS
 
 logger = logging.getLogger(__name__)
 # post_time = f"{POST_HOUR}:{POST_MINUTE}:00"
-post_time = f"20:00:00"
+post_time = f"19:00:00"
 
 
 def send_notification(context):
@@ -44,7 +44,7 @@ def send_notification(context):
             first_name = db_query(
                 f"select first_name from users where id = {user_id[0]}",
                 True,
-            )[0]
+            )[0][0]
             message += f'<a href="tg://user?id={user_id[0]}">{first_name}</a>, '
         message += f"день закончится через {REMINDER_DELTA} часа. Ты не забыл отметиться?"
         logger.info(message)
@@ -56,7 +56,7 @@ def send_notification(context):
 
 def reminder(job):
     # job.run_daily(callback = send_notification, time = time(POST_HOUR - REMINDER_DELTA, POST_MINUTE), days = REMINDER_DAYS, name = 'reminder_ok')
-    job.run_daily(callback = send_notification, time = time(9, 26), days = [6], name = 'reminder_ok')
+    job.run_daily(callback = send_notification, time = time(9, 30), days = [6], name = 'reminder_ok')
 
     # job.run_repeating(callback = send_notification, interval = timedelta(seconds = 20), name = 'reminder_ok')
     pass
