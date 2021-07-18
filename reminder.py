@@ -15,8 +15,6 @@ post_time = f"21:00:00"
 
 
 def send_notification(context):
-    logger.info(f"context: {context}")
-    logger.info(f"context dir: {dir(context)}")
     cur_date = datetime.now()
     yesterday = cur_date - timedelta(days=1)
     yesterday = yesterday.strftime('%Y-%m-%d') + f" {post_time}"
@@ -24,7 +22,7 @@ def send_notification(context):
     two_days_ago = two_days_ago.strftime('%Y-%m-%d') + f" {post_time}"
 
     # Check the participants of last week on Monday.
-    if cur_date.weekday() == 0:
+    if cur_date.weekday() == 6:
         jobs_types = db_query('select id from jobs_types', True)
         for job_type in jobs_types:
             jobs = db_query('select * from jobs where type = 1 order by id desc limit 2', True)
