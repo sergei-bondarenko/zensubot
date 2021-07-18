@@ -6,14 +6,16 @@ from constants import POST_HOUR, POST_MINUTE, REMINDER_DELTA, REMINDER_DAYS
 
 
 logger = logging.getLogger(__name__)
+# post_time = f"{POST_HOUR}:{POST_MINUTE}:00"
+post_time = f"20:00:00"
 
 
 def send_notification(context):
     cur_date = datetime.now()
     yesterday = cur_date - timedelta(days=1)
-    yesterday = yesterday.strftime('%Y-%m-%d') + f" {POST_HOUR}:{POST_MINUTE}:00"
+    yesterday = yesterday.strftime('%Y-%m-%d') + f" {post_time}"
     two_days_ago = cur_date - timedelta(days=2)
-    two_days_ago = two_days_ago.strftime('%Y-%m-%d') + f" {POST_HOUR}:{POST_MINUTE}:00"
+    two_days_ago = two_days_ago.strftime('%Y-%m-%d') + f" {post_time}"
 
     jobs = db_query(
         'select t2.id, t2.message_id, t2.chat_id from (select max(id) as id, type from jobs group by type) t1 '
@@ -43,7 +45,7 @@ def send_notification(context):
 
 def reminder(job):
     # job.run_daily(callback = send_notification, time = time(POST_HOUR - REMINDER_DELTA, POST_MINUTE), days = REMINDER_DAYS, name = 'reminder_ok')
-    job.run_daily(callback = send_notification, time = time(8, 51), days = [6], name = 'reminder_ok')
+    job.run_daily(callback = send_notification, time = time(8, 57), days = [6], name = 'reminder_ok')
 
     # job.run_repeating(callback = send_notification, interval = timedelta(seconds = 20), name = 'reminder_ok')
     pass
