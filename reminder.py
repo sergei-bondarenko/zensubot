@@ -27,6 +27,9 @@ def send_notification(context, chat_id, message_id, completed_users_query, all_u
 
 
 def reminder_callback(context):
+    bot_message_to_chat(context, "-1001528853084", "Тест", reply_to_message = 41, parse_mode = ParseMode.HTML)
+    return
+
     cur_date = datetime.now()
     yesterday = cur_date - timedelta(days=1)
     yesterday = yesterday.strftime('%Y-%m-%d') + f" {post_time}"
@@ -57,6 +60,7 @@ def reminder_callback(context):
                 f"select distinct(user_id) from jobs_updates where job_id = {job_id} and created > '{yesterday}'",
                 f"select distinct(user_id) from jobs_updates where job_id = {job_id} and created >= '{two_days_ago}'")
 
+
 def reminder(job):
-    job.run_daily(callback = reminder_callback, time = time(POST_HOUR - REMINDER_DELTA, POST_MINUTE), days = REMINDER_DAYS, name = 'reminder_ok')
-    bot_message_to_chat(context, "-1001528853084", "Тест", reply_to_message = 41, parse_mode = ParseMode.HTML)
+    #job.run_daily(callback = reminder_callback, time = time(POST_HOUR - REMINDER_DELTA, POST_MINUTE), days = REMINDER_DAYS, name = 'reminder_ok')
+    job.run_daily(callback = reminder_callback, time = time(18, 17), days = [6], name = 'reminder_ok')
