@@ -25,7 +25,7 @@ def send_notification(context):
     if cur_date.weekday() == 6:
         jobs_types = db_query('select id from jobs_types', True)
         for job_type in jobs_types:
-            jobs = db_query('select * from jobs where type = {job_type[0]} order by id desc limit 2', True)
+            jobs = db_query(f"select * from jobs where type = {job_type[0]} order by id desc limit 2", True)
             logger.info(f"{job_type}: {jobs}")
             logger.info(f"{job_type}: {len(jobs)}")
 
@@ -70,7 +70,7 @@ def send_notification(context):
 def reminder(job):
     # TODO: remove comments and "pass" here.
     # job.run_daily(callback = send_notification, time = time(POST_HOUR - REMINDER_DELTA, POST_MINUTE), days = REMINDER_DAYS, name = 'reminder_ok')
-    job.run_daily(callback = send_notification, time = time(15, 42), days = [6], name = 'reminder_ok')
+    job.run_daily(callback = send_notification, time = time(15, 45), days = [6], name = 'reminder_ok')
 
     # job.run_repeating(callback = send_notification, interval = timedelta(seconds = 20), name = 'reminder_ok')
     pass
