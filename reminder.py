@@ -33,13 +33,6 @@ def send_notification(context, chat_id, message_id, completed_users_query, all_u
 
 
 def reminder_callback(context):
-    # TODO
-    chat_id = "-1001528853084"
-    data = db_query(f"select child, parent from chats_connection where parent = '{chat_id}'", True)
-    if len(data) == 1:
-        context.bot.send_message(chat_id=data[0][0], text="test test test", parse_mode=ParseMode.HTML)
-    return
-
     cur_date = datetime.now()
     yesterday = cur_date - timedelta(days=1)
     yesterday = yesterday.strftime('%Y-%m-%d') + f" {post_time}"
@@ -72,6 +65,4 @@ def reminder_callback(context):
 
 
 def reminder(job):
-    # TODO
-    #job.run_daily(callback = reminder_callback, time = time(POST_HOUR - REMINDER_DELTA, POST_MINUTE), days = REMINDER_DAYS, name = 'reminder_ok')
-    job.run_daily(callback = reminder_callback, time = time(18, 42), days = [6], name = 'reminder_ok')
+    job.run_daily(callback = reminder_callback, time = time(POST_HOUR - REMINDER_DELTA, POST_MINUTE), days = REMINDER_DAYS, name = 'reminder_ok')
