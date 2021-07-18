@@ -23,11 +23,21 @@ def send_notification(context, chat_id, message_id, completed_users_query, all_u
         text += f'<a href="tg://user?id={user_id[0]}">{first_name}</a>, '
     if text != "":
         text += f"день закончится через {REMINDER_DELTA} часа. Ты не забыл отметиться?"
-        bot_message_to_chat(context, chat_id, text, reply_to_message = message_id, parse_mode = ParseMode.HTML)
+
+        # Check if we are in a cannel or in a chat.
+        data = db_query(f"select child, parent from chats_connection where parent = '{chat_id}'", True)[0]
+        if len(data) == 1:
+            context.bot.send_message(chat_id=data[0], text=text, parse_mode=ParseMode.HTML)
+        else:
+            bot_message_to_chat(context, chat_id, text, reply_to_message = message_id, parse_mode = ParseMode.HTML)
 
 
 def reminder_callback(context):
-    bot_message_to_chat(context, "-1001528853084", "Тест", reply_to_message = 41, parse_mode = ParseMode.HTML)
+    # TODO
+    chat_id = "-1001528853084"
+    data = db_query(f"select child, parent from chats_connection where parent = '{chat_id}'", True)[0]
+    if len(data) == 1:
+        context.bot.send_message(chat_id=data[0], text="test test test", parse_mode=ParseMode.HTML)
     return
 
     cur_date = datetime.now()
@@ -62,5 +72,6 @@ def reminder_callback(context):
 
 
 def reminder(job):
+    # TODO
     #job.run_daily(callback = reminder_callback, time = time(POST_HOUR - REMINDER_DELTA, POST_MINUTE), days = REMINDER_DAYS, name = 'reminder_ok')
-    job.run_daily(callback = reminder_callback, time = time(18, 17), days = [6], name = 'reminder_ok')
+    job.run_daily(callback = reminder_callback, time = time(18, 37), days = [6], name = 'reminder_ok')
