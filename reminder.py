@@ -1,8 +1,10 @@
 import logging
 from datetime import datetime, timedelta, time
+from telegram import ParseMode
 
 from database import db_query
 from constants import POST_HOUR, POST_MINUTE, REMINDER_DELTA, REMINDER_DAYS
+from bot_functions import bot_message_to_chat
 
 
 logger = logging.getLogger(__name__)
@@ -39,24 +41,23 @@ def send_notification(context):
             True,
         ))
 
-        message = ""
+        text = ""
         for user_id in all_users - completed_users:
             first_name = db_query(
                 f"select first_name from users where id = {user_id[0]}",
                 True,
             )[0][0]
-            message += f'<a href="tg://user?id={user_id[0]}">{first_name}</a>, '
-        message += f"день закончится через {REMINDER_DELTA} часа. Ты не забыл отметиться?"
-        logger.info(message)
+            text += f'<a href="tg://user?id={user_id[0]}">{first_name}</a>, '
 
-            #context.bot.send_message(chat_id = update.effective_message.chat_id, 
-            #                         text = get_stat(update),
-            #                         parse_mode = ParseMode.HTML)
+        if text != "":
+            text += f"день закончится через {REMINDER_DELTA} часа. Ты не забыл отметиться?"
+            logger.info(text)
+            bot_message_to_chat(context, chat_id, text, reply_to_message = message_id, parse_mode = ParseMode.HTML)
 
 
 def reminder(job):
     # job.run_daily(callback = send_notification, time = time(POST_HOUR - REMINDER_DELTA, POST_MINUTE), days = REMINDER_DAYS, name = 'reminder_ok')
-    job.run_daily(callback = send_notification, time = time(9, 30), days = [6], name = 'reminder_ok')
+    job.run_daily(callback = send_notification, time = time(9, 45), days = [6], name = 'reminder_ok')
 
     # job.run_repeating(callback = send_notification, interval = timedelta(seconds = 20), name = 'reminder_ok')
     pass
