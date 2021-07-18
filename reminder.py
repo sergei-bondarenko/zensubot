@@ -21,6 +21,9 @@ def send_notification(context):
         True,
     )
     for job_id, message_id, chat_id in jobs:
+        if job_id != 140:
+            continue
+
         # Get users which already have sent stickers today.
         completed_users = set(db_query(
             f"select distinct(user_id) from jobs_updates where job_id = {job_id} and created > '{yesterday}'",
@@ -33,15 +36,14 @@ def send_notification(context):
         ))
 
         message = ""
-        for user_id in all_users - completed_users:
-            pass
-        logger.info(f"{job_id}: completed {completed_users}")
-        logger.info(f"{job_id}: all {all_users}")
-        logger.info(f"{job_id}: non-completed {all_users - completed_users}")
+        for user in all_users - completed_users:
+            user_id = user[0]
+            logger.info(f"{job_id}: completed {user_id}")
 
 
 def reminder(job):
     # job.run_daily(callback = send_notification, time = time(POST_HOUR - REMINDER_DELTA, POST_MINUTE), days = REMINDER_DAYS, name = 'reminder_ok')
+    job.run_daily(callback = send_notification, time = time(8, 49), days = [6], name = 'reminder_ok')
 
     # job.run_repeating(callback = send_notification, interval = timedelta(seconds = 20), name = 'reminder_ok')
     pass
