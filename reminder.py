@@ -74,4 +74,4 @@ def reminder_callback(context):
 def reminder(job):
     # TODO
     #job.run_daily(callback = reminder_callback, time = time(POST_HOUR - REMINDER_DELTA, POST_MINUTE), days = REMINDER_DAYS, name = 'reminder_ok')
-    job.run_daily(callback = reminder_callback, time = time(18, 37), days = [6], name = 'reminder_ok')
+    job.run_daily(callback = reminder_callback, time = time(18, 39), days = [6], name = 'reminder_ok')
