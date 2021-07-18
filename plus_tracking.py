@@ -15,24 +15,21 @@ def plus(update, context):
 
     user_status = context.bot.get_chat_member(chat_id=chat_id, user_id=user_id).status
 
-    try:
-        import logging
-        logger = logging.getLogger(__name__)
-        logger.info(f"message: {update.message.reply_to_message}")
-        logger.info(f"message from: {update.message.reply_to_message.from}")
-        logger.info(f"message id: {update.message.reply_to_message.from.id}")
-        if user_id == update.message.reply_to_message.from.id:
-            text = "Твой голос не учтен! Самолайк не считается."
-            bot_message_to_chat(
-                context,
-                chat_id,
-                text,
-                60,
-                plus_message,
-            )
-            return None
-    except:
-        pass
+    import logging
+    logger = logging.getLogger(__name__)
+    logger.info(f"message: {update.message.reply_to_message}")
+    logger.info(f"message from: {update.message.reply_to_message.from_user}")
+    logger.info(f"message id: {update.message.reply_to_message.from_user.id}")
+    if user_id == update.message.reply_to_message.from_user.id:
+        text = "Твой голос не учтен! Самолайк не считается."
+        bot_message_to_chat(
+            context,
+            chat_id,
+            text,
+            60,
+            plus_message,
+        )
+        return None
 
     # Filter only accepted users
     if user_status not in STATUS:
