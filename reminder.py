@@ -40,14 +40,23 @@ def send_notification(context):
         ))
 
         message = ""
-        for user in all_users - completed_users:
-            user_id = user[0]
-            logger.info(f"{job_id}: completed {user_id}")
+        for user_id in all_users - completed_users:
+            first_name = db_query(
+                f"select first_name from users where id = {user_id[0]}",
+                True,
+            )[0]
+            message += f"<a href="tg://user?id={user_id[0]}">{first_name}</a>, "
+        message += f"день закончится через {REMINDER_DELTA} часа. Ты не забыл отметиться?"
+        logger.info(message)
+
+            #context.bot.send_message(chat_id = update.effective_message.chat_id, 
+            #                         text = get_stat(update),
+            #                         parse_mode = ParseMode.HTML)
 
 
 def reminder(job):
     # job.run_daily(callback = send_notification, time = time(POST_HOUR - REMINDER_DELTA, POST_MINUTE), days = REMINDER_DAYS, name = 'reminder_ok')
-    job.run_daily(callback = send_notification, time = time(9, 7), days = [6], name = 'reminder_ok')
+    job.run_daily(callback = send_notification, time = time(9, 22), days = [6], name = 'reminder_ok')
 
     # job.run_repeating(callback = send_notification, interval = timedelta(seconds = 20), name = 'reminder_ok')
     pass
