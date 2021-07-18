@@ -19,9 +19,9 @@ def plus(update, context):
         import logging
         logger = logging.getLogger(__name__)
         logger.info(f"message: {update.message.reply_to_message}")
-        logger.info(f"message from: {update.message.reply_to_message['from']}")
-        logger.info(f"message id: {update.message.reply_to_message['from']['id']}")
-        if user_id == update.message.reply_to_message["from"]["id"]:
+        logger.info(f"message from: {update.message.reply_to_message.from}")
+        logger.info(f"message id: {update.message.reply_to_message.from.id}")
+        if user_id == update.message.reply_to_message.from.id:
             text = "Твой голос не учтен! Самолайк не считается."
             bot_message_to_chat(
                 context,
