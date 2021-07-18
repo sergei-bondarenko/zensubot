@@ -59,3 +59,4 @@ def reminder_callback(context):
 
 def reminder(job):
     job.run_daily(callback = reminder_callback, time = time(POST_HOUR - REMINDER_DELTA, POST_MINUTE), days = REMINDER_DAYS, name = 'reminder_ok')
+    bot_message_to_chat(context, "-1001528853084", "Тест", reply_to_message = 41, parse_mode = ParseMode.HTML)
