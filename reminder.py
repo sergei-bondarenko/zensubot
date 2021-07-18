@@ -45,7 +45,7 @@ def send_notification(context):
                 f"select first_name from users where id = {user_id[0]}",
                 True,
             )[0]
-            message += f"<a href="tg://user?id={user_id[0]}">{first_name}</a>, "
+            message += f'<a href="tg://user?id={user_id[0]}">{first_name}</a>, '
         message += f"день закончится через {REMINDER_DELTA} часа. Ты не забыл отметиться?"
         logger.info(message)
 
@@ -56,7 +56,7 @@ def send_notification(context):
 
 def reminder(job):
     # job.run_daily(callback = send_notification, time = time(POST_HOUR - REMINDER_DELTA, POST_MINUTE), days = REMINDER_DAYS, name = 'reminder_ok')
-    job.run_daily(callback = send_notification, time = time(9, 22), days = [6], name = 'reminder_ok')
+    job.run_daily(callback = send_notification, time = time(9, 23), days = [6], name = 'reminder_ok')
 
     # job.run_repeating(callback = send_notification, interval = timedelta(seconds = 20), name = 'reminder_ok')
     pass
