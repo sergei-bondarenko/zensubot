@@ -21,6 +21,8 @@ def delete_message(context) -> None:
 
 
 def fill_template(text, n, start_date = datetime.now()) -> str:
+    print(start_date)
+    print(datetime.now())
     UTC_PLUS = 3
     text = re.sub('([#№])N', f"\g<1>{n}", text, flags=re.I)
     for day in range(5):
