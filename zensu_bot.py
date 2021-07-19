@@ -8,7 +8,7 @@ from telegram.ext import (CallbackQueryHandler, ChatMemberHandler,
 
 from chats_tracking import track_chats
 from commands import stat
-from database import clean_plus_data
+from database import clean_data
 from direct_messages import (CREATE_POST, EDIT_TEMPLATE, PARSE_START, SAVE_TEMPLATE,
                              PARSE_TYPE, PARSE_WHERE_TO_POST, 
                              EDIT_RESPONSE_TYPE, PARSE_RESPONSE_TYPE, WRITE_RESPONSES,
@@ -102,7 +102,7 @@ def main() -> None:
     create_post_sc(jobs)
 
     # Clean plus_data every 2 days
-    clean_plus_data(jobs)
+    clean_data(jobs)
 
     # Update posts every day except scheduled day of posting
     refresh_posts_job(jobs)
