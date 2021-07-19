@@ -9,6 +9,7 @@ def refresh_posts(context):
                     where date_part('day', now()-created) < {JOB_DAYS_DURATION} and type != 0"""
     rows = db_query(q)
     for row in rows:
+        # Example of on demand PostUpdater
         upd = PostUpdater(None, True, *row)
         upd.rebuild_message(context)
 

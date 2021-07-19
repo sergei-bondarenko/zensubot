@@ -1,7 +1,9 @@
 import re
 from datetime import datetime, timedelta
 
-def bot_message_to_chat(context, chat_id, text, delete = 0, reply_to_message = None, parse_mode = None):
+from telegram.ext import CallbackContext
+
+def bot_message_to_chat(context: CallbackContext, chat_id: int, text: str, delete: int = 0, reply_to_message: int = None, parse_mode: str = None) -> None:
     posted_message = context.bot.send_message(
         chat_id=chat_id,
         text=text,
@@ -15,12 +17,12 @@ def bot_message_to_chat(context, chat_id, text, delete = 0, reply_to_message = N
             context=[posted_message.message_id, chat_id],
         )
 
-def delete_message(context) -> None:
+def delete_message(context: CallbackContext) -> None:
     job = context.job.context
     context.bot.delete_message(chat_id=job[1], message_id=job[0])
 
 
-def fill_template(text, n, start_date = datetime.now()) -> str:
+def fill_template(text: str, n: int, start_date: datetime = datetime.now()) -> str:
     UTC_PLUS = 3
     text = re.sub('([#№])N', f"\g<1>{n}", text, flags=re.I)
     for day in range(5):
@@ -31,7 +33,7 @@ def fill_template(text, n, start_date = datetime.now()) -> str:
     return text
 
 
-def minutes_to_hours(minutes, mode = 0):
+def minutes_to_hours(minutes: int, mode = 0) -> str:
     if mode == 0:
         return f"{minutes // 60}h {(minutes % 60):02d}m"
     if mode == 1:

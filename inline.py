@@ -1,3 +1,4 @@
+"""Base for inline functions which are now not used because of their infrequent updates"""
 from uuid import uuid4
 
 from telegram import InlineQueryResultArticle, InputTextMessageContent, ParseMode

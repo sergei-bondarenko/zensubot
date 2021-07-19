@@ -1,14 +1,14 @@
+"""Sample finite-state machine"""
 import logging
 
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ParseMode
-from telegram.ext import ConversationHandler
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
+from telegram.ext import CallbackContext, ConversationHandler
 
-from bot_functions import minutes_to_hours
 from database import db_query
 from refresh_posts import refresh_posts
 from responses import Responses
-from telegraph_posting import TelegraphPost
 
+#These constants provided to zensu_bot conv_handler
 (
     PARSE_START,
     PARSE_WHERE_TO_POST,
@@ -24,7 +24,15 @@ from telegraph_posting import TelegraphPost
 logger = logging.getLogger(__name__)
 
 
-def get_reply_keyboard(query):
+def get_reply_keyboard(query: str) -> list:
+    """Generate reply keyboard from query
+
+    Args:
+        query (str): Sql query in form (id, text)
+
+    Returns:
+        list: List of buttons
+    """
     data = db_query(query)
 
     reply_keyboard = list()
@@ -34,8 +42,7 @@ def get_reply_keyboard(query):
     return reply_keyboard
 
 
-def start(update, context) -> int:
-
+def start(update: Update, context: CallbackContext) -> int:
     logger.info(
         f"@{update.effective_user.username}, {update.effective_user.first_name} started bot"
     )
@@ -63,7 +70,7 @@ def start(update, context) -> int:
     return PARSE_START
 
 
-def parse_start(update, context) -> int:
+def parse_start(update: Update, context: CallbackContext) -> int:
     query = update.callback_query
     if query.data == "add_post":
 
@@ -103,7 +110,7 @@ def parse_start(update, context) -> int:
         return ConversationHandler.END
 
 
-def parse_where_to_post(update, context) -> int:
+def parse_where_to_post(update: Update, context: CallbackContext) -> int:
     query = update.callback_query
     context.user_data["chosen_group"] = query.data
 
@@ -123,7 +130,7 @@ def parse_where_to_post(update, context) -> int:
     return PARSE_TYPE
 
 
-def parse_type(update, context) -> int:
+def parse_type(update: Update, context: CallbackContext) -> int:
     query = update.callback_query
     context.user_data["chosen_type"] = query.data
 
@@ -140,7 +147,7 @@ def parse_type(update, context) -> int:
     return CREATE_POST
 
 
-def create_post(update, context) -> int:
+def create_post(update: Update, context: CallbackContext) -> int:
     # context.bot.send_message(chat_id=update.effective_chat.id, text=context.user_data["chosen_group"] + '\n\n' + update.message.text)
     posted_message = context.bot.copy_message(
         chat_id=context.user_data["chosen_group"],
@@ -161,11 +168,11 @@ def create_post(update, context) -> int:
     return ConversationHandler.END
 
 
-def cancel(update, context) -> int:
+def cancel(update: Update, context: CallbackContext) -> int:
     return ConversationHandler.END
 
 
-def edit_template(update, context) -> int:
+def edit_template(update: Update, context: CallbackContext) -> int:
     query = update.callback_query
     context.user_data["chosen_type"] = query.data
     photo_id, caption = db_query(
@@ -180,7 +187,7 @@ def edit_template(update, context) -> int:
     return SAVE_TEMPLATE
 
 
-def save_template(update, context) -> int:
+def save_template(update: Update, context: CallbackContext) -> int:
     photo_id, caption = db_query(
         f'select photo_id, caption from post_templates where job_type = {context.user_data["chosen_type"]}',
         True,
@@ -202,7 +209,7 @@ def save_template(update, context) -> int:
     return ConversationHandler.END
 
 
-def edit_response_type(update, context):
+def edit_response_type(update: Update, context: CallbackContext) -> int:
     query = update.callback_query
     context.user_data["chosen_job_type"] = query.data
 
@@ -217,7 +224,7 @@ def edit_response_type(update, context):
     )
     return PARSE_RESPONSE_TYPE
 
-def parse_response_type(update, context):
+def parse_response_type(update: Update, context: CallbackContext) -> int:
     query = update.callback_query
     context.user_data["chosen_response_type"] = query.data
 
@@ -228,7 +235,7 @@ def parse_response_type(update, context):
     )
     return WRITE_RESPONSES
 
-def write_response(update, context):
+def write_response(update: Update, context: CallbackContext) -> int:
     job_type = int(context.user_data['chosen_job_type'])
     response_type = int(context.user_data['chosen_response_type'])
 
@@ -244,38 +251,3 @@ def write_response(update, context):
 
     context.bot.send_message(chat_id=update.effective_chat.id, text="Готово!")
     return ConversationHandler.END
-
-
-def stat(update, context):
-    context.bot.send_message(chat_id = update.effective_message.chat_id, 
-                            text = get_stat(update),
-                            parse_mode = ParseMode.HTML,
-                            disable_web_page_preview = True)
-
-def get_stat(update):
-    EMPTY_SYMBOL = ' ‎'
-
-    user_id = update.effective_user["id"]
-    user_name = update.effective_user["first_name"]
-
-    query = db_query(f"""select type, sum(case when max >= 4 then 1 else 0 end) as ended, count(max) as started, coalesce(sum(summ), 0)::integer
-                            from
-                                (select jobs_types."type", max(jobs_types.id) as types_id, jobs.id, max(date_part('day', jobs_updates.created - jobs.created)), sum(coalesce(stickers.power, 15 * power(2,sticker_id%5-1))) as summ
-                                    from jobs_types left join jobs on jobs.type = jobs_types.id left join jobs_updates on jobs.id = jobs_updates.job_id and user_id = {user_id} left join stickers on stickers.id = jobs_updates.sticker_id 
-                                    where  jobs_types.id != 0
-                                    group by jobs_types."type", jobs.id) t
-                            group by type, types_id
-                            order by types_id""")
-    
-    text = f'<b>Статистика пятидневок {user_name}</b><br>'
-    text += f"<pre> ‎ ‎ ‎Тип ‎ ‎ ‎ ‎ ‎ ‎Закончено ‎‏‏‎ ‎Время<br>"
-
-    for i, (type, ended, started, summ) in enumerate(query):
-        margin = ' ‎ ‎  ‎ ‎  ‎' if i == 0 else ' ‎ ‎   ‎' if i == 1 else '' if i==2 else ' ‎ ‎ ‎ ‎'
-        text += f"""{type}{margin} ‎ ‎  ‎{ended}/{started} ‎ ‎ ‎ ‎      ‎{minutes_to_hours(summ, 1)}<br>"""
-
-    text += "</pre>"
-    link = TelegraphPost.post_to_telegraph(text)
-
-    text = f'''Твоя статистика готова, <a href="tg://user?id={user_id}">{user_name}</a>\n\n{link}'''
-    return text

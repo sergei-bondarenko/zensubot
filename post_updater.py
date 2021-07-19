@@ -1,6 +1,7 @@
 import logging
 
-from telegram import ParseMode
+from telegram import ParseMode, Update
+from telegram.ext import CallbackContext
 from telegram.error import BadRequest
 
 from bot_functions import bot_message_to_chat, fill_template, minutes_to_hours
@@ -11,7 +12,12 @@ from responses import Responses
 logger = logging.getLogger(__name__)
 
 class PostUpdater:
-    def __init__(self, update, on_demand = False, *args):
+    """Class which applies updates to posts on demand or after sticker replies"""
+    def __init__(self, update: Update, on_demand:bool = False, *args):
+        """In case of on_demand=True update is None and trough *args class inits needed variables for update. Args are taken after db_query
+           In case of on_demand=False update is passed and class inits all variables for update from there
+        """
+
         self.on_demand = on_demand
         if on_demand:
             (self.job_id, self.job_type, self.start_date, self.job_message_id,
@@ -60,7 +66,9 @@ class PostUpdater:
                 self.job_id = self.sticker_id = None
 
 
-    def rebuild_message(self, context):
+    def rebuild_message(self, context: CallbackContext) -> None:
+        """Generates message trough call of fill_template and get_posted_message and tries to edit already posted message. If message stays the same BadRequest exception is passed
+        """
         text = db_query(
             f"select caption from post_templates where job_type = {self.job_type}"
         )[0][0]
@@ -110,7 +118,7 @@ class PostUpdater:
             pass
 
 
-    def get_posted_message(self, text):
+    def get_posted_message(self, text: str) -> None:
         # Collecting data about current job progress
         query = db_query(
             f"""select user_id, first_name, total, d0, d1, d2, d3, d4, d5, d6
@@ -151,9 +159,11 @@ class PostUpdater:
                 if user_id == self.user_id and i == self.cur_day:
                     work_today = work
                 
+                #weekends
                 if i >= 5:
                     if work > 0:
                         weekends.append(EM_WEEKEND)
+                #workdays
                 elif work == 0 and is_first_fail and i < self.cur_day:
                     phrase += EM_FAIL
                     is_first_fail = False

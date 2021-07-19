@@ -7,14 +7,14 @@ from telegram.ext import (CallbackQueryHandler, ChatMemberHandler,
                           MessageHandler, Updater, InlineQueryHandler)
 
 from chats_tracking import track_chats
+from commands import stat
 from database import clean_plus_data
 from direct_messages import (CREATE_POST, EDIT_TEMPLATE, PARSE_START, SAVE_TEMPLATE,
                              PARSE_TYPE, PARSE_WHERE_TO_POST, 
                              EDIT_RESPONSE_TYPE, PARSE_RESPONSE_TYPE, WRITE_RESPONSES,
                              cancel, create_post, edit_template, parse_start, parse_type, 
                              parse_where_to_post, start, save_template,
-                             edit_response_type, parse_response_type, write_response,
-                             stat)
+                             edit_response_type, parse_response_type, write_response)
 from inline import inline_stat
 from plus_tracking import plus
 from post_scheduler import create_post_sc
@@ -66,17 +66,21 @@ def main() -> None:
         fallbacks=[CommandHandler("cancel", cancel)],
     )
 
+    # Creates direct_messages handler
     dispatcher.add_handler(conv_handler)
     dispatcher.add_handler(
         ChatMemberHandler(track_chats, ChatMemberHandler.MY_CHAT_MEMBER)
     )
 
+    # Creates sticker_tracking handler
     stickers_handler = MessageHandler(Filters.sticker & Filters.reply, stickers)
     dispatcher.add_handler(stickers_handler)
 
+    # Creates plus_tracking handler
     plus_handler = MessageHandler(Filters.reply & Filters.regex(r"^\+$"), plus)
     dispatcher.add_handler(plus_handler)
 
+    # Creates commands handler
     stat_handler = CommandHandler("stat", stat)
     dispatcher.add_handler(stat_handler)
 

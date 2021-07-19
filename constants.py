@@ -1,3 +1,4 @@
+#Used in PostUpdater.get_posted_message
 EM_TRUE = "✅"
 EM_FALSE = "⚫️"
 EM_FAIL = "❌"

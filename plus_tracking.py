@@ -1,10 +1,16 @@
-from database import db_query
+from telegram import Update
+from telegram.ext import CallbackContext
+
 from bot_functions import bot_message_to_chat
+from database import db_query
 
 
-def plus(update, context):
+def plus(update: Update, context: CallbackContext):
+    # Amount of plus sign needed to copy message
     THRESHOLD = 3
+    # Message autodestruction timer
     AUTODESTRUCTION = 0
+    # Status of members which are allowed to vote
     STATUS = ["administrator", "creator"]
 
     chat_id = update.effective_message.chat.id
@@ -66,7 +72,7 @@ def plus(update, context):
     )[0]
 
     if has_voted != 0:
-        text = "Ты уже голосовал, грязный и мерзкий!"
+        text = "Ты уже голосовал!"
         bot_message_to_chat(
             context,
             chat_id,
