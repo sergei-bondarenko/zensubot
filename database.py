@@ -21,8 +21,8 @@ def clean_data(job):
     def cleaner(context):
         db_query(
             """delete from plus_data where date_part('day', now() - created) > 1;
-                delete from jobs_updates where job_id in (select id from jobs where type = 0);
-                delete from jobs where type = 0;""", False
+                delete from jobs_updates where job_id in (select id from jobs where type = 0 and date_part('day', now() - created) > 1);
+                delete from jobs where type = 0 and date_part('day', now() - created) > 1;""", False
         )
 
     job.run_repeating(
