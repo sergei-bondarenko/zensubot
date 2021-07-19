@@ -23,6 +23,7 @@ def delete_message(context: CallbackContext) -> None:
 
 
 def fill_template(text: str, n: int, start_date: datetime = datetime.now()) -> str:
+    #TODO: Fix bug where scheduled posts are posted with incorrect date
     UTC_PLUS = 3
     text = re.sub('([#№])N', f"\g<1>{n}", text, flags=re.I)
     for day in range(5):

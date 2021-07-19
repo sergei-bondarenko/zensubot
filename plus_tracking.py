@@ -1,8 +1,12 @@
+import logging
+
 from telegram import Update
 from telegram.ext import CallbackContext
 
 from bot_functions import bot_message_to_chat
 from database import db_query
+
+logger = logging.getLogger(__name__)
 
 
 def plus(update: Update, context: CallbackContext):
@@ -30,6 +34,7 @@ def plus(update: Update, context: CallbackContext):
             60,
             plus_message,
         )
+        logger.info(f"PLUS. Self plus from user @{update.effective_user.username} in chat {chat_id}")
         return None
 
     # Filter only accepted users
@@ -42,6 +47,7 @@ def plus(update: Update, context: CallbackContext):
             60,
             plus_message,
         )
+        logger.info(f"PLUS. User @{update.effective_user.username} is not allowed to vote in chat {chat_id}")
         return None
 
     try:
@@ -57,11 +63,13 @@ def plus(update: Update, context: CallbackContext):
 
     # Filter if chat is not enabled to pass plus
     if len(to_chat_ids) == 0:
+        logger.info(f"PLUS. User @{update.effective_user.username} voted for unactivated chat {chat_id}")
         return None
     # Filter if user tries to plus message from parent chat
     elif forward_from_chat_id in to_chat_ids:
         text = "Зачем ты голосуешь за пост, который уже есть в паблике?"
         bot_message_to_chat(context, chat_id, text, 60, plus_message)
+        logger.info(f"PLUS. User @{update.effective_user.username} voted for message in parent chat {chat_id}")
         return None
 
     # Getting info about post state and current user votes
@@ -80,6 +88,7 @@ def plus(update: Update, context: CallbackContext):
             AUTODESTRUCTION,
             plus_message,
         )
+        logger.info(f"PLUS. User @{update.effective_user.username} tried to plus message twice in {chat_id}")
         return None
 
     if cur_amount == THRESHOLD:
@@ -93,6 +102,7 @@ def plus(update: Update, context: CallbackContext):
             context.bot.copy_message(
                 chat_id=chat, from_chat_id=chat_id, message_id=replied_message
             )
+            logger.info(f"PLUS. Message {replied_message} copied from chat {chat_id} to chat {chat}")
 
     elif cur_amount < THRESHOLD:
         post_to = db_query(f"select title from chats where id in ({','.join(map(str, to_chat_ids))})")
@@ -104,9 +114,11 @@ def plus(update: Update, context: CallbackContext):
             f"insert into plus_data (chat_id, message_id, user_id) values ({chat_id}, {replied_message}, {user_id})",
             False
         )
+        logger.info(f"PLUS. Vote registered for message {replied_message} by user @{update.effective_user.username} in {chat_id} ")
 
     else:
         text = "Пост уже отправлен!"
         bot_message_to_chat(context, chat_id, text, AUTODESTRUCTION, plus_message)
+        logger.info(f"PLUS. User @{update.effective_user.username} voted for already posted message in {chat_id}")
 
     return None

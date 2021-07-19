@@ -1,4 +1,6 @@
 """Commands which are publicly accessible through /command"""
+import logging
+
 from telegram import ParseMode, Update
 from telegram.ext import CallbackContext
 
@@ -6,11 +8,14 @@ from bot_functions import minutes_to_hours
 from database import db_query
 from telegraph_posting import TelegraphPost
 
+logger = logging.getLogger(__name__)
+
 def stat(update: Update, context: CallbackContext) -> int:
     context.bot.send_message(chat_id = update.effective_message.chat_id, 
                             text = get_stat(update),
                             parse_mode = ParseMode.HTML,
                             disable_web_page_preview = True)
+    logger.info(f"Generated statistics for @{update.effective_user.username} in chat id {update.effective_message.chat_id}")
 
 def get_stat(update: Update) -> str:
     """Function which generates aligned stat and sends it to telegra.ph. 

@@ -91,6 +91,7 @@ class PostUpdater:
                     parse_mode=ParseMode.HTML,
                     disable_web_page_preview=True,
                 )
+
             if not self.on_demand:
                 logger.info(
                     f"Edited job with id {self.job_id} after posted sticker id {self.sticker_id} by @{self.username} with firstname {self.user_firstname}"
@@ -113,6 +114,8 @@ class PostUpdater:
                 bot_message_to_chat(
                     context, self.chat_id_user_reply, text, 0 if first_today else 60, self.message_id_user_reply, ParseMode.HTML
                 )
+            else:
+                logger.info(f"Edited job with id {self.job_id} after ON DEMAND update")
 
         except BadRequest:
             pass

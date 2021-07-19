@@ -206,6 +206,7 @@ def save_template(update: Update, context: CallbackContext) -> int:
         f"update post_templates set photo_id = '{photo_id}', caption = '{caption}' where job_type = {context.user_data['chosen_type']};",
         False,
     )
+    logger.info(f"@{update.effective_user.username} saved template for job_type = {context.user_data['chosen_type']}")
     return ConversationHandler.END
 
 
@@ -250,4 +251,5 @@ def write_response(update: Update, context: CallbackContext) -> int:
     Responses.update(job_type, response_type, text)
 
     context.bot.send_message(chat_id=update.effective_chat.id, text="Готово!")
+    logger.info(f"@{update.effective_user.username} written responses for job_type = {job_type} and response_type = {response_type}")
     return ConversationHandler.END
