@@ -3,7 +3,7 @@ from uuid import uuid4
 
 from telegram import InlineQueryResultArticle, InputTextMessageContent, ParseMode
 
-from direct_messages import get_stat
+from commands import get_stat
 
 def inline_stat(update, context) -> None:
     """Handle the inline query."""
