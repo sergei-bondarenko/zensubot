@@ -26,6 +26,8 @@ def fill_template(text, n, start_date = datetime.now()) -> str:
     UTC_PLUS = 3
     text = re.sub('([#№])N', f"\g<1>{n}", text, flags=re.I)
     for day in range(5):
+        print(start_date + timedelta(days=day, hours=UTC_PLUS))
+        print(datetime.now() + timedelta(days=day, hours=UTC_PLUS))
         date = start_date + timedelta(days=day, hours=UTC_PLUS)
         open, close = ('','') if datetime.now() - date < timedelta(hours = 24 - UTC_PLUS) else ('<b><s>', '</s></b>')
         date = date.strftime("%d.%m.%Y")
