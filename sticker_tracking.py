@@ -25,7 +25,7 @@ def stickers(update, context):
             bot_message_to_chat(
                 context,
                 upd.chat_id_user_reply,
-                f"Мда, долбаеб. Вчера день проебал, а сегодня хочешь отметиться?",
+                f"Мда. Вчера день пропустил, а сегодня хочешь отметиться?",
                 reply_to_message=upd.message_id_user_reply,
             )
 
