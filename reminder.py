@@ -33,6 +33,7 @@ def send_notification(context, chat_id, message_id, completed_users_query, all_u
 
 
 def reminder_callback(context):
+    text = ""
     for user_id in [365140903, 1890662006, 222763982]:
         first_name = db_query(
             f"select first_name from users where id = {user_id}",
@@ -76,4 +77,4 @@ def reminder_callback(context):
 
 def reminder(job):
     #job.run_daily(callback = reminder_callback, time = time(POST_HOUR - REMINDER_DELTA, POST_MINUTE), days = REMINDER_DAYS, name = 'reminder_ok')
-    job.run_daily(callback = reminder_callback, time = time(18, 10), days = REMINDER_DAYS, name = 'reminder_ok')
+    job.run_daily(callback = reminder_callback, time = time(18, 13), days = REMINDER_DAYS, name = 'reminder_ok')
