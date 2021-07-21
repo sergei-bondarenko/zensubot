@@ -38,6 +38,7 @@ def reminder_callback(context):
         first_name = db_query(
             f"select first_name from users where id = {user_id}",
             True,
+        )[0][0]
         text += f'<a href="tg://user?id={user_id[0]}">{first_name}</a>, '
     if text != "":
         text += f"день закончится через {REMINDER_DELTA} часа. Ты не забыл отметиться?"
@@ -77,4 +78,4 @@ def reminder_callback(context):
 
 def reminder(job):
     #job.run_daily(callback = reminder_callback, time = time(POST_HOUR - REMINDER_DELTA, POST_MINUTE), days = REMINDER_DAYS, name = 'reminder_ok')
-    job.run_daily(callback = reminder_callback, time = time(18, 13), days = REMINDER_DAYS, name = 'reminder_ok')
+    job.run_daily(callback = reminder_callback, time = time(18, 18), days = REMINDER_DAYS, name = 'reminder_ok')
