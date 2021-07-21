@@ -20,7 +20,7 @@ def send_notification(context, chat_id, message_id, completed_users_query, all_u
             f"select first_name from users where id = {user_id[0]}",
             True,
         )[0][0]
-        text += f'<a href="tg://user?id={user_id[0]}">{first_name}</a>, '
+        text += f'{chr(8206)}<a href="tg://user?id={user_id[0]}">{first_name}</a>, '
     if text != "":
         text += f"день закончится через {REMINDER_DELTA} часа. Ты не забыл отметиться?"
 
@@ -33,18 +33,6 @@ def send_notification(context, chat_id, message_id, completed_users_query, all_u
 
 
 def reminder_callback(context):
-    text = ""
-    for user_id in [365140903, 1890662006, 222763982]:
-        first_name = db_query(
-            f"select first_name from users where id = {user_id}",
-            True,
-        )[0][0]
-        text += f'{chr(8206)}<a href="tg://user?id={user_id}">{first_name}</a>, '
-    if text != "":
-        text += f"день закончится через {REMINDER_DELTA} часа. Ты не забыл отметиться?"
-    bot_message_to_chat(context, -1001211284566, text, parse_mode = ParseMode.HTML)
-    return
-
     cur_date = datetime.now()
     yesterday = cur_date - timedelta(days=1)
     yesterday = yesterday.strftime('%Y-%m-%d') + f" {post_time}"
@@ -77,5 +65,4 @@ def reminder_callback(context):
 
 
 def reminder(job):
-    #job.run_daily(callback = reminder_callback, time = time(POST_HOUR - REMINDER_DELTA, POST_MINUTE), days = REMINDER_DAYS, name = 'reminder_ok')
-    job.run_daily(callback = reminder_callback, time = time(18, 28), days = REMINDER_DAYS, name = 'reminder_ok')
+    job.run_daily(callback = reminder_callback, time = time(POST_HOUR - REMINDER_DELTA, POST_MINUTE), days = REMINDER_DAYS, name = 'reminder_ok')
