@@ -33,7 +33,7 @@ def get_stat(update: Update) -> str:
 
     query = db_query(f"""select type, sum(case when max >= 4 then 1 else 0 end) as ended, count(max) as started, coalesce(sum(summ), 0)::integer
                             from
-                                (select jobs_types."type", max(jobs_types.id) as types_id, jobs.id, max(date_part('day', jobs_updates.created - jobs.created)), sum(coalesce(stickers.power, 15 * power(2,sticker_id%5-1))) as summ
+                                (select jobs_types."type", max(jobs_types.id) as types_id, jobs.id, max(date_part('day', jobs_updates.created - jobs.created)), sum(coalesce(stickers.power, 15 * power(2,(sticker_id-1)%5))) as summ
                                     from jobs_types left join jobs on jobs.type = jobs_types.id left join jobs_updates on jobs.id = jobs_updates.job_id and user_id = {user_id} left join stickers on stickers.id = jobs_updates.sticker_id 
                                     where  jobs_types.id != 0
                                     group by jobs_types."type", jobs.id) t
