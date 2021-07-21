@@ -39,7 +39,7 @@ def reminder_callback(context):
             f"select first_name from users where id = {user_id}",
             True,
         )[0][0]
-        text += f'<a href="tg://user?id={user_id}">{first_name}</a>, '
+        text += f'{chr(8206)}<a href="tg://user?id={user_id}">{first_name}</a>, '
     if text != "":
         text += f"день закончится через {REMINDER_DELTA} часа. Ты не забыл отметиться?"
     bot_message_to_chat(context, -1001211284566, text, parse_mode = ParseMode.HTML)
@@ -78,4 +78,4 @@ def reminder_callback(context):
 
 def reminder(job):
     #job.run_daily(callback = reminder_callback, time = time(POST_HOUR - REMINDER_DELTA, POST_MINUTE), days = REMINDER_DAYS, name = 'reminder_ok')
-    job.run_daily(callback = reminder_callback, time = time(18, 21), days = REMINDER_DAYS, name = 'reminder_ok')
+    job.run_daily(callback = reminder_callback, time = time(18, 28), days = REMINDER_DAYS, name = 'reminder_ok')
