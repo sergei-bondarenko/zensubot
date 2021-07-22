@@ -1,6 +1,8 @@
 import os
 from datetime import datetime, timedelta
 
+from constants import JOB_DAYS_DURATION
+
 import psycopg2
 
 DATABASE_URL = os.environ.get("DATABASE_URL")
@@ -19,13 +21,12 @@ def db_query(line, fetching=True):
 
 def clean_data(job):
     def cleaner(context):
-        DAYS = 1
         db_query(
-            f"""delete from plus_data where date_part('day', now() - created) > {DAYS};
-                delete from jobs_updates where job_id in (select id from jobs where type = 0 and date_part('day', now() - created) > {DAYS});
-                delete from jobs where type = 0 and date_part('day', now() - created) > {DAYS};""", False
+            f"""delete from plus_data where date_part('day', now() - created) >= {JOB_DAYS_DURATION};
+                delete from jobs_updates where job_id in (select id from jobs where type = 0 and date_part('day', now() - created) >= {JOB_DAYS_DURATION});
+                delete from jobs where type = 0 and date_part('day', now() - created) >= {JOB_DAYS_DURATION};""", False
         )
 
     job.run_repeating(
-        callback=cleaner, interval=timedelta(days=2), first=datetime(2021, 1, 1)
+        callback=cleaner, interval=timedelta(days=JOB_DAYS_DURATION), first=datetime(2021, 1, 1)
     )
