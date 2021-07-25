@@ -41,11 +41,11 @@ def get_stat(update: Update) -> str:
                             order by types_id""")
     
     text = f'<b>Статистика пятидневок {user_name}</b><br>'
-    text += f"<pre> ‎ ‎ ‎Тип ‎ ‎ ‎ ‎ ‎ ‎Закончено ‎‏‏‎ ‎Время<br>"
+    text += f"<pre> ‎ ‎ ‎ ‎ ‎  ‎Тип ‎ ‎ ‎ ‎ ‎ ‎Закончено ‎‏‏‎ ‎Время<br>"
 
     for i, (type, ended, started, summ) in enumerate(query):
-        margin = ' ‎ ‎  ‎ ‎  ‎' if i == 0 else ' ‎ ‎   ‎' if i == 1 else '' if i==2 or i==4 else ' ‎ ‎ ‎ ‎'
-        text += f"""{type}{margin} ‎ ‎  ‎{ended}/{started} ‎ ‎ ‎ ‎      ‎{minutes_to_hours(summ, 1)}<br>"""
+        margin = ' ‎ ‎  ‎ ‎  ‎' if i == 0 else ' ‎ ‎   ‎' if i == 1 else '' if i==2 or i==4 or i==6 else ' ‎ ‎ ‎ ‎'
+        text += f"""{type}{margin} ‎ ‎  ‎ ‎ ‎  ‎{ended}/{started} ‎ ‎ ‎ ‎      ‎{minutes_to_hours(summ, 1)}<br>"""
 
     text += "</pre>"
     link = TelegraphPost.post_to_telegraph(text)
