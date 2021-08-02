@@ -19,9 +19,7 @@ def callback_minute(context):
     for job_type, created, order_number in data:
         passed_time = cur_date - created
 
-        if passed_time >= timedelta(days = JOB_DAYS_DURATION):
-        #if job_type == 0:
-
+        if job_type != 0 and passed_time >= timedelta(days = JOB_DAYS_DURATION):
             photo_id, caption = db_query(
                 f'select photo_id, caption from post_templates where job_type = {job_type}',
                 True,
