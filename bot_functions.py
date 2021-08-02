@@ -1,6 +1,8 @@
 import re
 from datetime import datetime, timedelta
 
+from constants import POST_HOUR
+
 from telegram.ext import CallbackContext
 
 def bot_message_to_chat(context: CallbackContext, chat_id: int, text: str, delete: int = 0, reply_to_message: int = None, parse_mode: str = None) -> None:
@@ -22,20 +24,15 @@ def delete_message(context: CallbackContext) -> None:
     context.bot.delete_message(chat_id=job[1], message_id=job[0])
 
 
-def fill_template(text: str, n: int, start_date: datetime = datetime.utcnow()) -> str:
-    print('fill_template started',text, n, start_date, sep='\n\n')
-    UTC_PLUS = 3
+def fill_template(text: str, n: int, start_date: datetime = datetime.now()) -> str:
+    heroku_bug = 3 if start_date.hour < POST_HOUR else 0
+    UTC_PLUS = 3 + heroku_bug
     text = re.sub('([#№])N', f"\g<1>{n}", text, flags=re.I)
-    print('text before loop',text, sep = '\n\n')
     for day in range(5):
         date = start_date + timedelta(days=day, hours=UTC_PLUS)
-        print('date in loop',date, sep='\n\n')
         open, close = ('','') if datetime.now() - date < timedelta(hours = 24 - UTC_PLUS) else ('<b><s>', '</s></b>')
         date = date.strftime("%d.%m.%Y")
-        print('date after strftime', date, sep='\n\n')
         text = re.sub(f"{day+1} [-–—] NN.NN.NNNN", f"{open}{day+1} — {date}{close}", text, flags=re.I)
-        print('text in loop', text, sep='\n\n')
-    print('final text', text, sep = '\n\n')
     return text
 
 
