@@ -25,7 +25,7 @@ def delete_message(context: CallbackContext) -> None:
 
 
 def fill_template(text: str, n: int, start_date: datetime = datetime.now()) -> str:
-    heroku_bug = 3 if start_date.hour < POST_HOUR else 0
+    heroku_bug = POST_HOUR - start_date.hour
     UTC_PLUS = 3 + heroku_bug
     text = re.sub('([#№])N', f"\g<1>{n}", text, flags=re.I)
     for day in range(5):
