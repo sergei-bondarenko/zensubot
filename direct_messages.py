@@ -55,7 +55,7 @@ def start(update: Update, context: CallbackContext) -> int:
             [InlineKeyboardButton("Добавить пост", callback_data="add_post")],
             [InlineKeyboardButton("Изменить шаблон", callback_data="edit_template")],
             [InlineKeyboardButton("Добавить реплики бота", callback_data="responses")],
-            [InlineKeyboardButton("Обновить хуй посты", callback_data="rebuild")],
+            [InlineKeyboardButton("Обновить посты", callback_data="rebuild")],
             [InlineKeyboardButton("Пойти нахуй", callback_data="end")]
         ]
     else:
