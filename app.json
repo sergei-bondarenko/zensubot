@@ -1,0 +1,16 @@
+
+{
+	"name": "zensu-bot",
+	"repository": "https://github.com/aorews/zensu_bot",
+	"keywords": ["telegram"],
+	"env": {
+		"TELEGRAM_TOKEN": {
+			"value": ""
+		}
+	},
+	"buildpacks": [
+		{
+			"url": "heroku/python"
+		}
+	]
+}
