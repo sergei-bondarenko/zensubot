@@ -103,9 +103,9 @@ class PostUpdater:
                     greet = Responses.get(self.job_type, 2)
                     line = '' if greet == '' else '\n\n'
                     if self.cur_day>=5:
-                        text = f"Молодец! Выходной день выполнен!"
+                        text = f"Огонёк за выходной!"
                     else:
-                        text = f"Молодец! День {int(self.cur_day+1)} выполнен!"
+                        text = f"День {int(self.cur_day+1)}/5 выполнен!"
                     text += f"\n\n{greet + line + question}"
                 else:
                     first_today = False
