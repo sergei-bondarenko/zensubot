@@ -13,7 +13,7 @@ def stickers(update, context):
         update_users(upd)
 
         # Check if user is not allowed to post
-        if upd.yesterday_work != 0 or upd.cur_day == 0:
+        if upd.yesterday_work != 0 or upd.cur_day == 0 or 1 == 1:
             # Inserting new job_update
             db_query(
                 f"insert into jobs_updates (user_id, job_id, sticker_id) values ({upd.user_id}, {upd.job_id}, {upd.sticker_id})",
@@ -22,22 +22,12 @@ def stickers(update, context):
 
             upd.rebuild_message(context)
         else:
-        #    bot_message_to_chat(
-        #        context,
-        #        upd.chat_id_user_reply,
-        #        f"Мда. Вчера день пропустил, а сегодня хочешь отметиться?",
-        #        reply_to_message=upd.message_id_user_reply,
-        #    )
-            
-            db_query(
-                f"insert into jobs_updates (user_id, job_id, sticker_id) values ({upd.user_id}, {upd.job_id}, {upd.sticker_id})",
-                False,
+            bot_message_to_chat(
+                context,
+                upd.chat_id_user_reply,
+                f"Мда. Вчера день пропустил, а сегодня хочешь отметиться?",
+                reply_to_message=upd.message_id_user_reply,
             )
-
-            upd.rebuild_message(context)
-
-
-
 
 
 def update_users(data):
