@@ -42,7 +42,7 @@ def get_stat(update: Update) -> str:
     
     text = f'<b>Статистика пятидневок {user_name}</b><br>'
     text += f"<pre> ‎ ‎ ‎ ‎ ‎  ‎Тип ‎ ‎ ‎ ‎ ‎ ‎Закончено ‎‏‏‎ ‎Время<br>"
-    margins = iter([8,6,3,7,3,6,1,3])
+    margins = iter([8,6,3,7,3,6,1,3] + [0]*20)
     for i, (type, ended, started, summ) in enumerate(query):
         length = next(margins)
         margin = length*EMPTY_SYMBOL if length != 0 else ''
