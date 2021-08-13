@@ -9,10 +9,10 @@ from telegram.ext import (CallbackQueryHandler, ChatMemberHandler,
 from chats_tracking import track_chats
 from commands import stat
 from database import clean_data
-from direct_messages import (CREATE_POST, EDIT_TEMPLATE, PARSE_START, SAVE_TEMPLATE,
+from direct_messages import (EDIT_TEMPLATE, PARSE_START, SAVE_TEMPLATE,
                              PARSE_TYPE, PARSE_WHERE_TO_POST, 
                              EDIT_RESPONSE_TYPE, PARSE_RESPONSE_TYPE, WRITE_RESPONSES,
-                             cancel, create_post, edit_template, parse_start, parse_type, 
+                             cancel, edit_template, parse_start, parse_type, 
                              parse_where_to_post, start, save_template,
                              edit_response_type, parse_response_type, write_response)
 from inline import inline_stat
@@ -50,13 +50,12 @@ def main() -> None:
         entry_points=[CommandHandler("start", start)],
         states={
             PARSE_START: [
-                CallbackQueryHandler(parse_start, pattern="add_post|edit_template|responses|rebuild|end")
+                CallbackQueryHandler(parse_start, pattern="add_job|job_type|edit_template|responses|rebuild|end")
             ],
             PARSE_WHERE_TO_POST: [
                 CallbackQueryHandler(parse_where_to_post, pattern=r"-\d*")
             ],
             PARSE_TYPE: [CallbackQueryHandler(parse_type, pattern=r"\d*")],
-            CREATE_POST: [MessageHandler(Filters.all, create_post)],
             EDIT_TEMPLATE: [CallbackQueryHandler(edit_template, pattern=r"\d*")],
             SAVE_TEMPLATE: [MessageHandler(Filters.all, save_template)],
             EDIT_RESPONSE_TYPE: [CallbackQueryHandler(edit_response_type, pattern=r"\d*")],
