@@ -218,7 +218,7 @@ def edit_response_type(update: Update, context: CallbackContext) -> int:
     reply_markup = InlineKeyboardMarkup(keyboard)
 
     context.bot.edit_message_text(
-        text="Выбери тип ответа бота",
+        text="Выбери тип ответа бота. Ответы идут друг за другом в формате Response 1/n/nResponse 2",
         chat_id=query.message.chat_id,
         message_id=query.message.message_id,
         reply_markup=reply_markup,

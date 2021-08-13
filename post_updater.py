@@ -99,14 +99,14 @@ class PostUpdater:
                 )
 
                 if work_today == self.sticker_power:
-                    question = Responses.get(self.job_type, 1)
-                    greet = Responses.get(self.job_type, 2)
-                    line = '' if greet == '' else '\n\n'
+                    r_1 = Responses.get(self.job_type, 1)
+                    r_2 = Responses.get(self.job_type, 2)
+                    line = '' if r_1 == '' else '\n\n'
                     if self.cur_day>=5:
                         text = f"Огонёк за выходной!"
                     else:
                         text = f"День {int(self.cur_day+1)}/5 выполнен!"
-                    text += f"\n\n{greet + line + question}"
+                    text += f"\n\n{r_1 + line + r_2}"
                 else:
                     text = f"За сегодня добавлено {minutes_to_hours(work_today)}!"
 
