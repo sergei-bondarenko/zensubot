@@ -55,8 +55,8 @@ def reminder_callback(context):
             last_chat_id = chat_id
         else:
             text += f"день закончится через {REMINDER_DELTA} часа. Ты не забыл отметиться?"
-
             bot_message_to_chat(context, chat_id, text, parse_mode = ParseMode.HTML)
+            text = str()
 
 
 def reminder(job):
