@@ -17,8 +17,9 @@ from responses import Responses
     SAVE_TEMPLATE,
     EDIT_RESPONSE_TYPE,
     PARSE_RESPONSE_TYPE,
-    WRITE_RESPONSES
-) = range(8)
+    WRITE_RESPONSES,
+    PARSE_JOB_TYPE
+) = range(9)
 
 logger = logging.getLogger(__name__)
 
@@ -104,7 +105,9 @@ def parse_start(update: Update, context: CallbackContext) -> int:
 
         return ConversationHandler.END
     if query.data == "add_job_type":
-        text = '\n'.join([x[0] for x in db_query('select type from jobs_types order by id')])
+        text = 'Уже добавленные типы пятидневок:'
+        text += '\n'.join([x[0] for x in db_query('select type from jobs_types order by id')])
+        text += '\n Если ни одна из них не подходит, то напиши сюда название новой пятидневки'
 
         context.bot.edit_message_text(
             text=text,
@@ -242,4 +245,16 @@ def write_response(update: Update, context: CallbackContext) -> int:
 
     context.bot.send_message(chat_id=update.effective_chat.id, text="Готово!")
     logger.info(f"@{update.effective_user.username} written responses for job_type = {job_type} and response_type = {response_type}")
+    return ConversationHandler.END
+
+def parse_job_type(update: Update, context: CallbackContext) -> int:
+    query = update.callback_query
+
+    db_query(f"insert into jobs_types (type) values ('{query.data}')", False)
+
+    context.bot.edit_message_text(
+        text="Готово!",
+        chat_id=query.message.chat_id,
+        message_id=query.message.message_id,
+    )
     return ConversationHandler.END

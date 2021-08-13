@@ -10,10 +10,10 @@ from chats_tracking import track_chats
 from commands import stat
 from database import clean_data
 from direct_messages import (EDIT_TEMPLATE, PARSE_START, SAVE_TEMPLATE,
-                             PARSE_TYPE, PARSE_WHERE_TO_POST, 
+                             PARSE_TYPE, PARSE_WHERE_TO_POST, PARSE_JOB_TYPE,
                              EDIT_RESPONSE_TYPE, PARSE_RESPONSE_TYPE, WRITE_RESPONSES,
                              cancel, edit_template, parse_start, parse_type, 
-                             parse_where_to_post, start, save_template,
+                             parse_where_to_post, start, save_template, parse_job_type,
                              edit_response_type, parse_response_type, write_response)
 from inline import inline_stat
 from plus_tracking import plus
@@ -60,7 +60,8 @@ def main() -> None:
             SAVE_TEMPLATE: [MessageHandler(Filters.all, save_template)],
             EDIT_RESPONSE_TYPE: [CallbackQueryHandler(edit_response_type, pattern=r"\d*")],
             PARSE_RESPONSE_TYPE: [CallbackQueryHandler(parse_response_type, pattern=r"\d*")],
-            WRITE_RESPONSES: [MessageHandler(Filters.document.txt, write_response)]
+            WRITE_RESPONSES: [MessageHandler(Filters.document.txt, write_response)],
+            PARSE_JOB_TYPE: [MessageHandler(Filters.text, parse_job_type)]
         },
         fallbacks=[CommandHandler("cancel", cancel)],
     )
