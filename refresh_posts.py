@@ -1,6 +1,6 @@
 from database import db_query
 from datetime import time
-from post_scheduler import JOB_DAYS_DURATION, POST_HOUR, POST_MINUTE, POST_WEEKDAY
+from constants import JOB_DAYS_DURATION, POST_HOUR, POST_MINUTE, POST_WEEKDAY
 from post_updater import PostUpdater
 
 def refresh_posts(context):
