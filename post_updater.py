@@ -1,4 +1,5 @@
 import logging
+from typing import List
 
 from telegram import ParseMode, Update
 from telegram.ext import CallbackContext
@@ -13,17 +14,19 @@ logger = logging.getLogger(__name__)
 
 class PostUpdater:
     """Class which applies updates to posts on demand or after sticker replies"""
-    def __init__(self, update: Update, on_demand:bool = False, *args):
-        """In case of on_demand=True update is None and trough *args class inits needed variables for update. Args are taken after db_query
-           In case of on_demand=False update is passed and class inits all variables for update from there
+    def __init__(self, update):
+        """If update is given as list then handling update as on_demand
+           If update is given as Update then parsing wrapper Update class for entities
         """
 
-        self.on_demand = on_demand
-        if on_demand:
+        if isinstance(update, list):
+            self.on_demand = True
             (self.job_id, self.job_type, self.start_date, self.job_message_id,
             self.job_chat_id, self.order_number, 
-            self.cur_day, self.user_id, self.is_caption) = args
-        else:
+            self.cur_day, self.user_id, self.is_caption) = update
+
+        elif isinstance(update, Update):
+            self.on_demand = False
             message = update["message"]
             reply = message["reply_to_message"]
             user = update.effective_user
@@ -52,12 +55,10 @@ class PostUpdater:
                     self.sticker_id, self.sticker_power, self.yesterday_work,
                 ) = db_query(
                     f"""select jobs.id, jobs.created, DATE_PART('day', now()-jobs.created), type, order_number , stickers.id, power, count(jobs_updates.created)
-                        from jobs left join jobs_updates 
-                        on jobs.id=jobs_updates.job_id and user_id={self.user_id} and date_part('day', jobs_updates.created - jobs.created) = least(4, DATE_PART('day', now()-jobs.created) - 1)
-                        left join stickers on stickers.text_id = '{message['sticker']['file_unique_id']}'
-                        where message_id = {self.job_message_id} 
-                        and chat_id = {self.job_chat_id} 
-                        and DATE_PART('day', now()-jobs.created) < {JOB_DAYS_DURATION}
+                            from jobs left join jobs_updates 
+                            on jobs.id=jobs_updates.job_id and user_id={self.user_id} and date_part('day', jobs_updates.created - jobs.created) = least(4, DATE_PART('day', now()-jobs.created) - 1)
+                            left join stickers on stickers.text_id = '{message['sticker']['file_unique_id']}'
+                            where message_id = {self.job_message_id} and chat_id = {self.job_chat_id} and DATE_PART('day', now()-jobs.created) < {JOB_DAYS_DURATION}
                         group by jobs.id, jobs.created, DATE_PART('day', now()-jobs.created), type, order_number , stickers.id, power
                 """
                 )[0]
@@ -98,7 +99,6 @@ class PostUpdater:
                 )
 
                 if work_today == self.sticker_power:
-                    first_today = True
                     question = Responses.get(self.job_type, 1)
                     greet = Responses.get(self.job_type, 2)
                     line = '' if greet == '' else '\n\n'
@@ -108,11 +108,10 @@ class PostUpdater:
                         text = f"День {int(self.cur_day+1)}/5 выполнен!"
                     text += f"\n\n{greet + line + question}"
                 else:
-                    first_today = False
                     text = f"За сегодня добавлено {minutes_to_hours(work_today)}!"
 
                 bot_message_to_chat(
-                    context, self.chat_id_user_reply, text, 0 if first_today else 0, self.message_id_user_reply, ParseMode.HTML
+                    context, self.chat_id_user_reply, text, 0, self.message_id_user_reply, ParseMode.HTML
                 )
             else:
                 logger.info(f"Edited job with id {self.job_id} after ON DEMAND update")

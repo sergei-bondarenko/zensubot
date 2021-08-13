@@ -10,7 +10,7 @@ def refresh_posts(context):
     rows = db_query(q)
     for row in rows:
         # Example of on demand PostUpdater
-        upd = PostUpdater(None, True, *row)
+        upd = PostUpdater(row)
         upd.rebuild_message(context)
 
 def refresh_posts_job(job):
