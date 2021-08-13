@@ -114,7 +114,7 @@ def parse_start(update: Update, context: CallbackContext) -> int:
             chat_id=query.message.chat_id,
             message_id=query.message.message_id,
         )
-        return ConversationHandler.END
+        return PARSE_JOB_TYPE
 
     if query.data == "end":
         context.bot.delete_message(
