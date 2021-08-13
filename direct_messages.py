@@ -104,7 +104,7 @@ def parse_start(update: Update, context: CallbackContext) -> int:
 
         return ConversationHandler.END
     if query.data == "add_job_type":
-        text = db_query('select * from jobs_types')
+        text = '\n'.join([x[0] for x in db_query('select type from jobs_types order by id')])
 
         context.bot.edit_message_text(
             text=text,
