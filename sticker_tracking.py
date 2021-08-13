@@ -5,9 +5,9 @@ from post_updater import PostUpdater
 
 def stickers(update, context):
     upd = PostUpdater(update)
-
+    print(upd.sticker_id)
     # Writing update to table if job_id and sticker_id is correct
-    if upd.job_id and upd.sticker_id or 1 == 1:
+    if upd.job_id and upd.sticker_id:
         # Creating new users if they do not exist or updating old users
         update_users(upd)
         # Inserting new job_update
