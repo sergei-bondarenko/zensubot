@@ -24,7 +24,7 @@ def clean_data(job):
         db_query(
             f"""delete from plus_data where date_part('day', now() - created) >= {JOB_DAYS_DURATION};
                 delete from jobs_updates where job_id in (select id from jobs where type = 0 and date_part('day', now() - created) >= {JOB_DAYS_DURATION});
-                delete from jobs where type = 0 and date_part('day', now() - created) >= {JOB_DAYS_DURATION};""", False
+                delete from jobs where (type = 0 or coalesce(order_number, 0) = 0) and date_part('day', now() - created) >= {JOB_DAYS_DURATION};""", False
         )
 
     job.run_repeating(
