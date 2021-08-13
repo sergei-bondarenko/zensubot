@@ -192,4 +192,3 @@ class PostUpdater:
         text += "\n\n" + added_text
 
         return text, work_today
-        print(update)
