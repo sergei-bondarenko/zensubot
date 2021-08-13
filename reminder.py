@@ -51,7 +51,7 @@ def reminder_callback(context):
     text = str()
     for chat_id, user_id, user_name in db_query(query):
         if last_chat_id == chat_id or last_chat_id is None:
-            text += f'{chr(8206)}<a href="tg://user?id={user_id[0]}">{user_name}</a>, '
+            text += f'{chr(8206)}<a href="tg://user?id={user_id}">{user_name}</a>, '
             last_chat_id = chat_id
         else:
             text += f"день закончится через {REMINDER_DELTA} часа. Ты не забыл отметиться?"
