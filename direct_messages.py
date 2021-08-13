@@ -137,7 +137,7 @@ def parse_type(update: Update, context: CallbackContext) -> int:
         f"@{update.effective_user.username}, {update.effective_user.first_name} chosen type {query.data}"
     )
 
-    db_query(f'update chats set jobs_type = {query.data} where id = {context.user_data["chosen_group"]}')
+    db_query(f'update chats set jobs_type = {query.data} where id = {context.user_data["chosen_group"]}', False)
 
     context.bot.edit_message_text(
         text="Готово!",
