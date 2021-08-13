@@ -53,12 +53,12 @@ def reminder_callback(context):
     for chat_id, user_id, user_name in db_query(query):
         if last_chat_id != chat_id and last_chat_id is not None:
             text += f"день закончится через {REMINDER_DELTA} часа. Ты не забыл отметиться?"
-            bot_message_to_chat(context, chat_id, text, parse_mode = ParseMode.HTML)
+            bot_message_to_chat(context, last_chat_id, text, parse_mode = ParseMode.HTML)
             text = str()
         text += f'{chr(8206)}<a href="tg://user?id={user_id}">{user_name}</a>, '
         last_chat_id = chat_id
     text += f"день закончится через {REMINDER_DELTA} часа. Ты не забыл отметиться?"
-    bot_message_to_chat(context, chat_id, text, parse_mode = ParseMode.HTML)
+    bot_message_to_chat(context, last_chat_id, text, parse_mode = ParseMode.HTML)
 
 
 def reminder(job):
