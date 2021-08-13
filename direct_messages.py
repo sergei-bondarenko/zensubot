@@ -52,7 +52,7 @@ def start(update: Update, context: CallbackContext) -> int:
     if update.effective_user.id in admins:
         reply_keyboard = [
             [InlineKeyboardButton("Добавить пятидневку в новый чат", callback_data="add_job")],
-            [InlineKeyboardButton("Добавить тип пятидневки", callback_data="job_type")],
+            [InlineKeyboardButton("Добавить тип пятидневки", callback_data="add_job_type")],
             [InlineKeyboardButton("Изменить шаблон", callback_data="edit_template")],
             [InlineKeyboardButton("Добавить реплики бота", callback_data="responses")],
             [InlineKeyboardButton("Обновить посты", callback_data="rebuild")],
@@ -103,6 +103,16 @@ def parse_start(update: Update, context: CallbackContext) -> int:
             message_id=query.message.message_id)
 
         return ConversationHandler.END
+    if query.data == "add_job_type":
+        text = db_query('select * from jobs_types')
+
+        context.bot.edit_message_text(
+            text=text,
+            chat_id=query.message.chat_id,
+            message_id=query.message.message_id,
+        )
+        return ConversationHandler.END
+
     if query.data == "end":
         context.bot.delete_message(
             chat_id=query.message.chat_id, message_id=query.message.message_id
