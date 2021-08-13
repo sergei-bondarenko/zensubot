@@ -248,13 +248,7 @@ def write_response(update: Update, context: CallbackContext) -> int:
     return ConversationHandler.END
 
 def parse_job_type(update: Update, context: CallbackContext) -> int:
-    query = update.callback_query
+    db_query(f"insert into jobs_types (type) values ('{update.message.text}')", False)
 
-    db_query(f"insert into jobs_types (type) values ('{query.data}')", False)
-
-    context.bot.edit_message_text(
-        text="Готово!",
-        chat_id=query.message.chat_id,
-        message_id=query.message.message_id,
-    )
+    context.bot.send_message(chat_id=update.effective_chat.id, text="Готово!")
     return ConversationHandler.END
