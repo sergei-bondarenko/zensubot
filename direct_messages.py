@@ -107,7 +107,7 @@ def parse_start(update: Update, context: CallbackContext) -> int:
     if query.data == "add_job_type":
         text = 'Уже добавленные типы пятидневок:\n'
         text += '\n'.join([x[0] for x in db_query('select type from jobs_types order by id')])
-        text += '\nЕсли ни одна из них не подходит, то напиши сюда название новой пятидневки'
+        text += '\n\nЕсли ни одна из них не подходит, то напиши сюда название новой пятидневки'
 
         context.bot.edit_message_text(
             text=text,
