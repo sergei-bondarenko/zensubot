@@ -7,7 +7,7 @@ def stickers(update, context):
     upd = PostUpdater(update)
 
     # Writing update to table if job_id and sticker_id is correct
-    if upd.job_id and upd.sticker_id:
+    if (upd.job_id and upd.sticker_id) or 1 = 1:
         # Creating new users if they do not exist or updating old users
         update_users(upd)
         # Inserting new job_update
