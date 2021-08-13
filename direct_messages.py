@@ -13,13 +13,12 @@ from responses import Responses
     PARSE_START,
     PARSE_WHERE_TO_POST,
     PARSE_TYPE,
-    CREATE_POST,
     EDIT_TEMPLATE,
     SAVE_TEMPLATE,
     EDIT_RESPONSE_TYPE,
     PARSE_RESPONSE_TYPE,
     WRITE_RESPONSES
-) = range(9)
+) = range(8)
 
 logger = logging.getLogger(__name__)
 
@@ -52,7 +51,8 @@ def start(update: Update, context: CallbackContext) -> int:
 
     if update.effective_user.id in admins:
         reply_keyboard = [
-            [InlineKeyboardButton("Добавить пост", callback_data="add_post")],
+            [InlineKeyboardButton("Добавить пятидневку в новый чат", callback_data="add_job")],
+            [InlineKeyboardButton("Добавить тип пятидневки", callback_data="job_type")],
             [InlineKeyboardButton("Изменить шаблон", callback_data="edit_template")],
             [InlineKeyboardButton("Добавить реплики бота", callback_data="responses")],
             [InlineKeyboardButton("Обновить посты", callback_data="rebuild")],
@@ -72,7 +72,7 @@ def start(update: Update, context: CallbackContext) -> int:
 
 def parse_start(update: Update, context: CallbackContext) -> int:
     query = update.callback_query
-    if query.data == "add_post":
+    if query.data == "add_job":
 
         keyboard = get_reply_keyboard(f"select id, title from chats")
         reply_markup = InlineKeyboardMarkup(keyboard)
@@ -132,39 +132,19 @@ def parse_where_to_post(update: Update, context: CallbackContext) -> int:
 
 def parse_type(update: Update, context: CallbackContext) -> int:
     query = update.callback_query
-    context.user_data["chosen_type"] = query.data
 
     logger.info(
         f"@{update.effective_user.username}, {update.effective_user.first_name} chosen type {query.data}"
     )
 
+    db_query(f'update chats set jobs_type = {query.data} where id = {context.user_data["chosen_group"]}', False)
+
     context.bot.edit_message_text(
-        text="Напиши здесь свой пост",
+        text="Готово!",
         chat_id=query.message.chat_id,
         message_id=query.message.message_id,
     )
 
-    return CREATE_POST
-
-
-def create_post(update: Update, context: CallbackContext) -> int:
-    # context.bot.send_message(chat_id=update.effective_chat.id, text=context.user_data["chosen_group"] + '\n\n' + update.message.text)
-    posted_message = context.bot.copy_message(
-        chat_id=context.user_data["chosen_group"],
-        from_chat_id=update.effective_chat.id,
-        message_id=update.effective_message.message_id,
-    )
-
-    db_query(
-        f'insert into jobs(message_id, chat_id, type) values ({posted_message.message_id}, {context.user_data["chosen_group"]}, {context.user_data["chosen_type"]});',
-        False,
-    )
-
-    logger.info(
-        f"@{update.effective_user.username}, {update.effective_user.first_name} posted message to {context.user_data['chosen_group']}"
-    )
-
-    context.bot.send_message(chat_id=update.effective_chat.id, text="Готово!")
     return ConversationHandler.END
 
 
