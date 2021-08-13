@@ -15,11 +15,11 @@ logger = logging.getLogger(__name__)
 class PostUpdater:
     """Class which applies updates to posts on demand or after sticker replies"""
     def __init__(self, update):
-        """If update is given as list then handling update as on_demand
+        """If update is given as tuple from query then handling update as on_demand
            If update is given as Update then parsing wrapper Update class for entities
         """
 
-        if isinstance(update, list):
+        if isinstance(update, tuple):
             self.on_demand = True
             (self.job_id, self.job_type, self.start_date, self.job_message_id,
             self.job_chat_id, self.order_number, 
