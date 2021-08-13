@@ -42,11 +42,11 @@ def get_stat(update: Update) -> str:
     
     text = f'<b>Статистика пятидневок {user_name}</b><br>'
     text += f"<pre> ‎ ‎ ‎ ‎ ‎  ‎Тип ‎ ‎ ‎ ‎ ‎ ‎Закончено ‎‏‏‎ ‎Время<br>"
-    margins = iter([5,3,0,4,0,3,0,0])
+    margins = iter([8,6,3,7,3,6,3,3])
     for i, (type, ended, started, summ) in enumerate(query):
         length = next(margins)
         margin = length*EMPTY_SYMBOL if length != 0 else ''
-        text += f"""{type}{margin}{5*EMPTY_SYMBOL}‎{ended}/{started} ‎ ‎ ‎ ‎      ‎{minutes_to_hours(summ, 1)}<br>"""
+        text += f"""{type}{margin}{2*EMPTY_SYMBOL}‎{ended}/{started} ‎ ‎ ‎ ‎      ‎{minutes_to_hours(summ, 1)}<br>"""
 
     text += "</pre>"
     link = TelegraphPost.post_to_telegraph(text)
