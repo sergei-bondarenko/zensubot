@@ -230,7 +230,7 @@ def parse_response_type(update: Update, context: CallbackContext) -> int:
     context.user_data["chosen_response_type"] = query.data
 
     context.bot.edit_message_text(
-        text="Отправь файл в формате .txt с одной фразой в каждой строчке. Можно использовать html теги телеграм",
+        text="Отправь файл в формате .txt с одной фразой в каждой строчке. Можно использовать html теги телеграм\n\nДля удаления фраз отправь .txt файл состоящий из одного пробела",
         chat_id=query.message.chat_id,
         message_id=query.message.message_id,
     )
