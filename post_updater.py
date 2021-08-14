@@ -146,7 +146,7 @@ class PostUpdater:
         work_today = 0
 
         for user_id, user_firstname, total, *days in query:
-            #is_first_fail = True
+            is_first_fail = True
             weekends = list()
             # chr(8206) is a mark to keep text format left to right
             name_phrase = (
@@ -166,10 +166,9 @@ class PostUpdater:
                     if work > 0:
                         weekends.append(EM_WEEKEND)
                 #workdays
-                #elif work == 0 and is_first_fail and i < self.cur_day:
                 elif work == 0 and i < self.cur_day:
                     phrase += EM_FAIL
-                    #is_first_fail = False
+                    is_first_fail = False
                 elif work > 0:
                     phrase += EM_TRUE
                 else:
