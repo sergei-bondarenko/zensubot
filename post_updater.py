@@ -167,12 +167,26 @@ class PostUpdater:
                         weekends.append(EM_WEEKEND)
                 #workdays
                 elif work == 0 and i < self.cur_day:
-                    phrase += EM_FAIL
+                    #phrase += EM_FAIL
+                    phrase += '💔'
                     is_first_fail = False
                 elif work > 0:
-                    phrase += EM_TRUE
+                    #phrase += EM_TRUE
+                    if work <= 15:
+                        phrase += '❤️'
+                    elif work <= 30:
+                        phrase += '🧡'
+                    elif work <= 60:
+                        phrase += '💛'
+                    elif work <= 120:
+                        phrase += '💚'
+                    elif work <= 180:
+                        phrase += '💙'
+                    else:
+                        phrase += '💜'
                 else:
-                    phrase += EM_FALSE
+                    #phrase += EM_FALSE
+                    phrase += '🤍'
 
             phrase += f" {minutes_to_hours(total)}"
             weekends = ''.join(weekends)
