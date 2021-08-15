@@ -197,7 +197,7 @@ class PostUpdater:
                 loosers.append((name_phrase, phrase, weekends))
 
         added_text = str()
-        i, j = 0, 0
+        
         for i, (name_phrase, phrase, weekends) in enumerate(passed):
             added_text += f"{i+1}. {name_phrase} {weekends}\n{phrase}\n\n"
 
