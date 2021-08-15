@@ -194,14 +194,14 @@ class PostUpdater:
             if is_first_fail:
                 passed.append((name_phrase, phrase, weekends))
             else:
-                loosers.append((name_phrase, phrase))
+                loosers.append((name_phrase, phrase, weekends))
 
         added_text = str()
 
         for i, (name_phrase, phrase, weekends) in enumerate(passed):
             added_text += f"{i+1}. {name_phrase} {weekends}\n{phrase}\n\n"
 
-        for j, (name_phrase, phrase) in enumerate(loosers):
+        for j, (name_phrase, phrase, weekends) in enumerate(loosers):
             added_text += f"{i + j + 2}. {name_phrase} {weekends}\n{phrase}\n\n"
         text += "\n\n" + added_text
 
