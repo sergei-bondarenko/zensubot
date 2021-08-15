@@ -161,11 +161,11 @@ class PostUpdater:
                 if user_id == self.user_id and i == self.cur_day:
                     work_today = work
                 
-                #weekends
+                # Weekends
                 if i >= 5:
                     if work > 0:
                         weekends.append(EM_WEEKEND)
-                #workdays
+                # Workdays
                 elif work == 0 and i < self.cur_day:
                     #phrase += EM_FAIL
                     phrase += '⭕'
