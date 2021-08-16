@@ -28,6 +28,7 @@ class PostUpdater:
         elif isinstance(update, Update):
             self.on_demand = False
             message = update["message"]
+            logger.info(f'Message: {message}')
             reply = message["reply_to_message"]
             user = update.effective_user
             try:
