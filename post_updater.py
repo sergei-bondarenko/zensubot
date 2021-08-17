@@ -70,9 +70,9 @@ class PostUpdater:
     def rebuild_message(self, context: CallbackContext) -> None:
         """Generates message trough call of fill_template and get_posted_message and tries to edit already posted message. If message stays the same BadRequest exception is passed
         """
-        text = db_query(
-            f"select caption from post_templates where job_type = {self.job_type}"
-        )[0][0]
+        photo_id, text = db_query(
+            f"select photo_id, caption from post_templates where job_type = {self.job_type}"
+        )[0]
         text = fill_template(text, self.order_number, self.start_date)
         text, work_today = self.get_posted_message(text)
 
@@ -83,6 +83,11 @@ class PostUpdater:
                     message_id=self.job_message_id,
                     caption=text,
                     parse_mode=ParseMode.HTML,
+                )
+                context.bot.edit_message_media(
+                    chat_id=self.job_chat_id,
+                    message_id=self.job_message_id,
+                    media=photo_id,
                 )
             else:
                 context.bot.edit_message_text(
