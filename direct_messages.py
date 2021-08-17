@@ -150,7 +150,7 @@ def parse_type(update: Update, context: CallbackContext) -> int:
     logger.info(
         f"@{update.effective_user.username}, {update.effective_user.first_name} chosen type {query.data}"
     )
-    if query.data == -1:
+    if query.data == '-1':
         db_query(f'update chats set jobs_type = null where id = {context.user_data["chosen_group"]}', False)
     else:
         db_query(f'update chats set jobs_type = {query.data} where id = {context.user_data["chosen_group"]}', False)
