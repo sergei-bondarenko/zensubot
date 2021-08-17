@@ -180,7 +180,7 @@ class PostUpdater:
                         phrase += '🟡'
                     elif work >= 30:
                         phrase += '🟣'
-                    if work >= 15:
+                    else:
                         phrase += '🟢'
                 else:
                     #phrase += EM_FALSE
