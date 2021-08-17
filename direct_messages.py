@@ -132,6 +132,7 @@ def parse_where_to_post(update: Update, context: CallbackContext) -> int:
     )
 
     keyboard = get_reply_keyboard(f"select id, type from jobs_types")
+    keyboard.append([InlineKeyboardButton('Удалить пятидневку из этого чата', callback_data=-1)])
     reply_markup = InlineKeyboardMarkup(keyboard)
 
     context.bot.edit_message_text(
@@ -149,8 +150,10 @@ def parse_type(update: Update, context: CallbackContext) -> int:
     logger.info(
         f"@{update.effective_user.username}, {update.effective_user.first_name} chosen type {query.data}"
     )
-
-    db_query(f'update chats set jobs_type = {query.data} where id = {context.user_data["chosen_group"]}', False)
+    if query.data == -1:
+        db_query(f'update chats set jobs_type = null where id = {context.user_data["chosen_group"]}', False)
+    else:
+        db_query(f'update chats set jobs_type = {query.data} where id = {context.user_data["chosen_group"]}', False)
 
     context.bot.edit_message_text(
         text="Готово!",
