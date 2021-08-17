@@ -168,22 +168,20 @@ class PostUpdater:
                 # Workdays
                 elif work == 0 and i < self.cur_day:
                     #phrase += EM_FAIL
-                    phrase += '⭕'
+                    phrase += '❌'
                     is_first_fail = False
                 elif work > 0:
                     #phrase += EM_TRUE
-                    if work <= 15:
+                    if work >= 240:
                         phrase += '🔴'
-                    elif work <= 30:
+                    elif work >= 120:
                         phrase += '🟠'
-                    elif work <= 60:
+                    elif work >= 60:
                         phrase += '🟡'
-                    elif work <= 120:
-                        phrase += '🟢'
-                    elif work <= 180:
-                        phrase += '🔵'
-                    else:
+                    elif work >= 30:
                         phrase += '🟣'
+                    if work >= 15:
+                        phrase += '🟢'
                 else:
                     #phrase += EM_FALSE
                     phrase += '⚫'
