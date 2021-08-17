@@ -203,7 +203,7 @@ class PostUpdater:
             added_text += f"{i+1}. {name_phrase} {weekends}\n{phrase}\n\n"
 
         for j, (name_phrase, phrase, weekends) in enumerate(loosers):
-            added_text += f"{i + j + 2 + (-1 if i==0 else 0)}. {name_phrase} {weekends}\n{phrase}\n\n"
+            added_text += f"{i + j + 2 + (-1 if i==0 else 0)}. <s>{name_phrase}</s> {weekends}\n{phrase}\n\n"
         text += "\n\n" + added_text
 
         return text, work_today
