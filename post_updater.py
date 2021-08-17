@@ -9,6 +9,7 @@ from bot_functions import bot_message_to_chat, fill_template, minutes_to_hours
 from constants import EM_TRUE, EM_FAIL, EM_FALSE, EM_WEEKEND, JOB_DAYS_DURATION, USERS
 from database import db_query
 from responses import Responses
+from telegram import InputMediaPhoto
 
 logger = logging.getLogger(__name__)
 
@@ -78,16 +79,19 @@ class PostUpdater:
 
         try:
             if self.is_caption:
-                context.bot.edit_message_caption(
-                    chat_id=self.job_chat_id,
-                    message_id=self.job_message_id,
-                    caption=text,
-                    parse_mode=ParseMode.HTML,
-                )
+                #context.bot.edit_message_caption(
+                #    chat_id=self.job_chat_id,
+                #    message_id=self.job_message_id,
+                #    caption=text,
+                #    parse_mode=ParseMode.HTML,
+                #)
                 context.bot.edit_message_media(
                     chat_id=self.job_chat_id,
                     message_id=self.job_message_id,
-                    media=photo_id,
+                    media=InputMediaPhoto(
+                        media=photo_id,
+                        caption=text,
+                        parse_mode=ParseMode.HTML),
                 )
             else:
                 context.bot.edit_message_text(
