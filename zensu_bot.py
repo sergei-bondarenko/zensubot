@@ -1,6 +1,6 @@
 import logging
 import os
-#testr
+#test
 
 from telegram.ext import (CallbackQueryHandler, ChatMemberHandler,
                           CommandHandler, ConversationHandler, Filters,
