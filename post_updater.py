@@ -9,6 +9,7 @@ from bot_functions import bot_message_to_chat, fill_template, minutes_to_hours
 from constants import EM_TRUE, EM_FAIL, EM_FALSE, EM_WEEKEND, JOB_DAYS_DURATION, USERS
 from database import db_query
 from responses import Responses
+from telegram import InputMediaPhoto
 
 logger = logging.getLogger(__name__)
 
@@ -70,19 +71,21 @@ class PostUpdater:
     def rebuild_message(self, context: CallbackContext) -> None:
         """Generates message trough call of fill_template and get_posted_message and tries to edit already posted message. If message stays the same BadRequest exception is passed
         """
-        text = db_query(
-            f"select caption from post_templates where job_type = {self.job_type}"
-        )[0][0]
+        photo_id, text = db_query(
+            f"select photo_id, caption from post_templates where job_type = {self.job_type}"
+        )[0]
         text = fill_template(text, self.order_number, self.start_date)
         text, work_today = self.get_posted_message(text)
 
         try:
             if self.is_caption:
-                context.bot.edit_message_caption(
+                context.bot.edit_message_media(
                     chat_id=self.job_chat_id,
                     message_id=self.job_message_id,
-                    caption=text,
-                    parse_mode=ParseMode.HTML,
+                    media=InputMediaPhoto(
+                        media=photo_id,
+                        caption=text,
+                        parse_mode=ParseMode.HTML),
                 )
             else:
                 context.bot.edit_message_text(
@@ -168,22 +171,20 @@ class PostUpdater:
                 # Workdays
                 elif work == 0 and i < self.cur_day:
                     #phrase += EM_FAIL
-                    phrase += '⭕'
+                    phrase += '❌'
                     is_first_fail = False
                 elif work > 0:
                     #phrase += EM_TRUE
-                    if work <= 15:
-                        phrase += '🔴'
-                    elif work <= 30:
-                        phrase += '🟠'
-                    elif work <= 60:
-                        phrase += '🟡'
-                    elif work <= 120:
-                        phrase += '🟢'
-                    elif work <= 180:
-                        phrase += '🔵'
-                    else:
+                    if work >= 240:
                         phrase += '🟣'
+                    elif work >= 120:
+                        phrase += '🔴'
+                    elif work >= 60:
+                        phrase += '🟠'
+                    elif work >= 30:
+                        phrase += '🟡'
+                    else:
+                        phrase += '🟢'
                 else:
                     #phrase += EM_FALSE
                     phrase += '⚫'
@@ -203,7 +204,7 @@ class PostUpdater:
             added_text += f"{i+1}. {name_phrase} {weekends}\n{phrase}\n\n"
 
         for j, (name_phrase, phrase, weekends) in enumerate(loosers):
-            added_text += f"{i + j + 2 + (-1 if i==0 else 0)}. {name_phrase} {weekends}\n{phrase}\n\n"
+            added_text += f"{i + j + 2 + (-1 if i==0 else 0)}. <s>{name_phrase}</s> {weekends}\n{phrase}\n\n"
         text += "\n\n" + added_text
 
         return text, work_today
