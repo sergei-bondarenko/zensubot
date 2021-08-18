@@ -79,12 +79,6 @@ class PostUpdater:
 
         try:
             if self.is_caption:
-                #context.bot.edit_message_caption(
-                #    chat_id=self.job_chat_id,
-                #    message_id=self.job_message_id,
-                #    caption=text,
-                #    parse_mode=ParseMode.HTML,
-                #)
                 context.bot.edit_message_media(
                     chat_id=self.job_chat_id,
                     message_id=self.job_message_id,
@@ -182,13 +176,13 @@ class PostUpdater:
                 elif work > 0:
                     #phrase += EM_TRUE
                     if work >= 240:
-                        phrase += '🔴'
-                    elif work >= 120:
-                        phrase += '🟠'
-                    elif work >= 60:
-                        phrase += '🟡'
-                    elif work >= 30:
                         phrase += '🟣'
+                    elif work >= 120:
+                        phrase += '🔴'
+                    elif work >= 60:
+                        phrase += '🟠'
+                    elif work >= 30:
+                        phrase += '🟡'
                     else:
                         phrase += '🟢'
                 else:
