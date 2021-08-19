@@ -210,13 +210,20 @@ def edit_response_type(update: Update, context: CallbackContext) -> int:
     query = update.callback_query
     context.user_data["chosen_job_type"] = query.data
 
+    job_type = int(query.data)
+
+    resp_1 = "Response 1:\n\n" + Responses.get(job_type, 1)
+    resp_2 = "Response 2:\n\n" + Responses.get(job_type, 2)
+
+    context.bot.send_message(update.effective_chat.id, resp_1)
+    context.bot.send_message(update.effective_chat.id, resp_2)
+
     keyboard = get_reply_keyboard(f"select id, type from response_types")
     reply_markup = InlineKeyboardMarkup(keyboard)
 
-    context.bot.edit_message_text(
+    context.bot.send_message(
         text="Выбери тип ответа бота. Ответы идут друг за другом в формате \nResponse 1\n\nResponse 2",
         chat_id=query.message.chat_id,
-        message_id=query.message.message_id,
         reply_markup=reply_markup,
     )
     return PARSE_RESPONSE_TYPE
