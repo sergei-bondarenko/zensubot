@@ -225,7 +225,8 @@ def edit_response_type(update: Update, context: CallbackContext) -> int:
             pass
 
     keyboard = get_reply_keyboard(f"select id, type from response_types")
-    reply_markup = InlineKeyboardMarkup(keyboard)
+    keybord_negative = get_reply_keyboard(f"select -id, concat('Удалить ', type) from response_types")
+    reply_markup = InlineKeyboardMarkup(keyboard + keybord_negative)
 
     context.bot.send_message(
         text="Выбери тип ответа бота. Ответы идут друг за другом в формате \nResponse 1\n\nResponse 2",
@@ -238,11 +239,23 @@ def parse_response_type(update: Update, context: CallbackContext) -> int:
     query = update.callback_query
     context.user_data["chosen_response_type"] = query.data
 
-    context.bot.edit_message_text(
-        text="Отправь файл в формате .txt с одной фразой в каждой строчке. Можно использовать html теги телеграм",
-        chat_id=query.message.chat_id,
-        message_id=query.message.message_id,
-    )
+    job_type = int(context.user_data['chosen_job_type'])
+    response_type = int(context.user_data['chosen_response_type'])
+
+    if response_type > 0:
+        context.bot.edit_message_text(
+            text="Отправь файл в формате .txt с одной фразой в каждой строчке. Можно использовать html теги телеграм",
+            chat_id=query.message.chat_id,
+            message_id=query.message.message_id,
+        )
+    else:
+        db_query(f"delete from responses where job_type = {job_type} and response_type = {-response_type}", False)
+        
+        context.bot.edit_message_text(
+            text="Готово!",
+            chat_id=query.message.chat_id,
+            message_id=query.message.message_id,
+        )
     return WRITE_RESPONSES
 
 def write_response(update: Update, context: CallbackContext) -> int:
