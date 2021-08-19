@@ -220,7 +220,7 @@ def edit_response_type(update: Update, context: CallbackContext) -> int:
         context.bot.send_message(update.effective_chat.id, resp)
         #empty file error
         try:
-            context.bot.send_document(update.effective_chat.id, str.encode(response), filename = f"Response {id}")
+            context.bot.send_document(update.effective_chat.id, str.encode(response), filename = f"Response {id}.txt")
         except:
             pass
 
