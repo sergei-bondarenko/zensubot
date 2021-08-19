@@ -212,11 +212,12 @@ def edit_response_type(update: Update, context: CallbackContext) -> int:
 
     job_type = int(query.data)
 
-    resp_1 = "Response 1:\n\n" + Responses.get_entity(job_type, 1)
-    resp_2 = "Response 2:\n\n" + Responses.get_entity(job_type, 2)
-
-    context.bot.send_message(update.effective_chat.id, resp_1)
-    context.bot.send_message(update.effective_chat.id, resp_2)
+    responses_ids = db_query('select id from response_types')
+    for id in responses_ids:
+        response = Responses.get_entity(job_type, id)
+        resp = f"Response {id}:\n\n" + response[:500]
+        context.bot.send_message(update.effective_chat.id, resp)
+        context.bot.send_document(update.effective_chat.id, str.encode(response), filename = f"Response {id}")
 
     keyboard = get_reply_keyboard(f"select id, type from response_types")
     reply_markup = InlineKeyboardMarkup(keyboard)
