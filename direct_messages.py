@@ -250,7 +250,9 @@ def parse_response_type(update: Update, context: CallbackContext) -> int:
         )
     else:
         db_query(f"delete from responses where job_type = {job_type} and response_type = {-response_type}", False)
-        
+
+        logger.info(f"@{update.effective_user.username} deleted responses for job_type = {job_type} and response_type = {response_type}")
+
         context.bot.edit_message_text(
             text="Готово!",
             chat_id=query.message.chat_id,
