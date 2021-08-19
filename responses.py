@@ -41,7 +41,3 @@ class Responses:
     def update(cls, job_type: int, response_type: int, text: str) -> None:
         #Runs after insertion of new responses to database
         cls.responses[(job_type, response_type)] = text
-    
-    @classmethod
-    def delete(cls, job_type: int, response_type: int) -> None:
-        del cls.responses[(job_type, response_type)]
