@@ -255,6 +255,7 @@ def parse_response_type(update: Update, context: CallbackContext) -> int:
             chat_id=query.message.chat_id,
             message_id=query.message.message_id,
         )
+        return WRITE_RESPONSES
     else:
         db_query(f"delete from responses where job_type = {job_type} and response_type = {-response_type}", False)
 
@@ -265,7 +266,7 @@ def parse_response_type(update: Update, context: CallbackContext) -> int:
             chat_id=query.message.chat_id,
             message_id=query.message.message_id,
         )
-    return WRITE_RESPONSES
+        return ConversationHandler.END
 
 def write_response(update: Update, context: CallbackContext) -> int:
     job_type = int(context.user_data['chosen_job_type'])
