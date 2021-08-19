@@ -24,10 +24,10 @@ class Responses:
 
             #zero len list breaks random choice
             if len(phrases) == 0:
-                phrases = ['']
+                return ''
             return random.choice(phrases)
         except KeyError:
-            return ""
+            return ''
 
     @classmethod
     def get_entity(cls, job_type: int, response_type: int) -> str:
