@@ -258,7 +258,7 @@ def parse_response_type(update: Update, context: CallbackContext) -> int:
         return WRITE_RESPONSES
     else:
         db_query(f"delete from responses where job_type = {job_type} and response_type = {-response_type}", False)
-
+        Responses.update(job_type, response_type, '')
         logger.info(f"@{update.effective_user.username} deleted responses for job_type = {job_type} and response_type = {response_type}")
 
         context.bot.edit_message_text(
