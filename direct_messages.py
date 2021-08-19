@@ -225,10 +225,17 @@ def parse_response_type(update: Update, context: CallbackContext) -> int:
     query = update.callback_query
     context.user_data["chosen_response_type"] = query.data
 
-    context.bot.edit_message_text(
-        text="Отправь файл в формате .txt с одной фразой в каждой строчке. Можно использовать html теги телеграм\n\nДля удаления фраз отправь .txt файл состоящий из одного пробела",
-        chat_id=query.message.chat_id,
-        message_id=query.message.message_id,
+    job_type = int(context.user_data['chosen_job_type'])
+
+    resp_1 = "Response 1:\n\n" + Responses.get(job_type, 1)
+    resp_2 = "Response 2:\n\n" + Responses.get(job_type, 2)
+
+    context.bot.send_message(update.effective_chat.id, resp_1)
+    context.bot.send_message(update.effective_chat.id, resp_2)
+
+    context.bot.send_message(
+        update.effective_chat.id,
+        "Отправь файл в формате .txt с одной фразой в каждой строчке. Можно использовать html теги телеграм"
     )
     return WRITE_RESPONSES
 
