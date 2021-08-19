@@ -21,6 +21,10 @@ class Responses:
         try:
             text = cls.responses[(job_type, response_type)]
             phrases = [x.strip() for x in text.split("\n") if len(x) != 1]
+
+            #zero len list breaks random choice
+            if len(phrases) == 0:
+                phrases = ['']
             return random.choice(phrases)
         except KeyError:
             return ""
