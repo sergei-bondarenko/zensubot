@@ -212,8 +212,8 @@ def edit_response_type(update: Update, context: CallbackContext) -> int:
 
     job_type = int(query.data)
 
-    resp_1 = "Response 1:\n\n" + Responses.get(job_type, 1)
-    resp_2 = "Response 2:\n\n" + Responses.get(job_type, 2)
+    resp_1 = "Response 1:\n\n" + Responses.get_entity(job_type, 1)
+    resp_2 = "Response 2:\n\n" + Responses.get_entity(job_type, 2)
 
     context.bot.send_message(update.effective_chat.id, resp_1)
     context.bot.send_message(update.effective_chat.id, resp_2)
