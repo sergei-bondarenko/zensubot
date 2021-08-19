@@ -154,6 +154,7 @@ def parse_type(update: Update, context: CallbackContext) -> int:
     if query.data == '-1':
         db_query(f'delete from chats where id = {group_id}', False)
         context.bot.leave_chat(group_id)
+        logger.info(f"@{update.effective_user.username} deleted bot from group {group_id}")
     else:
         db_query(f'update chats set jobs_type = {query.data} where id = {group_id}', False)
 
