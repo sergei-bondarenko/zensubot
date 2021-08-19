@@ -3,6 +3,7 @@ import logging
 
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import CallbackContext, ConversationHandler
+from telegram.error import BadRequest
 
 from database import db_query
 from refresh_posts import refresh_posts
@@ -153,7 +154,11 @@ def parse_type(update: Update, context: CallbackContext) -> int:
     group_id = int(context.user_data["chosen_group"])
     if query.data == '-1':
         db_query(f'delete from chats where id = {group_id}', False)
-        context.bot.leave_chat(group_id)
+        # Chat does not exist now
+        try:
+            context.bot.leave_chat(group_id)
+        except BadRequest:
+            pass
     else:
         db_query(f'update chats set jobs_type = {query.data} where id = {group_id}', False)
 
@@ -223,7 +228,7 @@ def edit_response_type(update: Update, context: CallbackContext) -> int:
         #empty file error
         try:
             context.bot.send_document(update.effective_chat.id, str.encode(response), filename = f"Response {id}.txt")
-        except:
+        except BadRequest:
             pass
 
     keyboard = get_reply_keyboard(f"select id, type from response_types")
