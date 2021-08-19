@@ -214,10 +214,15 @@ def edit_response_type(update: Update, context: CallbackContext) -> int:
 
     responses_ids = db_query('select id from response_types')
     for id in responses_ids:
+        id = id[0]
         response = Responses.get_entity(job_type, id)
         resp = f"Response {id}:\n\n" + response[:500]
         context.bot.send_message(update.effective_chat.id, resp)
-        context.bot.send_document(update.effective_chat.id, str.encode(response), filename = f"Response {id}")
+        #empty file error
+        try:
+            context.bot.send_document(update.effective_chat.id, str.encode(response), filename = f"Response {id}")
+        except:
+            pass
 
     keyboard = get_reply_keyboard(f"select id, type from response_types")
     reply_markup = InlineKeyboardMarkup(keyboard)
