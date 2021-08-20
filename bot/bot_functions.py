@@ -55,7 +55,7 @@ def send_job(context, cur_date, chat_id, job_type, order_number):
             f'select photo_id, caption from post_templates where job_type = {job_type}',
             True,
         )[0]
-        caption = fill_template(caption, order_number)
+        caption = fill_template(caption, order_number, cur_date)
         
         if photo_id == "None":
             posted_message = context.bot.send_message(chat_id, caption, parse_mode = ParseMode.HTML)
