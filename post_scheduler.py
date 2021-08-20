@@ -3,7 +3,7 @@ from datetime import datetime, timedelta, time
 
 from telegram import ParseMode
 
-from bot_functions import fill_template
+from bot_functions import send_job
 from constants import POST_WEEKDAY, POST_HOUR, POST_MINUTE
 from database import db_query
 
@@ -18,38 +18,7 @@ def post_callback(context):
             where jobs_type is not null"""
     )
     for chat_id, job_type, order_number in data:
-
-        if job_type != 0:
-            photo_id, caption = db_query(
-                f'select photo_id, caption from post_templates where job_type = {job_type}',
-                True,
-            )[0]
-            caption = fill_template(caption, order_number)
-            
-            if photo_id == "None":
-                posted_message = context.bot.send_message(chat_id, caption, parse_mode = ParseMode.HTML)
-            else:
-                posted_message = context.bot.send_photo(chat_id, photo_id, caption=caption, parse_mode = ParseMode.HTML)
-            
-            last_message_id = db_query(f"select coalesce(max(message_id), 0) from jobs where chat_id = {chat_id}")[0][0]
-
-            
-            db_query(f"""insert into jobs(message_id, chat_id, type, order_number, created) values 
-                        ({posted_message.message_id}, {chat_id}, {job_type}, {order_number}
-                        , '{cur_date.year}-{cur_date.month}-{cur_date.day} {POST_HOUR}:00')""",
-                False,
-            )
-            logger.info(f"Job type {job_type} posted to chat_id {chat_id}")
-            
-            try:
-                context.bot.unpin_chat_message(chat_id = chat_id, message_id = last_message_id)
-            except:
-                logger.info(f"Unpin didn't work in chat_id {chat_id}")
-            
-            try:
-                context.bot.pin_chat_message(chat_id, posted_message.message_id)
-            except:
-                logger.info(f"Pin didn't work in chat_id {chat_id}")
+        send_job(context, cur_date, chat_id, job_type, order_number)
     
     if context.job.name == 'post_err':
         context.job.schedule_removal()
