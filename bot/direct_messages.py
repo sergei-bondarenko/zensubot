@@ -171,7 +171,7 @@ def parse_type(update: Update, context: CallbackContext) -> int:
             today = datetime.today()
             d_to_monday = timedelta(days=today.weekday())
             d_to_curday = timedelta(days = (POST_WEEKDAY - 7) if today.weekday()<POST_WEEKDAY else POST_WEEKDAY)
-            d_hour_based = timedelta(days=7 if today.hour<POST_HOUR else 0)
+            d_hour_based = timedelta(days=7 if today.hour<POST_HOUR and today.weekday == d_to_curday.days else 0)
             last_send_date = today - d_to_monday + d_to_curday - d_hour_based
             last_send_date.replace(hour=POST_HOUR, minute=POST_MINUTE)
             print(last_send_date)
