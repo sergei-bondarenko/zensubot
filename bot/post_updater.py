@@ -166,8 +166,10 @@ class PostUpdater:
                 
                 # Weekends
                 if i >= 5:
-                    if work > 0:
-                        weekends.append(EM_WEEKEND)
+                    if i == 5 and work > 0:
+                        weekends.append('⭐')
+                    if i == 6 and work > 0:
+                        weekends.append('🌟')
                 # Workdays
                 elif work == 0 and i < self.cur_day:
                     #phrase += EM_FAIL
