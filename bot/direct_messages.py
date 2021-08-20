@@ -164,6 +164,7 @@ def parse_type(update: Update, context: CallbackContext) -> int:
             context.bot.leave_chat(chat_id)
         except BadRequest:
             pass
+    # Creating new job
     else:
         # Post job if there is no active jobs in chats
         if len(db_query(f"select id from jobs where chat_id = {chat_id} and date_part('day', now() - jobs.created)<{JOB_DAYS_DURATION}")) == 0:
@@ -177,6 +178,9 @@ def parse_type(update: Update, context: CallbackContext) -> int:
             order_number = db_query(f'select coalesce(max(order_number),0)+1 from jobs where type = {job_type}')
 
             send_job(context, last_send_date, chat_id, job_type, order_number)
+        else:
+            db_query(f'update chats set jobs_type = {job_type} where id = {chat_id}', False)
+            context.bot.send_message(update.effective_chat.id, "В этом чате уже идет пятидневка, следующая добавится в начале недели")
 
     context.bot.edit_message_text(
         text="Готово!",
