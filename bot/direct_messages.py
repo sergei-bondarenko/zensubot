@@ -7,7 +7,7 @@ from telegram.ext import CallbackContext, ConversationHandler
 from telegram.error import BadRequest
 
 from bot_functions import send_job
-from constants import POST_WEEKDAY, POST_HOUR
+from constants import POST_WEEKDAY, POST_HOUR, JOB_DAYS_DURATION
 from database import db_query
 from refresh_posts import refresh_posts
 from responses import Responses
@@ -156,6 +156,7 @@ def parse_type(update: Update, context: CallbackContext) -> int:
     )
     chat_id = int(context.user_data["chosen_group"])
     job_type = int(query.data)
+    # Removing job
     if job_type == -1:
         db_query(f'delete from chats where id = {chat_id}', False)
         # Chat does not exist now
@@ -164,16 +165,18 @@ def parse_type(update: Update, context: CallbackContext) -> int:
         except BadRequest:
             pass
     else:
-        today = datetime.today()
-        d_to_monday = timedelta(days=today.weekday())
-        d_to_curday = timedelta(days = (POST_WEEKDAY - 7) if today.weekday()<POST_WEEKDAY else POST_WEEKDAY)
-        d_hour_based = timedelta(days=7 if today.hour<POST_HOUR else 0)
-        last_send_date = today - d_to_monday + d_to_curday - d_hour_based
+        # Post job if there is no active jobs in chats
+        if len(db_query(f"select id from jobs where chat_id = {chat_id} and date_part('day', now() - jobs.created)<{JOB_DAYS_DURATION}")) == 0:
+            today = datetime.today()
+            d_to_monday = timedelta(days=today.weekday())
+            d_to_curday = timedelta(days = (POST_WEEKDAY - 7) if today.weekday()<POST_WEEKDAY else POST_WEEKDAY)
+            d_hour_based = timedelta(days=7 if today.hour<POST_HOUR else 0)
+            last_send_date = today - d_to_monday + d_to_curday - d_hour_based
 
-        db_query(f'update chats set jobs_type = {job_type} where id = {chat_id}', False)
-        order_number = db_query(f'select coalesce(max(order_number),0)+1 from jobs where type = {job_type}')
+            db_query(f'update chats set jobs_type = {job_type} where id = {chat_id}', False)
+            order_number = db_query(f'select coalesce(max(order_number),0)+1 from jobs where type = {job_type}')
 
-        send_job(context, last_send_date, chat_id, job_type, order_number)
+            send_job(context, last_send_date, chat_id, job_type, order_number)
 
     context.bot.edit_message_text(
         text="Готово!",
