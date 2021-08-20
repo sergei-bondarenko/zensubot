@@ -1,1 +1,1 @@
-run: python zensu_bot.py
+run: python telegram/zensu_bot.py
