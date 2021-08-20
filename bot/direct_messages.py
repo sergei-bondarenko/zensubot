@@ -175,7 +175,7 @@ def parse_type(update: Update, context: CallbackContext) -> int:
             last_send_date = today - d_to_monday + d_to_curday - d_hour_based
 
             db_query(f'update chats set jobs_type = {job_type} where id = {chat_id}', False)
-            order_number = db_query(f'select coalesce(max(order_number),0)+1 from jobs where type = {job_type}')
+            order_number = db_query(f'select coalesce(max(order_number),0)+1 from jobs where type = {job_type}')[0][0]
 
             send_job(context, last_send_date, chat_id, job_type, order_number)
         else:
