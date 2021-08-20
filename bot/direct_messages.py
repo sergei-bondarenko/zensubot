@@ -310,6 +310,6 @@ def write_response(update: Update, context: CallbackContext) -> int:
 
 def parse_job_type(update: Update, context: CallbackContext) -> int:
     db_query(f"insert into jobs_types (type) values ('{update.message.text}')", False)
-
+    db_query("insert into post_templates (photo_id, caption) values ('AgACAgIAAxkBAAIKbmEc8fAjS0XezpQZHNfZzE0mAAE-8QACfbQxG6Fr6UhvVMiZffrUNAEAAwIAA3gAAyAE', 'Шаблон пятидневки')", False)
     context.bot.send_message(chat_id=update.effective_chat.id, text="Готово!")
     return ConversationHandler.END
