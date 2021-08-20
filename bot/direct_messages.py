@@ -7,7 +7,7 @@ from telegram.ext import CallbackContext, ConversationHandler
 from telegram.error import BadRequest
 
 from bot_functions import send_job
-from constants import POST_WEEKDAY, POST_HOUR, JOB_DAYS_DURATION
+from constants import POST_MINUTE, POST_WEEKDAY, POST_HOUR, JOB_DAYS_DURATION
 from database import db_query
 from refresh_posts import refresh_posts
 from responses import Responses
@@ -173,6 +173,7 @@ def parse_type(update: Update, context: CallbackContext) -> int:
             d_to_curday = timedelta(days = (POST_WEEKDAY - 7) if today.weekday()<POST_WEEKDAY else POST_WEEKDAY)
             d_hour_based = timedelta(days=7 if today.hour<POST_HOUR else 0)
             last_send_date = today - d_to_monday + d_to_curday - d_hour_based
+            last_send_date.replace(hour=POST_HOUR, minute=POST_MINUTE)
 
             db_query(f'update chats set jobs_type = {job_type} where id = {chat_id}', False)
             order_number = db_query(f'select coalesce(max(order_number),0)+1 from jobs where type = {job_type}')[0][0]
