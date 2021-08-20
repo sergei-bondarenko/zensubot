@@ -1,10 +1,13 @@
 """Sample finite-state machine"""
+from datetime import datetime, timedelta
 import logging
 
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import CallbackContext, ConversationHandler
 from telegram.error import BadRequest
 
+from bot_functions import send_job
+from constants import POST_WEEKDAY, POST_HOUR
 from database import db_query
 from refresh_posts import refresh_posts
 from responses import Responses
@@ -151,16 +154,26 @@ def parse_type(update: Update, context: CallbackContext) -> int:
     logger.info(
         f"@{update.effective_user.username}, {update.effective_user.first_name} chosen type {query.data}"
     )
-    group_id = int(context.user_data["chosen_group"])
-    if query.data == '-1':
-        db_query(f'delete from chats where id = {group_id}', False)
+    chat_id = int(context.user_data["chosen_group"])
+    job_type = int(query.data)
+    if job_type == -1:
+        db_query(f'delete from chats where id = {chat_id}', False)
         # Chat does not exist now
         try:
-            context.bot.leave_chat(group_id)
+            context.bot.leave_chat(chat_id)
         except BadRequest:
             pass
     else:
-        db_query(f'update chats set jobs_type = {query.data} where id = {group_id}', False)
+        today = datetime.today()
+        d_to_monday = timedelta(days=today.weekday())
+        d_to_curday = timedelta(days = (POST_WEEKDAY - 7) if today.weekday()<POST_WEEKDAY else POST_WEEKDAY)
+        d_hour_based = timedelta(days=7 if today.hour<POST_HOUR else 0)
+        last_send_date = today - d_to_monday + d_to_curday - d_hour_based
+
+        db_query(f'update chats set jobs_type = {job_type} where id = {chat_id}', False)
+        order_number = db_query(f'select coalesce(max(order_number),0)+1 from jobs where type = {job_type}')
+
+        send_job(context, last_send_date, chat_id, job_type, order_number)
 
     context.bot.edit_message_text(
         text="Готово!",
@@ -257,8 +270,9 @@ def parse_response_type(update: Update, context: CallbackContext) -> int:
         )
         return WRITE_RESPONSES
     else:
-        db_query(f"delete from responses where job_type = {job_type} and response_type = {-response_type}", False)
-        Responses.update(job_type, -response_type, '')
+        response_type = -response_type
+        db_query(f"delete from responses where job_type = {job_type} and response_type = {response_type}", False)
+        Responses.update(job_type, response_type, '')
         logger.info(f"@{update.effective_user.username} deleted responses for job_type = {job_type} and response_type = {response_type}")
 
         context.bot.edit_message_text(
