@@ -1,1 +1,1 @@
-bot: python bot/zensu_bot.py
+bot: cd bot && python zensu_bot.py
