@@ -119,8 +119,8 @@ class PostUpdater:
             else:
                 logger.info(f"Edited job with id {self.job_id} after ON DEMAND update")
 
-        except BadRequest as ex:
-            logger.info(f"Post update error: {ex}")
+        except BadRequest:
+            pass
 
 
     def get_posted_message(self, text: str) -> None:
