@@ -14,7 +14,6 @@ def refresh_posts(context):
     logger.info("Refreshing posts.")
     for row in rows:
         # Example of on demand PostUpdater
-        logger.info(f"row: {row}")
         upd = PostUpdater(row)
         upd.rebuild_message(context)
 
