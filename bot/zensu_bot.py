@@ -81,8 +81,8 @@ def main() -> None:
     dispatcher.add_handler(plus_handler)
 
     # Creates commands handler
-    stat_handler = CommandHandler("stat", stat)
-    dispatcher.add_handler(stat_handler)
+    # stat_handler = CommandHandler("stat", stat)
+    # dispatcher.add_handler(stat_handler)
 
     #inline_stat_handler = InlineQueryHandler(inline_stat)
     #dispatcher.add_handler(inline_stat_handler)
