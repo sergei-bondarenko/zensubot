@@ -105,8 +105,10 @@ class PostUpdater:
                     r_1 = Responses.get(self.job_type, 1)
                     r_2 = Responses.get(self.job_type, 2)
                     line = '' if r_1 == '' else '\n\n'
-                    if self.cur_day>=5:
-                        text = f"Огонёк за выходной!"
+                    if self.cur_day == 5:
+                        text = f"День 6/5 выполнен! Держи ⭐️"
+                    elif self.cur_day == 6:
+                        text = f"День 7/5 выполнен! Держи 🌟"
                     else:
                         text = f"День {int(self.cur_day+1)}/5 выполнен!"
                     text += f"\n\n{r_1 + line + r_2}"
@@ -178,7 +180,7 @@ class PostUpdater:
                 elif work > 0:
                     #phrase += EM_TRUE
                     if work >= 240:
-                        phrase += '🟣'
+                        phrase += '💎'
                     elif work >= 120:
                         phrase += '🔴'
                     elif work >= 60:
