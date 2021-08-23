@@ -13,6 +13,7 @@ def refresh_posts(context):
     rows = db_query(q)
     logger.info("Refreshing posts.")
     for row in rows:
+        logger.info(f"Refreshing post: {row}")
         # Example of on demand PostUpdater
         upd = PostUpdater(row)
         upd.rebuild_message(context)
