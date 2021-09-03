@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 def refresh_posts(context):
     q = f"""select jobs.* , date_part('day', now()-created), 0, case when photo_id != 'None' then true else false end
                     from jobs left join post_templates on job_type = type
-                    where date_part('day', now()-created) < {JOB_DAYS_DURATION} and type != 0 and type != 5"""
+                    where date_part('day', now()-created) < {JOB_DAYS_DURATION} and type != 0"""
     rows = db_query(q)
     logger.info("Refreshing posts.")
     for row in rows:
