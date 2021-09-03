@@ -43,7 +43,7 @@ def get_stat(update: Update) -> str:
     text += f"<pre> ‎ ‎ ‎ ‎ ‎  ‎Тип ‎ ‎ ‎ ‎ ‎ ‎Закончено ‎‏‏‎ ‎Время<br>"
     for i, (type, ended, started, summ) in enumerate(query):
         length1 = 13 - len(type)
-        margin1 = length1*EMPTY_SYMBOL if length != 0 else ''
+        margin1 = length1*EMPTY_SYMBOL if length1 != 0 else ''
         length2 = 9 - len(f"{ended}/{started}")
         margin2 = length2 * EMPTY_SYMBOL
         text += f"""{type}{margin1}{2*EMPTY_SYMBOL}{ended}/{started}{margin2}{minutes_to_hours(summ, 1)}<br>"""
