@@ -44,7 +44,7 @@ def get_stat(update: Update) -> str:
     for i, (type, ended, started, summ) in enumerate(query):
         length1 = 13 - len(type)
         margin1 = length1*EMPTY_SYMBOL if length1 != 0 else ''
-        if any(c in ['⌨', '✍', '⚙'] for c in type):
+        if any(c == '️' for c in type):
             margin1 += EMPTY_SYMBOL
         length2 = 9 - len(f"{ended}/{started}")
         margin2 = length2 * EMPTY_SYMBOL
