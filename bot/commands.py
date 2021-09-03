@@ -21,7 +21,6 @@ def get_stat(update: Update) -> str:
     """Function which generates aligned stat and sends it to telegra.ph. 
     We are using telegra.ph here because telegram messages are not promising to hold the alignment.
     Alignment which we are getting in telegra.ph heavily holds on EMPTY_SYMBOL.
-    TODO: alignment will break in case of len(‎{ended}/{started})>3 so sample function is needed to align text here. Probably this is done in at least 2 passes: one is for computing width of each column and second for substructing (rowlen-min) inbetween column margins
 
     Returns:
         str: text of message
@@ -42,11 +41,10 @@ def get_stat(update: Update) -> str:
     
     text = f'<b>Статистика пятидневок {user_name}</b><br>'
     text += f"<pre> ‎ ‎ ‎ ‎ ‎  ‎Тип ‎ ‎ ‎ ‎ ‎ ‎Закончено ‎‏‏‎ ‎Время<br>"
-    margins = iter([8,6,3,7,3,6,1,3] + [0]*20)
     for i, (type, ended, started, summ) in enumerate(query):
-        length = next(margins)
+        length = 13 - len(type)
         margin = length*EMPTY_SYMBOL if length != 0 else ''
-        text += f"""{type}{margin}{2*EMPTY_SYMBOL}‎{ended}/{started} ‎ ‎ ‎ ‎      ‎{minutes_to_hours(summ, 1)}<br>"""
+        text += f"""{type}{margin}{2*EMPTY_SYMBOL}{ended}/{started} ‎ ‎ ‎ ‎      ‎{minutes_to_hours(summ, 1)}<br>"""
 
     text += "</pre>"
     link = TelegraphPost.post_to_telegraph(text)
