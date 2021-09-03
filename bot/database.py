@@ -1,5 +1,6 @@
 import os
 from datetime import datetime, timedelta
+from time import sleep
 
 from constants import JOB_DAYS_DURATION
 
@@ -10,14 +11,19 @@ CONNECTION = psycopg2.connect(DATABASE_URL, sslmode="require")
 
 
 def db_query(line, fetching=True):
-    with CONNECTION:
-        with CONNECTION.cursor() as cur:
-            cur.execute(line)
-            if fetching:
-                data = cur.fetchall()
-                return data
-            return None
-
+    global CONNECTION
+    while True:
+        try:
+            with CONNECTION:
+                with CONNECTION.cursor() as cur:
+                    cur.execute(line)
+                    if fetching:
+                        data = cur.fetchall()
+                        return data
+                    return None
+        except psycopg2.errors.AdminShutdown:
+            CONNECTION = psycopg2.connect(DATABASE_URL, sslmode="require")
+            sleep(1)
 
 def clean_data(job):
     def cleaner(context):
