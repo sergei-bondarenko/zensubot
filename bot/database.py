@@ -21,7 +21,7 @@ def db_query(line, fetching=True):
                         data = cur.fetchall()
                         return data
                     return None
-        except psycopg2.errors.AdminShutdown:
+        except:
             CONNECTION = psycopg2.connect(DATABASE_URL, sslmode="require")
             sleep(1)
 
