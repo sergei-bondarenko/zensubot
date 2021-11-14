@@ -18,7 +18,10 @@ def post_callback(context):
             where jobs_type is not null"""
     )
     for chat_id, job_type, order_number in data:
-        send_job(context, cur_date, chat_id, job_type, order_number)
+        try:
+            send_job(context, cur_date, chat_id, job_type, order_number)
+        except:
+            logger.info(f"Could not create job in {chat_id}")
     
     if context.job.name == 'post_err':
         context.job.schedule_removal()
