@@ -18,7 +18,7 @@ def post_callback(context):
             where jobs_type is not null"""
     )
     for chat_id, job_type, order_number in data:
-        if job_type in [2,9,12,13]:
+        if job_type in [2]:
             try:
                 send_job(context, cur_date, chat_id, job_type, order_number)
             except Exception as err: 
