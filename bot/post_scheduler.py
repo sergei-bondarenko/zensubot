@@ -33,4 +33,4 @@ def post_callback(context):
 def create_post_sc(job, completed = False):
     time_now = datetime.now()
     interval = timedelta(minutes = 2)
-    job.run_repeating(callback = post_callback, interval = interval, last = time_now + timedelta(hours = 1), name = 'post_err')
+    job.run_repeating(callback = post_callback, interval = interval, last = time_now + timedelta(hours = 1), name = 'post')
