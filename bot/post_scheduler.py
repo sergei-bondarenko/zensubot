@@ -18,10 +18,11 @@ def post_callback(context):
             where jobs_type is not null"""
     )
     for chat_id, job_type, order_number in data:
-        try:
-            send_job(context, cur_date, chat_id, job_type, order_number)
-        except:
-            logger.info(f"Could not create job in {chat_id}")
+        if job_type==4:
+            try:
+                send_job(context, cur_date, chat_id, job_type, order_number)
+            except:
+                logger.info(f"Could not create job in {chat_id}")
     
     if context.job.name == 'post_err':
         context.job.schedule_removal()
@@ -31,6 +32,8 @@ def post_callback(context):
 
 def create_post_sc(job, completed = False):
     time_now = datetime.now()
+    interval = timedelta(minutes = 2)
+    job.run_repeating(callback = post_callback, interval = interval, last = time_now + timedelta(hours = 1), name = 'post_err')
     #if time_now.weekday() == POST_WEEKDAY and POST_HOUR <= time_now.hour <= POST_HOUR+1 and not completed:
     #    interval = timedelta(minutes = 2)
     #    job.run_repeating(callback = post_callback, interval = interval, last = time_now + timedelta(hours = 1), name = 'post_err')
