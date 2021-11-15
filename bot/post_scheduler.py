@@ -11,24 +11,22 @@ logger = logging.getLogger(__name__)
 
 
 def post_callback(context):
-    logger.info("Callback called!!!")
-#    cur_date = datetime.now()
-#    data = db_query(
-#        """select id, jobs_type, coalesce(order_number, 0) + 1
-#            from chats left join (select type, max(order_number) as order_number from jobs group by type) t on t.type = chats.jobs_type 
-#            where jobs_type is not null"""
-#    )
-#    for chat_id, job_type, order_number in data:
-#        try:
-#            send_job(context, cur_date, chat_id, job_type, order_number)
-#        except:
-#            logger.info(f"Could not create job in {chat_id}")
-#
-#    if context.job.name == 'post_err':
-#        context.job.schedule_removal()
-#        create_post_sc(context.job_queue, completed=True)
-            
+    cur_date = datetime.now()
+    data = db_query(
+        """select id, jobs_type, coalesce(order_number, 0) + 1
+            from chats left join (select type, max(order_number) as order_number from jobs group by type) t on t.type = chats.jobs_type 
+            where jobs_type is not null"""
+    )
+    for chat_id, job_type, order_number in data:
+        try:
+            send_job(context, cur_date, chat_id, job_type, order_number)
+        except:
+            logger.info(f"Could not create job in {chat_id}")
 
+    if context.job.name == 'post_err':
+        context.job.schedule_removal()
+        create_post_sc(context.job_queue, completed=True)
+            
 
 def create_post_sc(job, completed = False):
     time_now = datetime.now()
