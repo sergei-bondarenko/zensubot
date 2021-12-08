@@ -21,7 +21,7 @@ def stickers(update, context):
 def update_users(data):
     db_query(
         f"""insert into users (id, username, first_name) 
-                values ({data.user_id}, '{data.username}', '{data.user_firstname}')
+                values ({data.user_id}, "{data.username}", '{data.user_firstname}')
                 on conflict (id) do update 
                 set username = excluded.username, 
                     first_name = excluded.first_name;""",
