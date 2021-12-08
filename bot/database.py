@@ -21,7 +21,8 @@ def db_query(line, fetching=True):
                         data = cur.fetchall()
                         return data
                     return None
-        except:
+        except Exception as e:
+            print(f"DB connection issue: {e}")
             CONNECTION = psycopg2.connect(DATABASE_URL, sslmode="require")
             sleep(1)
 
