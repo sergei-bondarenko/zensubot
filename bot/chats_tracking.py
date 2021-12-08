@@ -70,7 +70,7 @@ def track_chats(update, context) -> None:
                 chat.title,
                 chat.id,
             )
-            title = chat.title.replace("'", "\\'")
+            title = chat.title.replace("'", "''")
             db_query(f"insert into chats values ({chat.id}, '{title} чат')", False)
         elif was_member and not is_member:
             logger.info(

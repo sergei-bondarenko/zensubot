@@ -19,7 +19,7 @@ def stickers(update, context):
 
 
 def update_users(data):
-    user_firstname = data.user_firstname.replace("'", "\\'")
+    user_firstname = data.user_firstname.replace("'", "''")
     db_query(
         f"""insert into users (id, username, first_name) 
                 values ({data.user_id}, '{data.username}', '{user_firstname}')
