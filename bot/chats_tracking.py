@@ -70,7 +70,8 @@ def track_chats(update, context) -> None:
                 chat.title,
                 chat.id,
             )
-            db_query(f"insert into chats values ({chat.id}, '{chat.title} чат')", False)
+            title = chat.title.replace("'", "\\'")
+            db_query(f"insert into chats values ({chat.id}, '{title} чат')", False)
         elif was_member and not is_member:
             logger.info(
                 "%s removed the bot from the group %s with id %s",
@@ -88,7 +89,7 @@ def track_chats(update, context) -> None:
                 chat.id,
             )
             db_query(
-                f"insert into chats values ({chat.id}, '{chat.title} канал')", False
+                f"insert into chats values ({chat.id}, '{title} канал')", False
             )
         elif was_member and not is_member:
             logger.info(

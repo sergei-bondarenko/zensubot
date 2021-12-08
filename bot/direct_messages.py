@@ -295,7 +295,7 @@ def write_response(update: Update, context: CallbackContext) -> int:
     response_type = int(context.user_data['chosen_response_type'])
 
     b_array = context.bot.get_file(update.message.document).download_as_bytearray()
-    text = b_array.decode(encoding = 'utf-8')
+    text = b_array.decode(encoding = 'utf-8').replace("'", "\\'")
 
     db_query(f"""insert into responses (job_type, response_type, phrase) values 
                 ({job_type}, {response_type}, '{text}')
@@ -309,7 +309,8 @@ def write_response(update: Update, context: CallbackContext) -> int:
     return ConversationHandler.END
 
 def parse_job_type(update: Update, context: CallbackContext) -> int:
-    db_query(f"insert into jobs_types (type) values ('{update.message.text}')", False)
+    text = update.message.text.replace("'", "\\'")
+    db_query(f"insert into jobs_types (type) values ('{text}')", False)
     db_query("insert into post_templates (photo_id, caption) values ('None', 'Шаблон пятидневки')", False)
     context.bot.send_message(chat_id=update.effective_chat.id, text="Готово!")
     return ConversationHandler.END
