@@ -193,7 +193,7 @@ class PostUpdater:
                     #phrase += EM_FALSE
                     phrase += '⚫'
 
-            phrase += f" {minutes_to_hours(total)}"
+            phrase += f"\n⏱ <tt>{minutes_to_hours(total)}</tt>"
             weekends = ''.join(weekends)
 
             if is_first_fail:
