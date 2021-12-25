@@ -44,9 +44,9 @@ def fill_template(text: str, n: int, start_date: datetime = datetime.now()) -> s
 
 def minutes_to_hours(minutes: int, mode = 0) -> str:
     if mode == 0:
-        return f"{minutes // 60}h {(minutes % 60):02d}m"
+        return f"{minutes // 60}ч {(minutes % 60):02d}м"
     if mode == 1:
-        return f"{round(minutes / 60, 1):g}h"
+        return f"{round(minutes / 60, 1):g}ч"
 
 
 def send_job(context, cur_date, chat_id, job_type, order_number):
