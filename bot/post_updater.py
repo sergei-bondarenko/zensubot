@@ -162,8 +162,11 @@ class PostUpdater:
             for i, work in enumerate(days):
                 work = int(work)
 
-                # Checking if today is the first activity of user
-                if user_id == self.user_id and i == self.cur_day:
+                if not self.on_demand:
+                    # Checking if today is the first activity of user
+                    if user_id == self.user_id and i == self.cur_day:
+                        work_today = work
+                elif i == self.cur_day:
                     work_today = work
                 
                 # Weekends
@@ -194,6 +197,8 @@ class PostUpdater:
                     phrase += '⚫'
 
             phrase += f"\n🕗<code>{minutes_to_hours(total)}</code>"
+            if work_today > 0:
+                phrase += f"<code>[+{minutes_to_hours(work_today)}]</code>"
             weekends = ''.join(weekends)
 
             if is_first_fail:
