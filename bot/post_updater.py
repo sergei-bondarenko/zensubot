@@ -116,7 +116,7 @@ class PostUpdater:
                     text = f"За сегодня добавлено {minutes_to_hours(work_today)}!"
 
                 bot_message_to_chat(
-                    context, self.chat_id_user_reply, text, 0, self.message_id_user_reply, ParseMode.HTML
+                    context, self.chat_id_user_reply, text, 60, self.message_id_user_reply, ParseMode.HTML
                 )
             else:
                 logger.info(f"Edited job with id {self.job_id} after ON DEMAND update")
