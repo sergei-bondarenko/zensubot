@@ -162,13 +162,12 @@ class PostUpdater:
             for i, work in enumerate(days):
                 work = int(work)
 
-                if not self.on_demand:
-                    # Checking if today is the first activity of user
-                    if user_id == self.user_id and i == self.cur_day:
-                        work_today = work
-                elif i == self.cur_day:
-                    work_today = work
-                
+                # Checking if today is the first activity of user
+                if i == self.cur_day:
+                    work_user_today = work # This is today work time for the user in the for loop.
+                    if user_id == self.user_id:
+                        work_today = work # This is today work time for the user who sent the sticker.
+
                 # Weekends
                 if i >= 5:
                     if i == 5 and work > 0:
@@ -197,8 +196,8 @@ class PostUpdater:
                     phrase += '⚫'
 
             phrase += f"\n🕗<code>{minutes_to_hours(total)}</code>"
-            if work_today > 0:
-                phrase += f"<code>[+{minutes_to_hours(work_today)}]</code>"
+            if work_user_today > 0:
+                phrase += f"<code>[+{minutes_to_hours(work_user_today)}]</code>"
             weekends = ''.join(weekends)
 
             if is_first_fail:
