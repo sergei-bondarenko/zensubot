@@ -71,6 +71,7 @@ def send_job(context, cur_date, chat_id, job_type, order_number):
             False,
         )
         logger.info(f"Job type {job_type} posted to chat_id {chat_id}")
+        logger.info(f"Variables: cur_date={cur_date}, datetime.now()={datetime.now()}")
         
         try:
             context.bot.unpin_chat_message(chat_id = chat_id, message_id = last_message_id)
