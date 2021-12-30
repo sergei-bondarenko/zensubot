@@ -195,7 +195,7 @@ class PostUpdater:
                     #phrase += EM_FALSE
                     phrase += '🌑'
 
-            phrase += f"\n🕗<code>{minutes_to_hours(total)}</code>"
+            phrase += f"\n🕰 <code>{minutes_to_hours(total)}</code>"
             if work_user_today > 0:
                 phrase += f"<code>[+{minutes_to_hours(work_user_today)}]</code>"
             weekends = ''.join(weekends)
