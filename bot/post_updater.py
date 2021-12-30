@@ -177,23 +177,23 @@ class PostUpdater:
                 # Workdays
                 elif work == 0 and i < self.cur_day:
                     #phrase += EM_FAIL
-                    phrase += '❌'
+                    phrase += '✖️'
                     is_first_fail = False
                 elif work > 0:
                     #phrase += EM_TRUE
                     if work >= 240:
-                        phrase += '💎'
+                        phrase += '🌝'
                     elif work >= 120:
-                        phrase += '🔴'
+                        phrase += '🌕'
                     elif work >= 60:
-                        phrase += '🟠'
+                        phrase += '🌖'
                     elif work >= 30:
-                        phrase += '🟡'
+                        phrase += '🌗'
                     else:
-                        phrase += '🟢'
+                        phrase += '🌘'
                 else:
                     #phrase += EM_FALSE
-                    phrase += '⚫'
+                    phrase += '🌑'
 
             phrase += f"\n🕗<code>{minutes_to_hours(total)}</code>"
             if work_user_today > 0:
