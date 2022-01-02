@@ -20,7 +20,7 @@ def post_callback(context):
     )
     for chat_id, job_type, order_number in data:
         try:
-            send_job(context, cur_date, chat_id, job_type, order_number)
+            send_job(context, cur_date - timedelta(days=1), chat_id, job_type, order_number)
         except:
             logger.info(f"Could not create job in {chat_id}")
 
