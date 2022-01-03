@@ -1,9 +1,21 @@
 from bot_functions import bot_message_to_chat
 from database import db_query
 from post_updater import PostUpdater
+from telegram import ParseMode
 
 
 def stickers(update, context):
+    if update.effective_user["username"] == "Channel_Bot":
+        bot_message_to_chat(
+            context,
+            update["message"]["chat"]["id"],
+            "Стикер от паблика НЕ засчитан. Пожалуйста, используй личный аккаунт.",
+            0,
+            update["message"]["chat"]["id"],
+            ParseMode.HTML
+        )
+        return
+
     upd = PostUpdater(update)
     # Writing update to table if job_id and sticker_id is correct
     if upd.job_id and upd.sticker_id:
