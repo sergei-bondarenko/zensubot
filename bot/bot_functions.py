@@ -31,12 +31,11 @@ def delete_message(context: CallbackContext) -> None:
 
 
 def fill_template(text: str, n: int, start_date: datetime = datetime.now()) -> str:
-    heroku_bug = POST_HOUR - start_date.hour
-    UTC_PLUS = 3 + heroku_bug
+    UTC_PLUS = 3
     text = re.sub('([#№])N', f"\g<1>{n}", text, flags=re.I)
     for day in range(5):
         date = start_date + timedelta(days=day, hours=UTC_PLUS)
-        open, close = ('','') if datetime.now() - date < timedelta(hours = 24 - UTC_PLUS) else ('<b><s>', '</s></b>')
+        open, close = ('','') if datetime.now() - date < timedelta(hours = 24) else ('<b><s>', '</s></b>')
         date = date.strftime("%d.%m.%Y")
         text = re.sub(f"{day+1} [-–—] NN.NN.NNNN", f"{open}{day+1} — {date}{close}", text, flags=re.I)
     return text
