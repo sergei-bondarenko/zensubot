@@ -140,6 +140,12 @@ class PostUpdater:
         else:
             return ''
 
+    def render_drowned(self, name_phrase: str, work_user_today: int) -> str:
+        s = f"<s>{name_phrase}</s>"
+        if work_user_today > 0:
+            s += f"<code>[+{minutes_to_hours(work_user_today)}]</code>"
+        return s
+
     def get_posted_message(self, text: str) -> None:
         # Collecting data about current job progress
         query = db_query(
@@ -204,18 +210,28 @@ class PostUpdater:
                 phrase += f"<code>[+{minutes_to_hours(work_user_today)}]</code>"
 
             if is_first_fail:
-                passed.append((name_phrase, phrase, weekends))
+                passed.append((name_phrase, phrase, work_user_today))
             else:
-                loosers.append((name_phrase, phrase, weekends))
+                loosers.append((name_phrase, phrase, work_user_today))
 
         added_text = str()
         i, j = 0, 0
 
-        for i, (name_phrase, phrase, weekends) in enumerate(passed):
-            added_text += f"{i+1}. {name_phrase}\n{phrase}\n\n"
+        for i, (name_phrase, phrase, work_user_today) in enumerate(passed):
+            num = i+1
+            added_text += f"{num}. {name_phrase}\n{phrase}\n\n"
 
-        for j, (name_phrase, phrase, weekends) in enumerate(loosers):
-            added_text += f"{i + j + 2 + (-1 if i==0 else 0)}. <s>{name_phrase}</s>\n{phrase}\n\n"
+        for j, (name_phrase, phrase, work_user_today) in enumerate(loosers):
+            num = i + j + 2 + (-1 if i==0 else 0)
+            if num <= 10:
+                added_text += f"{num}. <s>{name_phrase}</s>\n{phrase}\n\n"
+            else:
+                if num == 11:
+                    added_text += '⚓️ Потонувшие:\n'
+                else:
+                    added_text += ', '
+                added_text += self.render_drowned(name_phrase, work_user_today)
+
         text += "\n\n" + added_text
 
         return text, work_today
