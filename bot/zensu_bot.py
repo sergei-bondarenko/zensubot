@@ -1,6 +1,5 @@
 import logging
 import os
-#testr
 
 from telegram.ext import (CallbackQueryHandler, ChatMemberHandler,
                           CommandHandler, ConversationHandler, Filters,
@@ -23,6 +22,7 @@ from refresh_posts import refresh_posts_job
 from sticker_tracking import stickers
 from telegraph_posting import TelegraphPost
 from reminder import reminder
+from greeting import greet_chat_members
 
 
 TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN")
@@ -86,6 +86,9 @@ def main() -> None:
 
     help_handler = CommandHandler("help", help)
     dispatcher.add_handler(help_handler)
+
+    # Handle members joining chats.
+    dispatcher.add_handler(ChatMemberHandler(greet_chat_members, ChatMemberHandler.CHAT_MEMBER))
 
     #inline_stat_handler = InlineQueryHandler(inline_stat)
     #dispatcher.add_handler(inline_stat_handler)
