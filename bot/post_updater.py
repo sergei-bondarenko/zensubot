@@ -105,12 +105,7 @@ class PostUpdater:
                     r_1 = Responses.get(self.job_type, 1)
                     r_2 = Responses.get(self.job_type, 2)
                     line = '' if r_1 == '' else '\n\n'
-                    if self.cur_day == 5:
-                        text = f"День 6/5 выполнен! Держи ⭐️"
-                    elif self.cur_day == 6:
-                        text = f"День 7/5 выполнен! Держи 🌟"
-                    else:
-                        text = f"День {int(self.cur_day+1)}/5 выполнен!"
+                    text = f"День {int(self.cur_day+1)}/5 выполнен!"
                     text += f"\n\n{r_1 + line + r_2}"
                 else:
                     text = f"За сегодня добавлено {minutes_to_hours(work_today)}!"
@@ -124,6 +119,26 @@ class PostUpdater:
         except BadRequest:
             pass
 
+
+    def get_emoji(self, work: int) -> str:
+        if work >= 240:
+            return '🌝'
+        elif work >= 120:
+            return '🌕'
+        elif work >= 60:
+            return '🌖'
+        elif work >= 30:
+            return '🌗'
+        elif work >= 15:
+            return '🌘'
+        else:
+            return '🌑'
+
+    def render_weekends(self, weekends: str) -> str:
+        if len(weekends) > 0 and weekends != '🌑🌑':
+            return f"+{weekends}"
+        else:
+            return ''
 
     def get_posted_message(self, text: str) -> None:
         # Collecting data about current job progress
@@ -170,10 +185,7 @@ class PostUpdater:
 
                 # Weekends
                 if i >= 5:
-                    if i == 5 and work > 0:
-                        weekends.append('⭐')
-                    if i == 6 and work > 0:
-                        weekends.append('🌟')
+                    weekends.append(self.get_emoji(work))
                 # Workdays
                 elif work == 0 and i < self.cur_day:
                     #phrase += EM_FAIL
@@ -181,24 +193,15 @@ class PostUpdater:
                     is_first_fail = False
                 elif work > 0:
                     #phrase += EM_TRUE
-                    if work >= 240:
-                        phrase += '🌝'
-                    elif work >= 120:
-                        phrase += '🌕'
-                    elif work >= 60:
-                        phrase += '🌖'
-                    elif work >= 30:
-                        phrase += '🌗'
-                    else:
-                        phrase += '🌘'
+                    phrase += self.get_emoji(work)
                 else:
                     #phrase += EM_FALSE
                     phrase += '🌑'
 
-            phrase += f"\n🕰 <code>{minutes_to_hours(total)}</code>"
+            weekends = ''.join(weekends)
+            phrase += f"{self.render_weekends(weekends)}\n🕰 <code>{minutes_to_hours(total)}</code>"
             if work_user_today > 0:
                 phrase += f"<code>[+{minutes_to_hours(work_user_today)}]</code>"
-            weekends = ''.join(weekends)
 
             if is_first_fail:
                 passed.append((name_phrase, phrase, weekends))
@@ -209,10 +212,10 @@ class PostUpdater:
         i, j = 0, 0
 
         for i, (name_phrase, phrase, weekends) in enumerate(passed):
-            added_text += f"{i+1}. {name_phrase} {weekends}\n{phrase}\n\n"
+            added_text += f"{i+1}. {name_phrase}\n{phrase}\n\n"
 
         for j, (name_phrase, phrase, weekends) in enumerate(loosers):
-            added_text += f"{i + j + 2 + (-1 if i==0 else 0)}. <s>{name_phrase}</s> {weekends}\n{phrase}\n\n"
+            added_text += f"{i + j + 2 + (-1 if i==0 else 0)}. <s>{name_phrase}</s>\n{phrase}\n\n"
         text += "\n\n" + added_text
 
         return text, work_today
