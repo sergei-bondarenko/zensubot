@@ -10,6 +10,12 @@ from telegraph_posting import TelegraphPost
 
 logger = logging.getLogger(__name__)
 
+def help(update: Update, context: CallbackContext) -> int:
+    context.bot.send_message(chat_id = update.effective_message.chat_id,
+                            text = "Отмечайся каждый день <a href = 'https://t.me/addstickers/minimaal_zensu'>стикером</a> <b>ответом на пост пятидневки</b>. За день можно отмечаться несколько раз, время суммируется. Участие в пятидневке в выходные дни по желанию, однако время тоже засчитывается.",
+                            parse_mode = ParseMode.HTML,
+                            disable_web_page_preview = True)
+
 def stat(update: Update, context: CallbackContext) -> int:
     context.bot.send_message(chat_id = update.effective_message.chat_id, 
                             text = get_stat(update),

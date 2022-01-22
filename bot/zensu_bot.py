@@ -7,7 +7,7 @@ from telegram.ext import (CallbackQueryHandler, ChatMemberHandler,
                           MessageHandler, Updater, InlineQueryHandler)
 
 from chats_tracking import track_chats
-from commands import stat
+from commands import stat, help
 from database import clean_data
 from direct_messages import (EDIT_TEMPLATE, PARSE_START, SAVE_TEMPLATE,
                              PARSE_TYPE, PARSE_WHERE_TO_POST, PARSE_JOB_TYPE,
@@ -83,6 +83,9 @@ def main() -> None:
     # Creates commands handler
     stat_handler = CommandHandler("stat", stat)
     dispatcher.add_handler(stat_handler)
+
+    help_handler = CommandHandler("help", help)
+    dispatcher.add_handler(help_handler)
 
     #inline_stat_handler = InlineQueryHandler(inline_stat)
     #dispatcher.add_handler(inline_stat_handler)
