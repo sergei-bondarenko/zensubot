@@ -55,11 +55,10 @@ def greet_chat_members(update: Update, context: CallbackContext) -> None:
         return
 
     was_member, is_member = result
-    cause_name = update.chat_member.from_user.mention_html()
     member_name = update.chat_member.new_chat_member.user.mention_html()
 
     if not was_member and is_member:
         chat_id = update['chat_member']['chat']['id']
         greeting = db_query(f"select greeting from chats where id = {chat_id}")[0][0]
         if greeting:
-            update.effective_chat.send_message(greeting, parse_mode=ParseMode.HTML)
+            update.effective_chat.send_message(member_name + greeting, parse_mode=ParseMode.HTML)
