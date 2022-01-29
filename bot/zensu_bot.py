@@ -77,8 +77,8 @@ def main() -> None:
     dispatcher.add_handler(stickers_handler)
 
     # Creates plus_tracking handler
-    plus_handler = MessageHandler(Filters.reply & Filters.regex(r"^\+$"), plus)
-    dispatcher.add_handler(plus_handler)
+    # plus_handler = MessageHandler(Filters.reply & Filters.regex(r"^\+$"), plus)
+    # dispatcher.add_handler(plus_handler)
 
     # Creates commands handler
     stat_handler = CommandHandler("stat", stat)
