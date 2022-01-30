@@ -122,10 +122,12 @@ class PostUpdater:
 
     def get_emoji(self, work: int) -> str:
         if work >= 240:
-            return '🌝'
+            return '🌟'
         elif work >= 120:
-            return '🌕'
+            return '⭐️'
         elif work >= 60:
+            return '🌕'
+        elif work >= 45:
             return '🌖'
         elif work >= 30:
             return '🌗'
