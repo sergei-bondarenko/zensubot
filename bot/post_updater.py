@@ -5,7 +5,7 @@ from telegram import ParseMode, Update
 from telegram.ext import CallbackContext
 from telegram.error import BadRequest
 
-from bot_functions import bot_message_to_chat, fill_template, minutes_to_hours
+from bot_functions import bot_message_to_chat, fill_template, minutes_to_hours, get_user_levels
 from constants import EM_TRUE, EM_FAIL, EM_FALSE, EM_WEEKEND, JOB_DAYS_DURATION, USERS
 from database import db_query
 from responses import Responses
@@ -162,6 +162,8 @@ class PostUpdater:
                     ;"""
         )
 
+        user_levels = get_user_levels(self.job_type)
+
         text = text.split(f"\n\n{USERS}:")[0]
 
         passed = list()
@@ -206,22 +208,26 @@ class PostUpdater:
             if work_user_today > 0:
                 phrase += f"<code>[+{minutes_to_hours(work_user_today)}]</code>"
 
+            try:
+                level = f"💫<code>{user_levels[user_id]}</code>"
+            except:
+                level = f"💫<code>0</code>"
             if is_first_fail:
-                passed.append((name_phrase, phrase, total))
+                passed.append((name_phrase, level, phrase, total))
             else:
-                loosers.append((name_phrase, phrase, total))
+                loosers.append((name_phrase, level, phrase, total))
 
         added_text = str()
         i, j = 0, 0
 
-        for i, (name_phrase, phrase, total) in enumerate(passed):
+        for i, (name_phrase, level, phrase, total) in enumerate(passed):
             num = i+1
-            added_text += f"{num}. {name_phrase}\n{phrase}\n\n"
+            added_text += f"{num}. {name_phrase}{level}\n{phrase}\n\n"
 
-        for j, (name_phrase, phrase, total) in enumerate(loosers):
+        for j, (name_phrase, level, phrase, total) in enumerate(loosers):
             num = i + j + 2 + (-1 if i==0 else 0)
             if num <= 10:
-                added_text += f"{num}. <s>{name_phrase}</s>\n{phrase}\n\n"
+                added_text += f"{num}. <s>{name_phrase}</s>{level}\n{phrase}\n\n"
             else:
                 if num == 11:
                     added_text += '⚓️ Потонувшие:\n'

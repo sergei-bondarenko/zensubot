@@ -7,9 +7,35 @@ from telegram.ext import CallbackContext
 
 from constants import POST_HOUR
 from database import db_query
+from typing import Dict
 
 logger = logging.getLogger(__name__)
 
+
+def get_user_levels(job_type: int) -> Dict[str, int]:
+    """
+    Return the number of fully completed jobs for each user for the
+    specified `job_type`.
+    """
+    query = db_query(f"""
+        SELECT user_id,
+               sum(CASE WHEN unique_days = 5 THEN 1 ELSE 0 END) AS count
+        FROM
+            (
+                SELECT user_id,
+                       job_id,
+                       COUNT(DISTINCT(date_part('day', jobs_updates.created - jobs.created))) AS unique_days
+                FROM jobs_updates
+                LEFT JOIN jobs ON jobs_updates.job_id = jobs.id
+                WHERE type = {job_type} AND date_part('day', jobs_updates.created - jobs.created) <= 4
+                GROUP BY user_id, job_id
+            ) t
+        GROUP BY user_id;
+    """)
+    levels = {}
+    for user_id, count in query:
+        levels[user_id] = count
+    return levels
 
 def bot_message_to_chat(context: CallbackContext, chat_id: int, text: str, delete: int = 0, reply_to_message: int = None, parse_mode: str = None) -> None:
     posted_message = context.bot.send_message(
