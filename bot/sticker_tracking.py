@@ -14,7 +14,7 @@ def stickers(update, context):
                 update["message"]["chat"]["id"],
                 "Стикер от паблика НЕ засчитан. Пожалуйста, используй личный аккаунт.",
                 0,
-                update["message"]["chat"]["id"],
+                update.message.message_id,
                 ParseMode.HTML
             )
             return
@@ -25,7 +25,7 @@ def stickers(update, context):
                 update["message"]["chat"]["id"],
                 "Пятидневка больше не принимает в себя эти жуткие огромные пальцы. Слишком уж это, простите, грязное зрелище. Возможно, когда-нибудь дизайнер откопает исходники и сделает пальцы поменьше, но а пока воспользуйтесь уже <a href = 'https://t.me/addstickers/minimaal_zensu'>уменьшенными стикерами</a>.",
                 0,
-                update["message"]["chat"]["id"],
+                update.message.message_id,
                 ParseMode.HTML
             )
             return
