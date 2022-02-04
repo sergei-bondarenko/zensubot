@@ -1,3 +1,4 @@
+from datetime import datetime
 from bot_functions import bot_message_to_chat
 from database import db_query
 from post_updater import PostUpdater
@@ -24,6 +25,17 @@ def stickers(update, context):
                 context,
                 update["message"]["chat"]["id"],
                 "Пятидневка больше не принимает в себя эти жуткие огромные пальцы. Слишком уж это, простите, грязное зрелище. Возможно, когда-нибудь дизайнер откопает исходники и сделает пальцы поменьше, но а пока воспользуйтесь уже <a href = 'https://t.me/addstickers/minimaal_zensu'>уменьшенными стикерами</a>.",
+                0,
+                update.message.message_id,
+                ParseMode.HTML
+            )
+            return
+
+        if datetime.today().weekday() in [5, 6]:
+            bot_message_to_chat(
+                context,
+                update["message"]["chat"]["id"],
+                "В целях эксперимента пятидневка не принимает отметки в выходные дни на протяжении всего февраля.",
                 0,
                 update.message.message_id,
                 ParseMode.HTML
