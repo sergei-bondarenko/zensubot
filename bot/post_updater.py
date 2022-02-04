@@ -227,7 +227,7 @@ class PostUpdater:
             added_text += f"{num}. {name_phrase}{level}\n{phrase}\n\n"
 
         for j, (name_phrase, level, phrase, total) in enumerate(loosers):
-            num = i + j + 2 + (-1 if i==0 else 0)
+            num = i + j + 2 + (-1 if len(passed)==0 else 0)
             if num <= 10:
                 added_text += f"{num}. <s>{name_phrase}</s>{level}\n{phrase}\n\n"
             else:
