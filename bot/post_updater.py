@@ -231,7 +231,7 @@ class PostUpdater:
             if num <= 10:
                 added_text += f"{num}. <s>{name_phrase}</s>{level}\n{phrase}\n\n"
             else:
-                if num == len(passed) + 1:
+                if num == len(passed) + 1 or num == 11:
                     added_text += '⚓️ Потонувшие:\n'
                 else:
                     added_text += ', '
