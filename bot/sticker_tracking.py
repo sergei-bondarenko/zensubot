@@ -31,17 +31,6 @@ def stickers(update, context):
             )
             return
 
-        if datetime.today().weekday() in [5, 6]:
-            bot_message_to_chat(
-                context,
-                update["message"]["chat"]["id"],
-                "В целях эксперимента пятидневка не принимает отметки в выходные дни на протяжении всего февраля.",
-                0,
-                update.message.message_id,
-                ParseMode.HTML
-            )
-            return
-
         # Creating new users if they do not exist or updating old users
         update_users(upd)
         # Inserting new job_update

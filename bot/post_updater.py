@@ -136,12 +136,6 @@ class PostUpdater:
         else:
             return '🌑'
 
-    def render_weekends(self, weekends: str) -> str:
-        if len(weekends) > 0 and weekends != '🌑🌑':
-            return f"+{weekends}"
-        else:
-            return ''
-
     def render_drowned(self, name_phrase: str, total: int) -> str:
         return f"<s>{name_phrase}</s><code>({minutes_to_hours(total)})</code>"
 
@@ -174,7 +168,7 @@ class PostUpdater:
 
         for user_id, user_firstname, total, *days in query:
             is_first_fail = True
-            weekends = list()
+            weekends = 0
             # chr(8206) is a mark to keep text format left to right
             name_phrase = (
                 f'{chr(8206)}<a href="tg://user?id={user_id}">{user_firstname}</a>'
@@ -192,7 +186,7 @@ class PostUpdater:
 
                 # Weekends
                 if i >= 5:
-                    weekends.append(self.get_emoji(work))
+                    weekends += work
                 # Workdays
                 elif work == 0 and i < self.cur_day:
                     #phrase += EM_FAIL
@@ -205,10 +199,14 @@ class PostUpdater:
                     #phrase += EM_FALSE
                     phrase += '🌑'
 
-            weekends = ''.join(weekends)
-            phrase += f"{self.render_weekends(weekends)}\n🕰 <code>{minutes_to_hours(total)}</code>"
-            if work_user_today > 0:
-                phrase += f"<code>[+{minutes_to_hours(work_user_today)}]</code>"
+            phrase += f"\n🕰 <code>{minutes_to_hours(total)}</code>"
+            if weekends == 0:
+                # Today is a workday.
+                if work_user_today > 0:
+                    phrase += f"<code>[+{minutes_to_hours(work_user_today)}]</code>"
+            else:
+                # Today is a weekday.
+                phrase += f" ✨<code>{minutes_to_hours(weekends)}</code>"
 
             try:
                 level = f"💫<code>{user_levels[user_id]}</code>"
