@@ -37,3 +37,18 @@ def clean_data(job):
     job.run_repeating(
         callback=cleaner, interval=timedelta(days=JOB_DAYS_DURATION), first=datetime(2021, 1, 1)
     )
+
+def get_effective_job(chat_id):
+    """
+    Input is the chat_id where the sticker is posted.
+    Output is chat_id and message_id where the job is posted as it could be in the channel.
+    """
+    data = db_query(f"""
+        SELECT message_id, chat_id, child FROM jobs LEFT OUTER JOIN chats_connection ON jobs.chat_id=chats_connection.parent
+        WHERE id IN (
+            SELECT MAX(id) FROM jobs GROUP BY type
+        );
+        """)
+    for (message_id, effective_chat_id, child) in data:
+        if chat_id == child or chat_id == effective_chat_id:
+            return (effective_chat_id, message_id)

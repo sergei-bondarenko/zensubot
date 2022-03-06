@@ -73,7 +73,7 @@ def main() -> None:
     )
 
     # Creates sticker_tracking handler
-    stickers_handler = MessageHandler(Filters.sticker & Filters.reply, stickers)
+    stickers_handler = MessageHandler(Filters.sticker, stickers)
     dispatcher.add_handler(stickers_handler)
 
     # Creates plus_tracking handler

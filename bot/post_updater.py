@@ -7,7 +7,7 @@ from telegram.error import BadRequest
 
 from bot_functions import bot_message_to_chat, fill_template, minutes_to_hours, get_user_levels
 from constants import EM_TRUE, EM_FAIL, EM_FALSE, EM_WEEKEND, JOB_DAYS_DURATION, USERS
-from database import db_query
+from database import db_query, get_effective_job
 from responses import Responses
 from telegram import InputMediaPhoto
 
@@ -31,14 +31,21 @@ class PostUpdater:
             message = update["message"]
             reply = message["reply_to_message"]
             user = update.effective_user
-            try:
-                # Job posted to channel
-                self.job_chat_id = reply["forward_from_chat"]["id"]
-                self.job_message_id = reply["forward_from_message_id"]
-            except TypeError:
-                # Job posted to chat
-                self.job_chat_id = message["chat"]["id"]
-                self.job_message_id = reply["message_id"]
+            if reply is None:
+                try:
+                    self.job_chat_id, self.job_message_id = get_effective_job(message["chat"]["id"])
+                except:
+                    return
+            else:
+                # TODO: Can be removed if we always extract job from the database.
+                try:
+                    # Job posted to channel
+                    self.job_chat_id = reply["forward_from_chat"]["id"]
+                    self.job_message_id = reply["forward_from_message_id"]
+                except TypeError:
+                    # Job posted to chat
+                    self.job_chat_id = message["chat"]["id"]
+                    self.job_message_id = reply["message_id"]
 
             self.user_id = user["id"]
             self.username = user["username"]
@@ -46,8 +53,6 @@ class PostUpdater:
 
             self.chat_id_user_reply = message["chat"]["id"]
             self.message_id_user_reply = message["message_id"]
-
-            self.is_caption = bool(reply.caption)
 
             # Getting active jobs if they exist
             try:
@@ -78,16 +83,16 @@ class PostUpdater:
         text, work_today = self.get_posted_message(text)
 
         try:
-            if self.is_caption:
-                context.bot.edit_message_media(
-                    chat_id=self.job_chat_id,
-                    message_id=self.job_message_id,
-                    media=InputMediaPhoto(
-                        media=photo_id,
-                        caption=text,
-                        parse_mode=ParseMode.HTML),
-                )
-            else:
+            context.bot.edit_message_media(
+                chat_id=self.job_chat_id,
+                message_id=self.job_message_id,
+                media=InputMediaPhoto(
+                    media=photo_id,
+                    caption=text,
+                    parse_mode=ParseMode.HTML),
+            )
+        except:
+            try:
                 context.bot.edit_message_text(
                     text=text,
                     chat_id=self.job_chat_id,
@@ -95,7 +100,10 @@ class PostUpdater:
                     parse_mode=ParseMode.HTML,
                     disable_web_page_preview=True,
                 )
+            except:
+                pass
 
+        try:
             if not self.on_demand:
                 logger.info(
                     f"Edited job with id {self.job_id} after posted sticker id {self.sticker_id} by @{self.username} with firstname {self.user_firstname}"
