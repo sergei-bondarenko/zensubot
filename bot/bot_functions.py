@@ -57,6 +57,7 @@ def delete_message(context: CallbackContext) -> None:
 
 
 def fill_template(text: str, n: int, start_date: datetime = datetime.now()) -> str:
+    logger.info(f"fill_template start_date={start_date}")
     UTC_PLUS = 3
     text = re.sub('([#№])N', f"\g<1>{n}", text, flags=re.I)
     for day in range(5):
