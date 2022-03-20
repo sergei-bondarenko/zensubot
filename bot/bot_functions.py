@@ -56,7 +56,7 @@ def delete_message(context: CallbackContext) -> None:
     context.bot.delete_message(chat_id=job[1], message_id=job[0])
 
 
-def fill_template(text: str, n: int, start_date: datetime = datetime.now()) -> str:
+def fill_template(text: str, n: int, start_date: datetime) -> str:
     logger.info(f"fill_template start_date={start_date}")
     UTC_PLUS = 3
     text = re.sub('([#№])N', f"\g<1>{n}", text, flags=re.I)
@@ -81,7 +81,7 @@ def send_job(context, cur_date, chat_id, job_type, order_number):
             f'select photo_id, caption from post_templates where job_type = {job_type}',
             True,
         )[0]
-        caption = fill_template(caption, order_number)
+        caption = fill_template(caption, order_number, datetime.now())
         
         if photo_id == "None":
             posted_message = context.bot.send_message(chat_id, caption, parse_mode = ParseMode.HTML)
