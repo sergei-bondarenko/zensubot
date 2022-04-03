@@ -84,9 +84,9 @@ def send_job(context, cur_date, chat_id, job_type, order_number):
         caption = fill_template(caption, order_number, datetime.now())
         
         if photo_id == "None":
-            posted_message = context.bot.send_message(chat_id, caption, parse_mode = ParseMode.HTML)
+            posted_message = context.bot.send_message(chat_id, caption, parse_mode = ParseMode.HTML, disable_notification=True)
         else:
-            posted_message = context.bot.send_photo(chat_id, photo_id, caption=caption, parse_mode = ParseMode.HTML)
+            posted_message = context.bot.send_photo(chat_id, photo_id, caption=caption, parse_mode = ParseMode.HTML, disable_notification=True)
         
         last_message_id = db_query(f"select coalesce(max(message_id), 0) from jobs where chat_id = {chat_id}")[0][0]
 
@@ -105,7 +105,7 @@ def send_job(context, cur_date, chat_id, job_type, order_number):
             logger.info(f"Unpin didn't work in chat_id {chat_id}")
         
         try:
-            context.bot.pin_chat_message(chat_id, posted_message.message_id)
+            context.bot.pin_chat_message(chat_id, posted_message.message_id, disable_notification=True)
         except:
             logger.info(f"Pin didn't work in chat_id {chat_id}")
 
