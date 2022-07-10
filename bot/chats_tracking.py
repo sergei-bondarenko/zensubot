@@ -57,6 +57,7 @@ def track_chats(update, context) -> None:
 
     # Handle chat types differently:
     chat = update.effective_chat
+    title = chat.title.replace("'", "''")
     if chat.type == Chat.PRIVATE:
         if not was_member and is_member:
             logger.info("%s started the bot", cause_name)
@@ -70,7 +71,6 @@ def track_chats(update, context) -> None:
                 chat.title,
                 chat.id,
             )
-            title = chat.title.replace("'", "''")
             db_query(f"insert into chats values ({chat.id}, '{title} чат')", False)
         elif was_member and not is_member:
             logger.info(
