@@ -23,6 +23,7 @@ from sticker_tracking import stickers
 from telegraph_posting import TelegraphPost
 from reminder import reminder
 from greeting import greet_chat_members
+from unpin_channel_messages import unpin_channel_messages
 
 
 TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN")
@@ -64,6 +65,13 @@ def main() -> None:
             PARSE_JOB_TYPE: [MessageHandler(Filters.text, parse_job_type)]
         },
         fallbacks=[CommandHandler("cancel", cancel)],
+    )
+
+    dispatcher.add_handler(
+        MessageHandler(
+            Filters.forwarded_from(chat_id=-1001491354914),
+            unpin_channel_messages
+        )
     )
 
     # Creates direct_messages handler
