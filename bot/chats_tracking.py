@@ -57,7 +57,11 @@ def track_chats(update, context) -> None:
 
     # Handle chat types differently:
     chat = update.effective_chat
-    title = chat.title.replace("'", "''")
+    if chat.title is None:
+        logger.info("Can't track chat: ", chat)
+        return
+    else:
+        title = chat.title.replace("'", "''")
     if chat.type == Chat.PRIVATE:
         if not was_member and is_member:
             logger.info("%s started the bot", cause_name)
