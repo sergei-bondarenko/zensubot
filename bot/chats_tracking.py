@@ -58,7 +58,7 @@ def track_chats(update, context) -> None:
     # Handle chat types differently:
     chat = update.effective_chat
     if chat.title is None:
-        logger.info("Can't track chat: ", chat)
+        logger.info(f"Can't track chat: {chat.id}.")
         return
     else:
         title = chat.title.replace("'", "''")
