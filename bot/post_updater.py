@@ -91,7 +91,8 @@ class PostUpdater:
                     caption=text,
                     parse_mode=ParseMode.HTML),
             )
-        except:
+        except Exception as e1:
+            logger.info(f"Edited job with id {self.job_id} with media FAILED: {e1}")
             try:
                 context.bot.edit_message_text(
                     text=text,
@@ -100,8 +101,9 @@ class PostUpdater:
                     parse_mode=ParseMode.HTML,
                     disable_web_page_preview=True,
                 )
-            except:
-                pass
+            except Exception as e2:
+                logger.info(f"Edited job with id {self.job_id} with text FAILED: {e2}")
+
 
         try:
             if not self.on_demand:
@@ -124,8 +126,8 @@ class PostUpdater:
             else:
                 logger.info(f"Edited job with id {self.job_id} after ON DEMAND update")
 
-        except BadRequest:
-            pass
+        except BadRequest as e:
+            logger.info(f"Edited job with id {self.job_id} after ON DEMAND update FAILED: {e}")
 
 
     def get_emoji(self, work: int) -> str:
