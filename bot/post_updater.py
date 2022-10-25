@@ -146,8 +146,11 @@ class PostUpdater:
         else:
             return '🌑'
 
-    def render_drowned(self, name_phrase: str, total: int) -> str:
-        return f"<s>{name_phrase}</s><code>({minutes_to_hours(total)})</code>"
+    def render_drowned(self, name_phrase: str, total: int, crossed: bool) -> str:
+        if crossed:
+            return f"<s>{name_phrase}</s><code>({minutes_to_hours(total)})</code>"
+        else:
+            return f"{name_phrase}<code>({minutes_to_hours(total)})</code>"
 
     def get_posted_message(self, text: str) -> None:
         # Collecting data about current job progress
@@ -172,8 +175,7 @@ class PostUpdater:
 
         text = text.split(f"\n\n{USERS}:")[0]
 
-        passed = list()
-        loosers = list() 
+        users = list()
         work_today = 0
 
         for user_id, user_firstname, total, *days in query:
@@ -223,27 +225,27 @@ class PostUpdater:
             except:
                 level = f"💫<code>0</code>"
             if is_first_fail:
-                passed.append((name_phrase, level, phrase, total))
+                drowned = False
             else:
-                loosers.append((name_phrase, level, phrase, total))
+                drowned = True
+            users.append((name_phrase, level, phrase, total, drowned))
 
         added_text = str()
         i, j = 0, 0
 
-        for i, (name_phrase, level, phrase, total) in enumerate(passed):
+        for i, (name_phrase, level, phrase, total, drowned) in enumerate(users):
             num = i+1
-            added_text += f"{num}. {name_phrase}{level}\n{phrase}\n\n"
-
-        for j, (name_phrase, level, phrase, total) in enumerate(loosers):
-            num = i + j + 2 + (-1 if len(passed)==0 else 0)
             if num <= 10:
-                added_text += f"{num}. <s>{name_phrase}</s>{level}\n{phrase}\n\n"
+                if drowned:
+                    added_text += f"{num}. <s>{name_phrase}</s>{level}\n{phrase}\n\n"
+                else:
+                    added_text += f"{num}. {name_phrase}{level}\n{phrase}\n\n"
             else:
-                if num == len(passed) + 1 or num == 11:
+                if num == 11:
                     added_text += '⚓️ Потонувшие:\n'
                 else:
                     added_text += ', '
-                added_text += self.render_drowned(name_phrase, total)
+                added_text += self.render_drowned(name_phrase, total, drowned)
 
         text += "\n\n" + added_text
 
