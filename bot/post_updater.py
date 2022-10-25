@@ -231,7 +231,7 @@ class PostUpdater:
             users.append((name_phrase, level, phrase, total, drowned))
 
         added_text = str()
-        i, j = 0, 0
+        i = 0
 
         for i, (name_phrase, level, phrase, total, drowned) in enumerate(users):
             num = i+1
