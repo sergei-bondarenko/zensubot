@@ -101,12 +101,12 @@ def send_job(context, cur_date, chat_id, job_type, order_number):
         
         try:
             context.bot.unpin_chat_message(chat_id = chat_id, message_id = last_message_id)
-        except:
-            logger.info(f"Unpin didn't work in chat_id {chat_id}")
+        except Exception as e:
+            logger.info(f"Unpin didn't work in chat_id {chat_id}: {e}")
         
         try:
             context.bot.pin_chat_message(chat_id, posted_message.message_id, disable_notification=True)
-        except:
-            logger.info(f"Pin didn't work in chat_id {chat_id}")
+        except Exception as e:
+            logger.info(f"Pin didn't work in chat_id {chat_id}: {e}")
 
 
