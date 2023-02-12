@@ -67,13 +67,6 @@ def main() -> None:
         fallbacks=[CommandHandler("cancel", cancel)],
     )
 
-    dispatcher.add_handler(
-        MessageHandler(
-            Filters.forwarded_from(chat_type=Filters.chat_type.channel),
-            unpin_channel_messages
-        )
-    )
-
     # Creates direct_messages handler
     dispatcher.add_handler(conv_handler)
     dispatcher.add_handler(
@@ -100,6 +93,13 @@ def main() -> None:
 
     #inline_stat_handler = InlineQueryHandler(inline_stat)
     #dispatcher.add_handler(inline_stat_handler)
+
+    dispatcher.add_handler(
+        MessageHandler(
+            Filters.all,
+            unpin_channel_messages
+        )
+    )
 
     # Collect bot responses
     Responses.collect()
