@@ -69,7 +69,7 @@ def main() -> None:
 
     dispatcher.add_handler(
         MessageHandler(
-            Filters.forwarded_from(chat_id=-1001491354914),
+            Filters.forwarded_from(chat_type=Filters.chat_type.channel),
             unpin_channel_messages
         )
     )
