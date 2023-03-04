@@ -152,6 +152,12 @@ class PostUpdater:
         else:
             return f"{name_phrase}<code>({minutes_to_hours(total)})</code>"
 
+    def truncate(self, string: str, length: int) -> str:
+        if len(string) > length:
+            return string[:length] + "..."
+        else:
+            return string
+
     def get_posted_message(self, text: str) -> None:
         # Collecting data about current job progress
         query = db_query(
@@ -183,7 +189,7 @@ class PostUpdater:
             weekends = 0
             # chr(8206) is a mark to keep text format left to right
             name_phrase = (
-                f'{chr(8206)}<a href="tg://user?id={user_id}">{user_firstname}</a>'
+                    f'{chr(8206)}<a href="tg://user?id={user_id}">{self.truncate(user_firstname, 15)}</a>'
             )
             phrase = str()
 
