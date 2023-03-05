@@ -6,7 +6,7 @@ from telegram.ext import CallbackContext
 from telegram.error import BadRequest
 
 from bot_functions import bot_message_to_chat, fill_template, minutes_to_hours, get_user_levels
-from constants import EM_TRUE, EM_FAIL, EM_FALSE, EM_WEEKEND, JOB_DAYS_DURATION, USERS
+from constants import EM_TRUE, EM_FAIL, EM_FALSE, EM_WEEKEND, JOB_DAYS_DURATION, USERS, TRUNCATE_LENGTH, DROWN_AFTER
 from database import db_query, get_effective_job
 from responses import Responses
 from telegram import InputMediaPhoto
@@ -189,7 +189,7 @@ class PostUpdater:
             weekends = 0
             # chr(8206) is a mark to keep text format left to right
             name_phrase = (
-                    f'{chr(8206)}<a href="tg://user?id={user_id}">{self.truncate(user_firstname, 15)}</a>'
+                    f'{chr(8206)}<a href="tg://user?id={user_id}">{self.truncate(user_firstname, TRUNCATE_LENGTH)}</a>'
             )
             phrase = str()
 
@@ -241,13 +241,13 @@ class PostUpdater:
 
         for i, (name_phrase, level, phrase, total, drowned) in enumerate(users):
             num = i+1
-            if num <= 10:
+            if num <= DROWN_AFTER:
                 if drowned:
                     added_text += f"{num}. <s>{name_phrase}</s>{level}\n{phrase}\n\n"
                 else:
                     added_text += f"{num}. {name_phrase}{level}\n{phrase}\n\n"
             else:
-                if num == 11:
+                if num == DROWN_AFTER + 1:
                     added_text += '⚓️ Потонувшие:\n'
                 else:
                     added_text += ', '
