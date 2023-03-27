@@ -9,6 +9,7 @@ from telegram.ext import (
     ChatMemberHandler,
 )
 from database import db_query
+from bot_functions import bot_message_to_chat
 
 
 logger = logging.getLogger(__name__)
@@ -61,4 +62,10 @@ def greet_chat_members(update: Update, context: CallbackContext) -> None:
         chat_id = update['chat_member']['chat']['id']
         greeting = db_query(f"select greeting from chats where id = {chat_id}")[0][0]
         if greeting:
-            update.effective_chat.send_message(greeting.replace("ANON_NAME", member_name), parse_mode=ParseMode.HTML)
+            #update.effective_chat.send_message(greeting.replace("ANON_NAME", member_name), parse_mode=ParseMode.HTML)
+            bot_message_to_chat(context = context, 
+                                chat_id = chat_id, 
+                                text = greeting.replace("ANON_NAME", member_name), 
+                                delete = 30*60, 
+                                parse_mode=ParseMode.HTML
+                                )
