@@ -16,7 +16,7 @@ def post_callback(context):
     data = db_query(
         """select id, jobs_type, coalesce(order_number, 0) + 1
             from chats left join (select type, max(order_number) as order_number from jobs group by type) t on t.type = chats.jobs_type 
-            where jobs_type is not null"""
+            where jobs_type is not null and is_enabled = True"""
     )
     for chat_id, job_type, order_number in data:
         try:
