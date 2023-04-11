@@ -18,6 +18,7 @@ def reminder_callback(context):
                             join chats on chats.id = jobs.chat_id and chats.jobs_type is not null
                             left join chats_connection on parent = chat_id
                     where date_part('day', jobs_updates.created - jobs.created) = 0
+                        and chats.is_enabled = true
                     group by coalesce(child, chat_id), users.id, users.first_name)
 
                     except 
