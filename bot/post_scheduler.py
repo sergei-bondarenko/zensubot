@@ -33,7 +33,19 @@ def create_post_sc(job, completed = False):
     time_now = datetime.now()
 
     if time_now.weekday() == POST_WEEKDAY and POST_HOUR <= time_now.hour <= POST_HOUR+1 and not completed:
-        interval = timedelta(minutes = 2)
-        job.run_repeating(callback = post_callback, interval = interval, last = time_now + timedelta(hours = 1), name = 'post_err')
+        interval = timedelta(minutes = 5)
+        job.run_repeating(
+            callback = post_callback,
+            interval = interval,
+            last = time_now + timedelta(hours = 1),
+            name = 'post_err',
+            job_kwargs = {'misfire_grace_time': 180}
+        )
     else:
-        job.run_daily(callback = post_callback, time = time(POST_HOUR, POST_MINUTE), days = [POST_WEEKDAY], name = 'post_ok')
+        job.run_daily(
+            callback = post_callback,
+            time = time(POST_HOUR, POST_MINUTE),
+            days = [POST_WEEKDAY],
+            name = 'post_ok',
+            job_kwargs = {'misfire_grace_time': 180}
+        )

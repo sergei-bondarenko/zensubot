@@ -100,16 +100,16 @@ def send_job(context, cur_date, chat_id, job_type, order_number):
         logger.info(f"Variables: cur_date={cur_date}, datetime.now()={datetime.now()}")
         
         try:
-            logger.info(f"Unpinning message {last_message_id} in chat {chat_id}...")
+            # logger.info(f"Unpinning message {last_message_id} in chat {chat_id}...")
             result = context.bot.unpin_chat_message(chat_id = chat_id, message_id = last_message_id)
-            logger.info(f"Unpinning message {last_message_id} in chat {chat_id} result = {result}")
+            # logger.info(f"Unpinning message {last_message_id} in chat {chat_id} result = {result}")
         except Exception as e:
             logger.info(f"Unpin didn't work in chat_id {chat_id}: {e}")
         
         try:
-            logger.info(f"Pinning message {last_message_id} in chat {chat_id}...")
+            # logger.info(f"Pinning message {last_message_id} in chat {chat_id}...")
             result = context.bot.pin_chat_message(chat_id, posted_message.message_id, disable_notification=True)
-            logger.info(f"Pinning message {last_message_id} in chat {chat_id} result = {result}")
+            # logger.info(f"Pinning message {last_message_id} in chat {chat_id} result = {result}")
         except Exception as e:
             logger.info(f"Pin didn't work in chat_id {chat_id}: {e}")
 
