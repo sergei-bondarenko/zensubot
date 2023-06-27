@@ -1,3 +1,4 @@
+from html import escape
 from datetime import datetime
 from bot_functions import bot_message_to_chat
 from database import db_query
@@ -43,7 +44,7 @@ def stickers(update, context):
 
 
 def update_users(data):
-    user_firstname = data.user_firstname.replace("'", "''")
+    user_firstname = escape(data.user_firstname)
     db_query(
         f"""insert into users (id, username, first_name) 
                 values ({data.user_id}, '{data.username}', '{user_firstname}')
