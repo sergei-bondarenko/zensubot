@@ -84,6 +84,8 @@ def get_stat(update: Update) -> str:
     text = f'<b>Статистика пятидневок {user_name}</b><br>'
     text += f"<pre> ‎ ‎ ‎ ‎ ‎  ‎Тип ‎ ‎ ‎ ‎ ‎ ‎Закончено ‎‏‏‎ ‎Время<br>"
     for i, (type, ended, started, summ) in enumerate(query):
+        if summ == 0:
+            continue
         length1 = 13 - len(type)
         margin1 = length1*EMPTY_SYMBOL if length1 != 0 else ''
         if any(c in ['️', '✍'] for c in type):
