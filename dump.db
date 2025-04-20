@@ -1,0 +1,320 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 13.8 (Debian 13.8-1.pgdg90+1)
+-- Dumped by pg_dump version 13.8 (Debian 13.8-1.pgdg90+1)
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
+--
+-- Name: chats; Type: TABLE; Schema: public; Owner: zensubot
+--
+
+CREATE TABLE public.chats (
+    id bigint,
+    title character varying,
+    jobs_type integer,
+    greeting character varying,
+    is_enabled boolean DEFAULT true
+);
+
+
+ALTER TABLE public.chats OWNER TO zensubot;
+
+--
+-- Name: chats_connection; Type: TABLE; Schema: public; Owner: zensubot
+--
+
+CREATE TABLE public.chats_connection (
+    child bigint,
+    parent bigint
+);
+
+
+ALTER TABLE public.chats_connection OWNER TO zensubot;
+
+--
+-- Name: job_type_seq; Type: SEQUENCE; Schema: public; Owner: zensubot
+--
+
+CREATE SEQUENCE public.job_type_seq
+    START WITH 9
+    INCREMENT BY 1
+    MINVALUE 9
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.job_type_seq OWNER TO zensubot;
+
+--
+-- Name: jobs; Type: TABLE; Schema: public; Owner: zensubot
+--
+
+CREATE TABLE public.jobs (
+    id integer NOT NULL,
+    type integer,
+    created timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    message_id bigint,
+    chat_id bigint,
+    order_number integer
+);
+
+
+ALTER TABLE public.jobs OWNER TO zensubot;
+
+--
+-- Name: jobs_id_seq; Type: SEQUENCE; Schema: public; Owner: zensubot
+--
+
+CREATE SEQUENCE public.jobs_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.jobs_id_seq OWNER TO zensubot;
+
+--
+-- Name: jobs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: zensubot
+--
+
+ALTER SEQUENCE public.jobs_id_seq OWNED BY public.jobs.id;
+
+
+--
+-- Name: jobs_types; Type: TABLE; Schema: public; Owner: zensubot
+--
+
+CREATE TABLE public.jobs_types (
+    id integer NOT NULL,
+    type character varying(40)
+);
+
+
+ALTER TABLE public.jobs_types OWNER TO zensubot;
+
+--
+-- Name: jobs_types_id_seq; Type: SEQUENCE; Schema: public; Owner: zensubot
+--
+
+CREATE SEQUENCE public.jobs_types_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.jobs_types_id_seq OWNER TO zensubot;
+
+--
+-- Name: jobs_types_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: zensubot
+--
+
+ALTER SEQUENCE public.jobs_types_id_seq OWNED BY public.jobs_types.id;
+
+
+--
+-- Name: jobs_updates; Type: TABLE; Schema: public; Owner: zensubot
+--
+
+CREATE TABLE public.jobs_updates (
+    user_id bigint,
+    job_id integer,
+    sticker_id integer,
+    created timestamp without time zone DEFAULT CURRENT_TIMESTAMP
+);
+
+
+ALTER TABLE public.jobs_updates OWNER TO zensubot;
+
+--
+-- Name: plus_data; Type: TABLE; Schema: public; Owner: zensubot
+--
+
+CREATE TABLE public.plus_data (
+    chat_id bigint,
+    message_id bigint,
+    created timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    user_id bigint
+);
+
+
+ALTER TABLE public.plus_data OWNER TO zensubot;
+
+--
+-- Name: post_templates; Type: TABLE; Schema: public; Owner: zensubot
+--
+
+CREATE TABLE public.post_templates (
+    job_type integer DEFAULT nextval('public.job_type_seq'::regclass),
+    photo_id text,
+    caption text
+);
+
+
+ALTER TABLE public.post_templates OWNER TO zensubot;
+
+--
+-- Name: response_types; Type: TABLE; Schema: public; Owner: zensubot
+--
+
+CREATE TABLE public.response_types (
+    id integer NOT NULL,
+    type character varying(40)
+);
+
+
+ALTER TABLE public.response_types OWNER TO zensubot;
+
+--
+-- Name: response_types_id_seq; Type: SEQUENCE; Schema: public; Owner: zensubot
+--
+
+CREATE SEQUENCE public.response_types_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.response_types_id_seq OWNER TO zensubot;
+
+--
+-- Name: response_types_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: zensubot
+--
+
+ALTER SEQUENCE public.response_types_id_seq OWNED BY public.response_types.id;
+
+
+--
+-- Name: responses; Type: TABLE; Schema: public; Owner: zensubot
+--
+
+CREATE TABLE public.responses (
+    job_type integer NOT NULL,
+    phrase text,
+    response_type integer NOT NULL
+);
+
+
+ALTER TABLE public.responses OWNER TO zensubot;
+
+--
+-- Name: stickers; Type: TABLE; Schema: public; Owner: zensubot
+--
+
+CREATE TABLE public.stickers (
+    id integer NOT NULL,
+    text_id character varying(100),
+    power integer
+);
+
+
+ALTER TABLE public.stickers OWNER TO zensubot;
+
+--
+-- Name: stickers_id_seq; Type: SEQUENCE; Schema: public; Owner: zensubot
+--
+
+CREATE SEQUENCE public.stickers_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.stickers_id_seq OWNER TO zensubot;
+
+--
+-- Name: stickers_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: zensubot
+--
+
+ALTER SEQUENCE public.stickers_id_seq OWNED BY public.stickers.id;
+
+
+--
+-- Name: users; Type: TABLE; Schema: public; Owner: zensubot
+--
+
+CREATE TABLE public.users (
+    id bigint NOT NULL,
+    username character varying(100),
+    first_name character varying(100),
+    is_admin boolean DEFAULT false
+);
+
+
+ALTER TABLE public.users OWNER TO zensubot;
+
+--
+-- Name: jobs id; Type: DEFAULT; Schema: public; Owner: zensubot
+--
+
+ALTER TABLE ONLY public.jobs ALTER COLUMN id SET DEFAULT nextval('public.jobs_id_seq'::regclass);
+
+
+--
+-- Name: jobs_types id; Type: DEFAULT; Schema: public; Owner: zensubot
+--
+
+ALTER TABLE ONLY public.jobs_types ALTER COLUMN id SET DEFAULT nextval('public.jobs_types_id_seq'::regclass);
+
+
+--
+-- Name: response_types id; Type: DEFAULT; Schema: public; Owner: zensubot
+--
+
+ALTER TABLE ONLY public.response_types ALTER COLUMN id SET DEFAULT nextval('public.response_types_id_seq'::regclass);
+
+
+--
+-- Name: stickers id; Type: DEFAULT; Schema: public; Owner: zensubot
+--
+
+ALTER TABLE ONLY public.stickers ALTER COLUMN id SET DEFAULT nextval('public.stickers_id_seq'::regclass);
+
+
+--
+-- Name: responses responses_pk; Type: CONSTRAINT; Schema: public; Owner: zensubot
+--
+
+ALTER TABLE ONLY public.responses
+    ADD CONSTRAINT responses_pk PRIMARY KEY (job_type, response_type);
+
+
+--
+-- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: zensubot
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+
+
+--
+-- PostgreSQL database dump complete
+--
+
